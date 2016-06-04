@@ -1,5 +1,7 @@
 # About
-This is the Storyblok php client for accessing the publishing api
+This is the Storyblok php client for easy access of the publishing api.
+
+The library checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
 ## Install
 ```bash
@@ -23,6 +25,10 @@ $client->setCache('filesytem', 'cachefolder');
 $client->getStoryBySlug('home');
 $data = $client->getStoryContent();
 ```
+## TODO
+
+* Implement database driver
+
 
 ### License
 
