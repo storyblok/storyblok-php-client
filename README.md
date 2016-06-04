@@ -14,7 +14,7 @@ $client = new \Storyblok\Client('your-storyblok-private-token');
 $client->setSpace('your-space-id');
 
 // Optionally set a cache
-$client->setCache('filesytem', $app['config.cacheFolder']);
+$client->setCache('filesytem', 'cachefolder');
 
 // Get the story as array
 $client->getStoryBySlug('home');
