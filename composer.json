@@ -1,6 +1,10 @@
 {
     "name": "storyblok/php-client",
     "description": "Storyblok Client to easily call the publishing api",
+    "type": "library",
+    "keywords": ["storyblok"],
+    "license": "MIT",
+    "minimum-stability": "dev",
     "require": {
         "guzzlehttp/guzzle": "^6.2",
         "doctrine/cache": "^1.6"
