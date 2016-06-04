@@ -9,6 +9,9 @@ composer require storyblok/php-client
 ## Usage
 
 ```php
+// Require composer autoload
+require 'vendor/autoload.php';
+
 // Initialize
 $client = new \Storyblok\Client('your-storyblok-private-token');
 $client->setSpace('your-space-id');
