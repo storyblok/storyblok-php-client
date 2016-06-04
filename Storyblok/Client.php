@@ -3,12 +3,11 @@
 namespace Storyblok;
 
 use GuzzleHttp\Client as Guzzle;
-use Storyblok\Cache\Cache;
 
 /**
 * Storyblok Client
 */
-class Storyblok
+class Client
 {
     const API_USER = "api";
     const SDK_VERSION = "1.0";
@@ -33,7 +32,7 @@ class Storyblok
     /**
      * @var string
      */
-    private $tempToken;
+    private $editModeEnabled;
     
     /**
      * @var Guzzle
@@ -51,7 +50,7 @@ class Storyblok
      * @param string $apiVersion
      * @param bool   $ssl
      */
-    function __construct($apiEndpoint = "api.storyblok.com", $apiKey = null, $apiVersion = "v1", $ssl = false)
+    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v1", $ssl = false)
     {
         $this->apiKey = $apiKey;
         $this->client = new Guzzle([
@@ -66,10 +65,10 @@ class Storyblok
             ],
         ]);
 
-        if (isset($_GET['storybloktkn'])) {
-            $this->tempToken = $_GET['storybloktkn'];
+        if (isset($_GET['_storyblok'])) {
+            $this->editModeEnabled = $_GET['_storyblok'];
         } else {
-            $this->cache = new Cache();
+            $this->editModeEnabled = false;
         }
     }
 
@@ -95,16 +94,16 @@ class Storyblok
      *
      * @return \stdClass
      *
-     * @throws GenericHTTPError
-     * @throws InvalidCredentials
-     * @throws MissingEndpoint
-     * @throws MissingRequiredParameters
+     * @throws Exception
      */
     public function get($endpointUrl, $queryString = array())
     {
-        $response = $this->client->get($endpointUrl, ['query' => $queryString]);
-
-        return $this->responseHandler($response);
+        try {
+            $responseObj = $this->client->get($endpointUrl, ['query' => $queryString]);
+            return $this->responseHandler($responseObj);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR);
+        }
     }
 
     /**
@@ -112,24 +111,21 @@ class Storyblok
      *
      * @return \stdClass
      *
-     * @throws GenericHTTPError
-     * @throws InvalidCredentials
-     * @throws MissingEndpoint
-     * @throws MissingRequiredParameters
+     * @throws Exception
      */
     public function responseHandler($responseObj)
     {
         $httpResponseCode = $responseObj->getStatusCode();
         if ($httpResponseCode === 200) {
             $data = (string) $responseObj->getBody();
-            $jsonResponseData = json_decode($data, false);
+            $jsonResponseData = (array) json_decode($data, true);
             $result = new \stdClass();
             // return response data as json if possible, raw if not
-            $result->http_response_body = $data && $jsonResponseData === null ? $data : $jsonResponseData;
+            $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
         } else {
-            throw new GenericHTTPError(self::EXCEPTION_GENERIC_HTTP_ERROR . $this->getResponseExceptionMessage($responseObj), $httpResponseCode, $responseObj->getBody());
+            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . $this->getResponseExceptionMessage($responseObj), $httpResponseCode, $responseObj->getBody());
         }
-        $result->http_response_code = $httpResponseCode;
+        $result->httpResponseCode = $httpResponseCode;
 
         return $result;
     }
@@ -142,66 +138,107 @@ class Storyblok
     protected function getResponseExceptionMessage(\GuzzleHttp\Message\Response $responseObj)
     {
         $body = (string) $responseObj->getBody();
-        $response = json_decode($body);
+        $response = (array) json_decode($body, true);
+
         if (json_last_error() == JSON_ERROR_NONE && isset($response->message)) {
             return " ".$response->message;
         }
     }
 
-    public function setCachePath($path)
+    /**
+     * Set cache driver and optional the cache path
+     * 
+     * @param string $driver Driver
+     * @param string $path   Path for file cache
+     * @return \Storyblok
+     */
+    public function setCache($driver, $path = 'cache')
     {
-        if ($this->cache) {
-            $this->cache->setCachePath($path);
+        switch ($driver) {
+            // TODO: add other drivers
+            
+            default:
+                $this->cache = new \Doctrine\Common\Cache\FilesystemCache($path);
+                break;
         }
+
+        return $this;
     }
 
+    /**
+     * Automatically delete the cache of one item if client sends published parameter
+     * 
+     * @param  string $slug Cache key
+     * @return \Storyblok
+     */
+    private function reCacheOnPublishBySlug($slug)
+    {
+        if (isset($_GET['_storyblok_published']) && $this->cache) {
+            $this->cache->delete($slug);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Gets a story by the slug identifier
+     * 
+     * @param  string $slug Slug
+     * @return \Storyblok
+     */
     public function getStoryBySlug($slug)
     {
-        
-        if ($this->cache && $this->cache->contains($slug)) {
-            $this->responseBody = $this->cache->fetch($slug);
+        $version = 'published';
 
-            return $this->responseBody;
+        if ($this->editModeEnabled) {
+            $version = 'draft';
+        }
+
+        $key = $this->spacePath . 'stories/' . $version . '/' . $slug;
+
+        $this->reCacheOnPublishBySlug($key);
+
+        if ($version == 'published' && $this->cache && $this->cache->contains($key)) {
+            $this->responseBody = $this->cache->fetch($key);
         } else {
             $options = array(
-                'access_token' => $this->apiKey
+                'token' => $this->apiKey
             );
 
-            $version = 'published';
+            $response = $this->get($key, $options);
 
-            if ($this->tempToken) {
-                $options['temp_token'] = $this->tempToken;
-                $version = 'draft';
-            }
+            $this->responseBody = $response->httpResponseBody;
 
-            try {
-                $response = $this->get($this->spacePath . 'stories/' . $version . '/' . $slug, $options);
-                $this->responseBody = $response->http_response_body;
-
-                if ($this->cache) {
-                    $this->cache->save($slug, $this->responseBody);
-                }
-
-                return $this->responseBody;
-            } catch (\GuzzleHttp\Exception\ClientException $e) {
-                $request = $e->getRequest();
-                $response = $e->getResponse();
-                #echo $response->getReasonPhrase();
-                return false;
+            if ($this->cache && $version == 'published') {
+                $this->cache->save($key, $this->responseBody);
             }
         }
+        return $this;
     }
 
+    /**
+     * Sets the space id
+     * 
+     * @param string $spaceId
+     */
     public function setSpace($spaceId)
     {
         $this->spacePath = 'spaces/' . $spaceId . '/';
+
+        return $this;
     }
 
+    /**
+     * Gets the json response body as an array
+     * 
+     * @return array
+     */
     public function getStoryContent()
     {
-        if (isset($this->responseBody->story->content)) {
-            return (array)$this->responseBody->story->content;
+        if (isset($this->responseBody)) {
+            return $this->responseBody;
         }
+
         return array();
     }
 }

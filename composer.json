@@ -1,0 +1,14 @@
+{
+    "name": "storyblok/php-client",
+    "description": "Storyblok Client to easily call the publishing api",
+    "require": {
+        "guzzlehttp/guzzle": "^6.2",
+        "doctrine/cache": "^1.6"
+    },
+    "authors": [
+        {
+            "name": "Alexander Feiglstorfer",
+            "email": "delooks@gmail.com"
+        }
+    ]
+}
