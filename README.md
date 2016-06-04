@@ -1,8 +1,26 @@
+# About
+This is the Storyblok php client for accessing the publishing api
+
+## Install
+```bash
+composer require storyblok/php-client
 ```
-$client = new \Storyblok\Storyblok('localhost:3001');
-#$client->setCachePath(ROOT_DIR . '/cache');
-$client->setSpace('3');
-$client->getStoryBySlug($slug);
+
+## Usage
+
+```php
+// Initialize
+$client = new \Storyblok\Client('your-storyblok-private-token');
+$client->setSpace('your-space-id');
+
+// Optionally set a cache
+$client->setCache('filesytem', $app['config.cacheFolder']);
+
+// Get the story as array
+$client->getStoryBySlug('home');
 $data = $client->getStoryContent();
-$data = json_decode(json_encode($data), true);
 ```
+
+### License
+
+This project is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
