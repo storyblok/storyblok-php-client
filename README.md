@@ -3,7 +3,7 @@ This is the Storyblok php client for accessing the publishing api
 
 ## Install
 ```bash
-composer require storyblok/php-client
+composer require storyblok/php-client dev-master
 ```
 
 ## Usage
