@@ -7,7 +7,7 @@
     "minimum-stability": "dev",
     "require": {
         "guzzlehttp/guzzle": "^6.2",
-        "doctrine/cache": "^1.6"
+        "apix/cache": "^1.2"
     },
     "authors": [
         {

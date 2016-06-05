@@ -3,6 +3,7 @@
 namespace Storyblok;
 
 use GuzzleHttp\Client as Guzzle;
+use Apix\Cache as ApixCache;
 
 /**
 * Storyblok Client
@@ -118,7 +119,7 @@ class Client
         $httpResponseCode = $responseObj->getStatusCode();
         if ($httpResponseCode === 200) {
             $data = (string) $responseObj->getBody();
-            $jsonResponseData = (array) json_decode($data, true);
+            $jsonResponseData = (array) json_decode($data);
             $result = new \stdClass();
             // return response data as json if possible, raw if not
             $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
@@ -138,10 +139,10 @@ class Client
     protected function getResponseExceptionMessage(\GuzzleHttp\Message\Response $responseObj)
     {
         $body = (string) $responseObj->getBody();
-        $response = (array) json_decode($body, true);
+        $response = json_decode($body);
 
         if (json_last_error() == JSON_ERROR_NONE && isset($response->message)) {
-            return " ".$response->message;
+            return $response->message;
         }
     }
 
@@ -149,16 +150,33 @@ class Client
      * Set cache driver and optional the cache path
      * 
      * @param string $driver Driver
-     * @param string $path   Path for file cache
+     * @param string $options Path for file cache
      * @return \Storyblok
      */
-    public function setCache($driver, $path = 'cache')
+    public function setCache($driver, $options = array())
     {
+        $options['serializer'] = 'json';
+        $options['prefix_key'] = 'storyblok:';
+        $options['prefix_tag'] = 'storyblok:';
+
         switch ($driver) {
-            // TODO: add other drivers
+            case 'mysql':
+                $dbh = $options['pdo'];
+                $this->cache = new ApixCache\Pdo\Mysql($dbh, $options);
+
+                break;
+
+            case 'postgres':
+                $dbh = $options['pdo'];
+                $this->cache = new ApixCache\Pdo\Pgsql($dbh, $options);
+
+                break;
             
             default:
-                $this->cache = new \Doctrine\Common\Cache\FilesystemCache($path);
+                $options['directory'] = $options['path'];
+
+                $this->cache = new ApixCache\Files($options);
+
                 break;
         }
 
@@ -175,7 +193,7 @@ class Client
     {
         $key = $this->spacePath . 'stories/published/' . $slug;
 
-        if ($this->cache && $this->cache->contains($key)) {
+        if ($this->cache && !$this->cache->load($key)) {
             $this->cache->delete($key);
         }
 
@@ -190,9 +208,7 @@ class Client
      */
     private function reCacheOnPublish($key)
     {
-        if (isset($_GET['_storyblok_published']) && $this->cache && $this->cache->contains($key)) {
-            $cachedItem = $this->cache->fetch($key);
-
+        if (isset($_GET['_storyblok_published']) && $this->cache && !$cachedItem = $this->cache->load($key)) {
             if (isset($cachedItem['story']) && $cachedItem['story']['id'] == $_GET['_storyblok_published']) {
                 $this->cache->delete($key);
             }
@@ -219,8 +235,8 @@ class Client
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $this->cache->contains($key)) {
-            $this->responseBody = $this->cache->fetch($key);
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+            $this->responseBody = (array) $cachedItem;
         } else {
             $options = array(
                 'token' => $this->apiKey
@@ -231,9 +247,10 @@ class Client
             $this->responseBody = $response->httpResponseBody;
 
             if ($this->cache && $version == 'published') {
-                $this->cache->save($key, $this->responseBody);
+                $this->cache->save($this->responseBody, $key);
             }
         }
+
         return $this;
     }
 
