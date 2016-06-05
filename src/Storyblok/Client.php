@@ -166,15 +166,36 @@ class Client
     }
 
     /**
-     * Automatically delete the cache of one item if client sends published parameter
+     * Manually delete the cache of one item
      * 
-     * @param  string $slug Cache key
+     * @param  string $slug Slug
      * @return \Storyblok
      */
-    private function reCacheOnPublishBySlug($slug)
+    public function deleteCacheBySlug($slug)
     {
-        if (isset($_GET['_storyblok_published']) && $this->cache) {
-            $this->cache->delete($slug);
+        $key = $this->spacePath . 'stories/published/' . $slug;
+
+        if ($this->cache && $this->cache->contains($key)) {
+            $this->cache->delete($key);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Automatically delete the cache of one item if client sends published parameter
+     * 
+     * @param  string $key Cache key
+     * @return \Storyblok
+     */
+    private function reCacheOnPublish($key)
+    {
+        if (isset($_GET['_storyblok_published']) && $this->cache && $this->cache->contains($key)) {
+            $cachedItem = $this->cache->fetch($key);
+
+            if ($cachedItem['id'] == $_GET['_storyblok_published']) {
+                $this->cache->delete($key);
+            }
         }
 
         return $this;
@@ -196,7 +217,7 @@ class Client
 
         $key = $this->spacePath . 'stories/' . $version . '/' . $slug;
 
-        $this->reCacheOnPublishBySlug($key);
+        $this->reCacheOnPublish($key);
 
         if ($version == 'published' && $this->cache && $this->cache->contains($key)) {
             $this->responseBody = $this->cache->fetch($key);
