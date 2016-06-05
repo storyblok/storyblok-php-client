@@ -193,7 +193,7 @@ class Client
         if (isset($_GET['_storyblok_published']) && $this->cache && $this->cache->contains($key)) {
             $cachedItem = $this->cache->fetch($key);
 
-            if ($cachedItem['id'] == $_GET['_storyblok_published']) {
+            if (isset($cachedItem['story']) && $cachedItem['story']['id'] == $_GET['_storyblok_published']) {
                 $this->cache->delete($key);
             }
         }
