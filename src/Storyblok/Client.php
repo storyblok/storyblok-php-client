@@ -193,7 +193,7 @@ class Client
     {
         $key = $this->spacePath . 'stories/published/' . $slug;
 
-        if ($this->cache && !$this->cache->load($key)) {
+        if ($this->cache) {
             $this->cache->delete($key);
         }
 
