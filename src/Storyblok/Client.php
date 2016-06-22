@@ -119,7 +119,7 @@ class Client
         $httpResponseCode = $responseObj->getStatusCode();
         if ($httpResponseCode === 200) {
             $data = (string) $responseObj->getBody();
-            $jsonResponseData = (array) json_decode($data);
+            $jsonResponseData = (array) json_decode($data, true);
             $result = new \stdClass();
             // return response data as json if possible, raw if not
             $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
