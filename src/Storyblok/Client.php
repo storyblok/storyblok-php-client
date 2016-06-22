@@ -59,7 +59,6 @@ class Client
             'defaults'=> [
                 'auth' => array(self::API_USER, $this->apiKey),
                 'exceptions' => false,
-                'config' => ['curl' => [ CURLOPT_FORBID_REUSE => true ]],
                 'headers' => [
                     'User-Agent' => self::SDK_USER_AGENT.'/'.self::SDK_VERSION,
                 ],
