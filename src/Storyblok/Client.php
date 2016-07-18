@@ -154,7 +154,7 @@ class Client
      */
     public function setCache($driver, $options = array())
     {
-        $options['serializer'] = 'json';
+        $options['serializer'] = 'php';
         $options['prefix_key'] = 'storyblok:';
         $options['prefix_tag'] = 'storyblok:';
 
@@ -165,12 +165,18 @@ class Client
 
                 break;
 
+            case 'sqlite':
+                $dbh = $options['pdo'];
+                $this->cache = new ApixCache\Pdo\Sqlite($dbh, $options);
+
+                break;
+
             case 'postgres':
                 $dbh = $options['pdo'];
                 $this->cache = new ApixCache\Pdo\Pgsql($dbh, $options);
 
                 break;
-            
+
             default:
                 $options['directory'] = $options['path'];
 
