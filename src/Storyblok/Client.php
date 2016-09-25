@@ -11,7 +11,7 @@ use Apix\Cache as ApixCache;
 class Client
 {
     const API_USER = "api";
-    const SDK_VERSION = "1.0";
+    const SDK_VERSION = "1.1";
     const SDK_USER_AGENT = "storyblok-sdk-php";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred! Check your network connection and try again.";
 
@@ -29,6 +29,11 @@ class Client
      * @var string
      */
     private $spacePath;
+
+    /**
+     * @var string
+     */
+    private $linksPath;
 
     /**
      * @var string
@@ -70,6 +75,18 @@ class Client
         } else {
             $this->editModeEnabled = false;
         }
+    }
+
+    /**
+     * Enables editmode to receive draft versions
+     * 
+     * @param  boolean $enabled
+     * @return \Client
+     */
+    public function editMode($enabled = true)
+    {
+        $this->editModeEnabled = $enabled;
+        return $this;
     }
 
     /**
@@ -150,7 +167,7 @@ class Client
      * 
      * @param string $driver Driver
      * @param string $options Path for file cache
-     * @return \Storyblok
+     * @return \Storyblok\Client
      */
     public function setCache($driver, $options = array())
     {
@@ -192,7 +209,7 @@ class Client
      * Manually delete the cache of one item
      * 
      * @param  string $slug Slug
-     * @return \Storyblok
+     * @return \Storyblok\Client
      */
     public function deleteCacheBySlug($slug)
     {
@@ -200,6 +217,9 @@ class Client
 
         if ($this->cache) {
             $this->cache->delete($key);
+
+            // Always refresh cache of links
+            $this->cache->delete($this->linksPath);
         }
 
         return $this;
@@ -209,7 +229,7 @@ class Client
      * Automatically delete the cache of one item if client sends published parameter
      * 
      * @param  string $key Cache key
-     * @return \Storyblok
+     * @return \Storyblok\Client
      */
     private function reCacheOnPublish($key)
     {
@@ -217,6 +237,9 @@ class Client
             if (isset($cachedItem['story']) && $cachedItem['story']['id'] == $_GET['_storyblok_published']) {
                 $this->cache->delete($key);
             }
+
+            // Always refresh cache of links
+            $this->cache->delete($this->linksPath);
         }
 
         return $this;
@@ -226,7 +249,7 @@ class Client
      * Gets a story by the slug identifier
      * 
      * @param  string $slug Slug
-     * @return \Storyblok
+     * @return \Storyblok\Client
      */
     public function getStoryBySlug($slug)
     {
@@ -236,7 +259,7 @@ class Client
             $version = 'draft';
         }
 
-        $key = $this->spacePath . 'stories/' . $version . '/' . $slug;
+        $key = $this->spacePath . 'stories/' . $slug;
 
         $this->reCacheOnPublish($key);
 
@@ -244,7 +267,8 @@ class Client
             $this->responseBody = (array) $cachedItem;
         } else {
             $options = array(
-                'token' => $this->apiKey
+                'token' => $this->apiKey,
+                'version' => $version
             );
 
             $response = $this->get($key, $options);
@@ -260,28 +284,114 @@ class Client
     }
 
     /**
-     * Sets the space id
+     * Gets a list of links
      * 
-     * @param string $spaceId
+     * @return \Storyblok\Client
      */
-    public function setSpace($spaceId)
+    public function getLinks()
     {
-        $this->spacePath = 'spaces/' . $spaceId . '/';
+        $version = 'published';
+
+        if ($this->editModeEnabled) {
+            $version = 'draft';
+        }
+
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($this->linksPath)) {
+            $this->responseBody = (array) $cachedItem;
+        } else {
+            $options = array(
+                'token' => $this->apiKey,
+                'version' => $version
+            );
+
+            $response = $this->get($this->linksPath, $options);
+
+            $this->responseBody = $response->httpResponseBody;
+
+            if ($this->cache && $version == 'published') {
+                $this->cache->save($this->responseBody, $this->linksPath);
+            }
+        }
 
         return $this;
     }
 
     /**
-     * Gets the json response body as an array
+     * Gets the json response body
      * 
      * @return array
      */
-    public function getStoryContent()
+    public function getBody()
     {
         if (isset($this->responseBody)) {
             return $this->responseBody;
         }
 
         return array();
+    }
+
+    /**
+     * Transforms links into a tree
+     * 
+     * @param  string $slug Slug
+     * @return \Client
+     */
+    public function getAsTree()
+    {
+        if (!isset($this->responseBody)) {
+            return array();
+        }
+
+        $tree = [];
+
+        foreach ($this->responseBody['links'] as $item) {
+            if (!isset($tree[$item['parent_id']])) {
+                $tree[$item['parent_id']] = array();
+            }
+
+            $tree[$item['parent_id']][] = $item;
+        }
+
+        return $this->_generateTree(0, $tree);
+    }
+
+    /**
+     * Recursive function to generate tree
+     * 
+     * @param  integer $parent
+     * @param  array  $items
+     * @return array
+     */
+    private function _generateTree($parent = 0, $items)
+    {
+        $tree = array();
+
+        if (isset($items[$parent])) {
+            $result = $items[$parent];
+
+            foreach ($result as $item) {
+                if (!isset($tree[$item['id']])) {
+                    $tree[$item['id']] = array();
+                }
+
+                $tree[$item['id']]['item']  = $item;
+                $tree[$item['id']]['children']  = $this->_generateTree($item['id'], $items);
+            }
+        }
+
+        return $tree;
+    }
+
+    /**
+     * Sets the space id
+     * 
+     * @param string $spaceId
+     */
+    public function setSpace($spaceId)
+    {
+        $this->spacePath = 'cdn/spaces/' . $spaceId . '/';
+        $this->linksPath = $this->spacePath . 'links/';
+
+        return $this;
     }
 }
