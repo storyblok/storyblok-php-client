@@ -317,6 +317,14 @@ class Client
     }
 
     /**
+     * @deprecated
+     */
+    public function getStoryContent()
+    {
+        return $this->getBody();
+    }
+
+    /**
      * Gets the json response body
      * 
      * @return array
