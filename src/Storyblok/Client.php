@@ -28,12 +28,7 @@ class Client
     /**
      * @var string
      */
-    private $spacePath;
-
-    /**
-     * @var string
-     */
-    private $linksPath;
+    private $linksPath = 'links/';
 
     /**
      * @var string
@@ -99,9 +94,9 @@ class Client
     private function generateEndpoint($apiEndpoint, $apiVersion, $ssl)
     {
         if (!$ssl) {
-            return "http://".$apiEndpoint."/".$apiVersion."/";
+            return "http://".$apiEndpoint."/".$apiVersion."/cdn/";
         } else {
-            return "https://".$apiEndpoint."/".$apiVersion."/";
+            return "https://".$apiEndpoint."/".$apiVersion."/cdn/";
         }
     }
 
@@ -213,7 +208,7 @@ class Client
      */
     public function deleteCacheBySlug($slug)
     {
-        $key = $this->spacePath . 'stories/published/' . $slug;
+        $key = 'stories/' . $slug;
 
         if ($this->cache) {
             $this->cache->delete($key);
@@ -259,7 +254,7 @@ class Client
             $version = 'draft';
         }
 
-        $key = $this->spacePath . 'stories/' . $slug;
+        $key = 'stories/' . $slug;
 
         $this->reCacheOnPublish($key);
 
@@ -388,18 +383,5 @@ class Client
         }
 
         return $tree;
-    }
-
-    /**
-     * Sets the space id
-     * 
-     * @param string $spaceId
-     */
-    public function setSpace($spaceId)
-    {
-        $this->spacePath = 'cdn/spaces/' . $spaceId . '/';
-        $this->linksPath = $this->spacePath . 'links/';
-
-        return $this;
     }
 }

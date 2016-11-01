@@ -2,7 +2,6 @@
 require '../vendor/autoload.php';
 
 $client = new \Storyblok\Client('t618GfLe1YHICBioAHnMrwtt', 'localhost:3001');
-$client->setSpace('39837');
 
 // Optionally set a cache
 $client->setCache('filesytem', array('path' => 'cache'));

@@ -17,7 +17,6 @@ require 'vendor/autoload.php';
 
 // Initialize
 $client = new \Storyblok\Client('your-storyblok-private-token');
-$client->setSpace('your-space-id');
 
 // Optionally set a cache
 $client->setCache('filesytem', array('path' => 'cache'));
