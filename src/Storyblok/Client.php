@@ -266,7 +266,11 @@ class Client
                 'version' => $version
             );
 
-            $response = $this->get($key, $options);
+            try {
+                $response = $this->get($key, $options);
+            } catch (\Exception $e) {
+                throw $e;
+            }
 
             $this->responseBody = $response->httpResponseBody;
 
