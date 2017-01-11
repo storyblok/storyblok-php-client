@@ -31,3 +31,21 @@ foreach ($tree as $item) {
 	echo '</li>';
 }
 echo '</ul>';
+
+var_dump($client->cacheVersion);
+
+echo '<hr>';
+
+sleep(2);
+
+echo '<hr>';
+
+var_dump($client->cacheVersion);
+
+echo '<hr>';
+
+$client->deleteCacheBySlug('demo');
+
+var_dump($client->cacheVersion);
+
+$client->flushCache();

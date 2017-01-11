@@ -12,6 +12,7 @@ class Client
 {
     const API_USER = "api";
     const SDK_VERSION = "1.1";
+    const CACHE_VERSION_KEY = "storyblok:cache_version";
     const SDK_USER_AGENT = "storyblok-sdk-php";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred! Check your network connection and try again.";
 
@@ -19,6 +20,11 @@ class Client
      * @var stdClass
      */
     private $responseBody;
+
+    /**
+     * @var string
+     */
+    public $cacheVersion;
 
     /**
      * @var string
@@ -197,6 +203,12 @@ class Client
                 break;
         }
 
+        $this->cacheVersion = $this->cache->load(self::CACHE_VERSION_KEY);
+
+        if (!$this->cacheVersion) {
+            $this->setCacheVersion();
+        }
+
         return $this;
     }
 
@@ -215,6 +227,21 @@ class Client
 
             // Always refresh cache of links
             $this->cache->delete($this->linksPath);
+            $this->setCacheVersion();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Flush all cache
+     * 
+     * @return \Storyblok\Client
+     */
+    public function flushCache()
+    {
+        if ($this->cache) {
+            $this->cache->flush();
         }
 
         return $this;
@@ -235,6 +262,23 @@ class Client
 
             // Always refresh cache of links
             $this->cache->delete($this->linksPath);
+            $this->setCacheVersion();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Sets cache version to get a fresh version from cdn after clearing the cache
+     * 
+     * @return \Storyblok\Client
+     */
+    public function setCacheVersion()
+    {
+        if ($this->cache) {
+            $timestamp = time();
+            $this->cache->save($timestamp, self::CACHE_VERSION_KEY);
+            $this->cacheVersion = $timestamp;
         }
 
         return $this;
@@ -263,7 +307,8 @@ class Client
         } else {
             $options = array(
                 'token' => $this->apiKey,
-                'version' => $version
+                'version' => $version,
+                'cache_version' => $this->cacheVersion
             );
 
             $response = $this->get($key, $options);
@@ -296,7 +341,8 @@ class Client
         } else {
             $options = array(
                 'token' => $this->apiKey,
-                'version' => $version
+                'version' => $version,
+                'cache_version' => $this->cacheVersion
             );
 
             $response = $this->get($this->linksPath, $options);
