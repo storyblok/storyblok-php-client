@@ -242,6 +242,7 @@ class Client
     {
         if ($this->cache) {
             $this->cache->flush();
+            $this->setCacheVersion();
         }
 
         return $this;
