@@ -40,7 +40,7 @@ class Client
      * @var string
      */
     private $editModeEnabled;
-    
+
     /**
      * @var Guzzle
      */
@@ -80,7 +80,7 @@ class Client
 
     /**
      * Enables editmode to receive draft versions
-     * 
+     *
      * @param  boolean $enabled
      * @return \Client
      */
@@ -165,7 +165,7 @@ class Client
 
     /**
      * Set cache driver and optional the cache path
-     * 
+     *
      * @param string $driver Driver
      * @param string $options Path for file cache
      * @return \Storyblok\Client
@@ -214,7 +214,7 @@ class Client
 
     /**
      * Manually delete the cache of one item
-     * 
+     *
      * @param  string $slug Slug
      * @return \Storyblok\Client
      */
@@ -235,7 +235,7 @@ class Client
 
     /**
      * Flush all cache
-     * 
+     *
      * @return \Storyblok\Client
      */
     public function flushCache()
@@ -250,7 +250,7 @@ class Client
 
     /**
      * Automatically delete the cache of one item if client sends published parameter
-     * 
+     *
      * @param  string $key Cache key
      * @return \Storyblok\Client
      */
@@ -271,7 +271,7 @@ class Client
 
     /**
      * Sets cache version to get a fresh version from cdn after clearing the cache
-     * 
+     *
      * @return \Storyblok\Client
      */
     public function setCacheVersion()
@@ -287,7 +287,7 @@ class Client
 
     /**
      * Gets a story by the slug identifier
-     * 
+     *
      * @param  string $slug Slug
      * @return \Storyblok\Client
      */
@@ -325,8 +325,57 @@ class Client
     }
 
     /**
+     * Gets a list of stories
+     *
+     * array(
+     *    'starts_with' => $slug,
+     *    'with_tag' => $tag,
+     *    'sort_by' => $sort_by,
+     *    'per_page' => 25,
+     *    'page' => 0
+     * )
+     *
+     *
+     * @param  array $options Options
+     * @return \Storyblok\Client
+     */
+    public function getStories($options = array())
+    {
+        $version = 'published';
+        $endpointUrl = 'stories/';
+
+        if ($this->editModeEnabled) {
+            $version = 'draft';
+        }
+
+        $key = 'stories/' . serialize($options);
+
+        $this->reCacheOnPublish($key);
+
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+            $this->responseBody = (array) $cachedItem;
+        } else {
+            $options = array_merge($options, array(
+                'token' => $this->apiKey,
+                'version' => $version,
+                'cache_version' => $this->cacheVersion
+            ));
+
+            $response = $this->get($endpointUrl, $options);
+
+            $this->responseBody = $response->httpResponseBody;
+
+            if ($this->cache && $version == 'published') {
+                $this->cache->save($this->responseBody, $key);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets a list of links
-     * 
+     *
      * @return \Storyblok\Client
      */
     public function getLinks()
@@ -368,7 +417,7 @@ class Client
 
     /**
      * Gets the json response body
-     * 
+     *
      * @return array
      */
     public function getBody()
@@ -382,7 +431,7 @@ class Client
 
     /**
      * Transforms links into a tree
-     * 
+     *
      * @param  string $slug Slug
      * @return \Client
      */
@@ -407,7 +456,7 @@ class Client
 
     /**
      * Recursive function to generate tree
-     * 
+     *
      * @param  integer $parent
      * @param  array  $items
      * @return array

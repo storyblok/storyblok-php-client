@@ -11,6 +11,8 @@ composer require storyblok/php-client dev-master
 
 ## Usage
 
+### Load a Story
+
 ```php
 // Require composer autoload
 require 'vendor/autoload.php';
@@ -24,6 +26,27 @@ $client->setCache('filesytem', array('path' => 'cache'));
 // Get the story as array
 $client->getStoryBySlug('home');
 $data = $client->getBody();
+```
+
+### Load a list of Stories
+
+```php
+// Require composer autoload
+require 'vendor/autoload.php';
+
+// Initialize
+$client = new \Storyblok\Client('your-storyblok-private-token');
+
+// Optionally set a cache
+$client->setCache('filesytem', array('path' => 'cache'));
+
+// Get all Stories that start with news
+$client->getStories(
+			array(
+				'starts_with' => 'news'
+			)
+);
+$data = $client->getStoryContent();
 ```
 
 ## Clearing the cache (Optionally if using setCache)
