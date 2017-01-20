@@ -49,6 +49,29 @@ $client->getStories(
 $data = $client->getStoryContent();
 ```
 
+### Load a list of datasource entries
+
+```php
+// Require composer autoload
+require 'vendor/autoload.php';
+
+// Initialize
+$client = new \Storyblok\Client('your-storyblok-private-token');
+
+// Optionally set a cache
+$client->setCache('filesytem', array('path' => 'cache'));
+
+// Get all Stories that start with news
+$client->getDatasourceEntries('categories');
+
+// will return the whole response
+$data = $client->getBody();
+
+// will return as ['name']['value'] Array for easy access
+$nameValueArray = $client->getAsNameValueArray();
+
+```
+
 ## Clearing the cache (Optionally if using setCache)
 
 In order to flush the cache when the user clicks publish, you need to listen to the published event in javascript or define a webhook in the space settings that clears the cache on your server.

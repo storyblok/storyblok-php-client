@@ -374,6 +374,48 @@ class Client
     }
 
     /**
+     * Gets a list of datasource entries
+     *
+     * @param  string $slug Slug
+     * @param  array $options Options
+     * @return \Storyblok\Client
+     */
+    public function getDatasourceEntries($slug, $options = array())
+    {
+        $version = 'published';
+        $endpointUrl = 'datasource_entries/';
+
+        if ($this->editModeEnabled) {
+            $version = 'draft';
+        }
+
+        $key = 'datasource_entries/' . $slug . '/' . serialize($options);
+
+        $this->reCacheOnPublish($key);
+
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+            $this->responseBody = (array) $cachedItem;
+        } else {
+            $options = array_merge($options, array(
+                'token' => $this->apiKey,
+                'version' => $version,
+                'cache_version' => $this->cacheVersion,
+                'datasource' => $slug
+            ));
+
+            $response = $this->get($endpointUrl, $options);
+
+            $this->responseBody = $response->httpResponseBody;
+
+            if ($this->cache && $version == 'published') {
+                $this->cache->save($this->responseBody, $key);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets a list of links
      *
      * @return \Storyblok\Client
@@ -430,9 +472,30 @@ class Client
     }
 
     /**
+     * Transforms datasources into a ['name']['value'] array.
+     *
+     * @return array
+     */
+    public function getAsNameValueArray()
+    {
+        if (!isset($this->responseBody)) {
+            return array();
+        }
+
+        $array = [];
+
+        foreach ($this->responseBody['datasource_entries'] as $entry) {
+            if (!isset($array[$entry['name']])) {
+                $array[$entry['name']] = $entry['value'];
+            }
+        }
+
+        return $array;
+    }
+
+    /**
      * Transforms links into a tree
      *
-     * @param  string $slug Slug
      * @return \Client
      */
     public function getAsTree()
