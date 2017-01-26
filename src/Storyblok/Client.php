@@ -374,6 +374,51 @@ class Client
     }
 
     /**
+     * Gets a list of tags
+     *
+     * array(
+     *    'starts_with' => $slug
+     * )
+     *
+     *
+     * @param  array $options Options
+     * @return \Storyblok\Client
+     */
+    public function getTags($options = array())
+    {
+        $version = 'published';
+        $endpointUrl = 'tags/';
+
+        if ($this->editModeEnabled) {
+            $version = 'draft';
+        }
+
+        $key = 'tags/' . serialize($options);
+
+        $this->reCacheOnPublish($key);
+
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+            $this->responseBody = (array) $cachedItem;
+        } else {
+            $options = array_merge($options, array(
+                'token' => $this->apiKey,
+                'version' => $version,
+                'cache_version' => $this->cacheVersion
+            ));
+
+            $response = $this->get($endpointUrl, $options);
+
+            $this->responseBody = $response->httpResponseBody;
+
+            if ($this->cache && $version == 'published') {
+                $this->cache->save($this->responseBody, $key);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets a list of datasource entries
      *
      * @param  string $slug Slug
@@ -488,6 +533,26 @@ class Client
             if (!isset($array[$entry['name']])) {
                 $array[$entry['name']] = $entry['value'];
             }
+        }
+
+        return $array;
+    }
+
+    /**
+     * Transforms tags into a string array.
+     *
+     * @return array
+     */
+    public function getTagsAsStringArray()
+    {
+        if (!isset($this->responseBody)) {
+            return array();
+        }
+
+        $array = [];
+
+        foreach ($this->responseBody['tags'] as $entry) {
+            array_push($array, $entry['name']);
         }
 
         return $array;

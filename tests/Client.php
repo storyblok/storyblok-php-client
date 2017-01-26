@@ -81,4 +81,22 @@ var_dump($data);
 echo '</pre>';
 echo '<hr>';
 
+$client->getTags();
+$data = $client->getBody();
+
+echo '<h2> getTags | getBody </h2>
+			<pre>';
+var_dump($data);
+echo '</pre>';
+echo '<hr>';
+
+$data = $client->getTagsAsStringArray();
+
+echo '<h2> getTags | getTagsAsStringArray </h2>
+			<pre>';
+var_dump($data);
+echo '</pre>';
+echo '<hr>';
+
+
 echo '</div>';
