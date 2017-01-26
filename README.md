@@ -72,6 +72,29 @@ $nameValueArray = $client->getAsNameValueArray();
 
 ```
 
+### Load a list of tags
+
+```php
+// Require composer autoload
+require 'vendor/autoload.php';
+
+// Initialize
+$client = new \Storyblok\Client('your-storyblok-private-token');
+
+// Optionally set a cache
+$client->setCache('filesytem', array('path' => 'cache'));
+
+// Get all Stories that start with news
+$client->getTags();
+
+// will return the whole response
+$data = $client->getBody();
+
+// will return as ['tagName1', 'tagName2'] Array for easy access
+$stringArray = $client->getAsStringArray();
+
+```
+
 ## Clearing the cache (Optionally if using setCache)
 
 In order to flush the cache when the user clicks publish, you need to listen to the published event in javascript or define a webhook in the space settings that clears the cache on your server.
