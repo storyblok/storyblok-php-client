@@ -84,7 +84,7 @@ $client = new \Storyblok\Client('your-storyblok-private-token');
 // Optionally set a cache
 $client->setCache('filesytem', array('path' => 'cache'));
 
-// Get all Stories that start with news
+// Get all Tags
 $client->getTags();
 
 // will return the whole response
@@ -92,6 +92,26 @@ $data = $client->getBody();
 
 // will return as ['tagName1', 'tagName2'] Array for easy access
 $stringArray = $client->getAsStringArray();
+
+```
+
+### Load a list of tags and get the Respones Headers
+
+```php
+// Require composer autoload
+require 'vendor/autoload.php';
+
+// Initialize
+$client = new \Storyblok\Client('your-storyblok-private-token');
+
+// Optionally set a cache
+$client->setCache('filesytem', array('path' => 'cache'));
+
+// Get all Tags
+$client->getTags();
+
+// Let's you acces the Headers
+var_dump($client->getHeaders());
 
 ```
 
