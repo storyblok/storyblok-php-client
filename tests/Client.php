@@ -20,6 +20,15 @@ var_dump($data);
 echo '	</pre>';
 echo '<hr>';
 
+// Get the story headers
+$headers = $client->getHeaders();
+
+echo '<h2> $client->getHeaders </h2>
+			<pre>';
+var_dump($headers);
+echo '</pre>
+			<hr>';
+
 $tree = $client->editMode()->getLinks()->getAsTree();
 
 echo '<h2> getLinks | getAsTree </h2>
@@ -72,6 +81,15 @@ echo '<h2> getDatasourceEntries "test-case-1" | getBody </h2>
 var_dump($data);
 echo '</pre>';
 echo '<hr>';
+
+// Get the story headers
+$headers = $client->getHeaders();
+
+echo '<h2> $client->getHeaders() should have `Total` included </h2>
+			<pre>';
+var_dump($headers);
+echo '</pre>
+			<hr>';
 
 $data = $client->getAsNameValueArray();
 

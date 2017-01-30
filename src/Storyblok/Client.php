@@ -22,6 +22,11 @@ class Client
     private $responseBody;
 
     /**
+     * @var stdClass
+     */
+    private $responseHeaders;
+
+    /**
      * @var string
      */
     public $cacheVersion;
@@ -144,7 +149,7 @@ class Client
             throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . $this->getResponseExceptionMessage($responseObj), $httpResponseCode, $responseObj->getBody());
         }
         $result->httpResponseCode = $httpResponseCode;
-
+        $result->httpResponseHeaders = $responseObj->getHeaders();
         return $result;
     }
 
@@ -304,7 +309,7 @@ class Client
         $this->reCacheOnPublish($key);
 
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
-            $this->responseBody = (array) $cachedItem;
+            $this->_assignState($cachedItem);
         } else {
             $options = array(
                 'token' => $this->apiKey,
@@ -314,11 +319,7 @@ class Client
 
             $response = $this->get($key, $options);
 
-            $this->responseBody = $response->httpResponseBody;
-
-            if ($this->cache && $version == 'published') {
-                $this->cache->save($this->responseBody, $key);
-            }
+            $this->_save($response, $key, $version);
         }
 
         return $this;
@@ -353,7 +354,7 @@ class Client
         $this->reCacheOnPublish($key);
 
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
-            $this->responseBody = (array) $cachedItem;
+            $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
                 'token' => $this->apiKey,
@@ -363,15 +364,12 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->responseBody = $response->httpResponseBody;
-
-            if ($this->cache && $version == 'published') {
-                $this->cache->save($this->responseBody, $key);
-            }
+            $this->_save($response, $key, $version);
         }
 
         return $this;
     }
+
 
     /**
      * Gets a list of tags
@@ -398,7 +396,7 @@ class Client
         $this->reCacheOnPublish($key);
 
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
-            $this->responseBody = (array) $cachedItem;
+            $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
                 'token' => $this->apiKey,
@@ -408,11 +406,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->responseBody = $response->httpResponseBody;
-
-            if ($this->cache && $version == 'published') {
-                $this->cache->save($this->responseBody, $key);
-            }
+            $this->_save($response, $key, $version);
         }
 
         return $this;
@@ -439,7 +433,7 @@ class Client
         $this->reCacheOnPublish($key);
 
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
-            $this->responseBody = (array) $cachedItem;
+            $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
                 'token' => $this->apiKey,
@@ -450,11 +444,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->responseBody = $response->httpResponseBody;
-
-            if ($this->cache && $version == 'published') {
-                $this->cache->save($this->responseBody, $key);
-            }
+            $this->_save($response, $key, $version);
         }
 
         return $this;
@@ -469,12 +459,14 @@ class Client
     {
         $version = 'published';
 
+        $key = $this->linksPath;
+
         if ($this->editModeEnabled) {
             $version = 'draft';
         }
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($this->linksPath)) {
-            $this->responseBody = (array) $cachedItem;
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+            $this->_assignState($cachedItem);
         } else {
             $options = array(
                 'token' => $this->apiKey,
@@ -482,13 +474,9 @@ class Client
                 'cache_version' => $this->cacheVersion
             );
 
-            $response = $this->get($this->linksPath, $options);
+            $response = $this->get($key, $options);
 
-            $this->responseBody = $response->httpResponseBody;
-
-            if ($this->cache && $version == 'published') {
-                $this->cache->save($this->responseBody, $this->linksPath);
-            }
+            $this->_save($response, $key, $version);
         }
 
         return $this;
@@ -511,6 +499,20 @@ class Client
     {
         if (isset($this->responseBody)) {
             return $this->responseBody;
+        }
+
+        return array();
+    }
+
+    /**
+     * Gets the response headers
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        if (isset($this->responseHeaders)) {
+            return $this->responseHeaders;
         }
 
         return array();
@@ -607,5 +609,33 @@ class Client
         }
 
         return $tree;
+    }
+
+    /**
+     * Save's the current response in the cache if version is published
+     *
+     * @param  array $response
+     * @param  string $key
+     * @param  string $version
+     */
+    private function _save($response, $key, $version)
+    {
+        $this->_assignState($response);
+
+        if ($this->cache && $version == 'published') {
+            $this->cache->save($response, $key);
+        }
+    }
+
+    /**
+     * Assigns the httpResponseBody and httpResponseHeader to '$this';
+     *
+     * @param  array $response
+     * @param  string $key
+     * @param  string $version
+     */
+    private function _assignState($response) {
+        $this->responseBody = $response->httpResponseBody;
+        $this->responseHeaders = $response->httpResponseHeaders;
     }
 }
