@@ -317,7 +317,11 @@ class Client
                 'cache_version' => $this->cacheVersion
             );
 
-            $response = $this->get($key, $options);
+            try {
+                $response = $this->get($key, $options);
+            } catch (\Exception $e) {
+                throw $e;
+            }
 
             $this->_save($response, $key, $version);
         }
