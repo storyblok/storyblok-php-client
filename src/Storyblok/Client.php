@@ -14,7 +14,7 @@ class Client
     const SDK_VERSION = "1.1";
     const CACHE_VERSION_KEY = "storyblok:cache_version";
     const SDK_USER_AGENT = "storyblok-sdk-php";
-    const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred! Check your network connection and try again.";
+    const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
 
     /**
      * @var stdClass
@@ -69,7 +69,6 @@ class Client
             'base_uri'=> $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl),
             'defaults'=> [
                 'auth' => array(self::API_USER, $this->apiKey),
-                'exceptions' => false,
                 'headers' => [
                     'User-Agent' => self::SDK_USER_AGENT.'/'.self::SDK_VERSION,
                 ],
@@ -123,9 +122,10 @@ class Client
     {
         try {
             $responseObj = $this->client->get($endpointUrl, ['query' => $queryString]);
+
             return $this->responseHandler($responseObj);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR);
+            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage());
         }
     }
 
@@ -133,21 +133,16 @@ class Client
      * @param ResponseInterface $responseObj
      *
      * @return \stdClass
-     *
-     * @throws Exception
      */
     public function responseHandler($responseObj)
     {
         $httpResponseCode = $responseObj->getStatusCode();
-        if ($httpResponseCode === 200) {
-            $data = (string) $responseObj->getBody();
-            $jsonResponseData = (array) json_decode($data, true);
-            $result = new \stdClass();
-            // return response data as json if possible, raw if not
-            $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
-        } else {
-            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . $this->getResponseExceptionMessage($responseObj), $httpResponseCode, $responseObj->getBody());
-        }
+        $data = (string) $responseObj->getBody();
+        $jsonResponseData = (array) json_decode($data, true);
+        $result = new \stdClass();
+
+        // return response data as json if possible, raw if not
+        $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
         $result->httpResponseCode = $httpResponseCode;
         $result->httpResponseHeaders = $responseObj->getHeaders();
         return $result;
