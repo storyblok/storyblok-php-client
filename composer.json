@@ -13,6 +13,10 @@
         {
             "name": "Alexander Feiglstorfer",
             "email": "delooks@gmail.com"
+        },
+        {
+            "name": "Dominik Angerer",
+            "email": "dominikangerer1@gmail.com"
         }
     ],
     "autoload": {
