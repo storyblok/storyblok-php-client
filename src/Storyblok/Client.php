@@ -617,7 +617,11 @@ class Client
     {
         $this->_assignState($response);
 
-        if ($this->cache && $version == 'published') {
+        if ($this->cache &&
+            $version == 'published' &&
+            $response->httpResponseHeaders &&
+            $response->httpResponseCode == 200) {
+
             $this->cache->save($response, $key);
         }
     }
