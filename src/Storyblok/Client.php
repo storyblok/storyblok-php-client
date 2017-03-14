@@ -344,7 +344,7 @@ class Client
             $version = 'draft';
         }
 
-        $key = 'stories/' . serialize($options);
+        $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
 
         $this->reCacheOnPublish($key);
 
@@ -636,5 +636,23 @@ class Client
     private function _assignState($response) {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;
+    }
+
+    /**
+     * prepares to Options for the cache key. Fixes some issues for too long filenames if filecache is used.
+     *
+     * @param  array $response
+     * @param  string $key
+     * @param  string $version
+     */
+    private function _prepareOptionsForKey($options) {
+        $prepared = array();
+        $keyOrder = array();
+        foreach($options as $key => $value) {
+           array_push($prepared, $value);
+           array_push($keyOrder, substr($key, 0, 1));
+       }
+       array_push($prepared, join('', $keyOrder));
+       return $prepared;
     }
 }
