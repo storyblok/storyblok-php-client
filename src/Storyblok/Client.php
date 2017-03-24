@@ -622,7 +622,7 @@ class Client
             $response->httpResponseHeaders &&
             $response->httpResponseCode == 200) {
 
-            $this->cache->save($response, $key);
+            $this->cache->save($response, hash('sha256', $key));
         }
     }
 
