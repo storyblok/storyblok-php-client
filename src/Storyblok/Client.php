@@ -256,10 +256,8 @@ class Client
      */
     private function reCacheOnPublish($key)
     {
-        if (isset($_GET['_storyblok_published']) && $this->cache && !$cachedItem = $this->cache->load($key)) {
-            if (isset($cachedItem['story']) && $cachedItem['story']['id'] == $_GET['_storyblok_published']) {
-                $this->cache->delete($key);
-            }
+        if (isset($_GET['_storyblok_published']) && $this->cache) {
+            $this->cache->delete($key);
 
             // Always refresh cache of links
             $this->cache->delete($this->linksPath);
