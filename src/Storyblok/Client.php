@@ -11,7 +11,7 @@ use Apix\Cache as ApixCache;
 class Client
 {
     const API_USER = "api";
-    const SDK_VERSION = "1.1";
+    const SDK_VERSION = "1.2";
     const CACHE_VERSION_KEY = "storyblok:cache_version";
     const SDK_USER_AGENT = "storyblok-sdk-php";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
