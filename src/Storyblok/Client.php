@@ -42,9 +42,14 @@ class Client
     private $linksPath = 'links/';
 
     /**
-     * @var string
+     * @var boolean
      */
     private $editModeEnabled;
+
+    /**
+     * @var boolean
+     */
+    private $cacheNotFound;
 
     /**
      * @var Guzzle
@@ -91,6 +96,18 @@ class Client
     public function editMode($enabled = true)
     {
         $this->editModeEnabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * Enables caching for 404 responses
+     *
+     * @param  boolean $enabled
+     * @return \Client
+     */
+    public function cacheNotFound($enabled = true)
+    {
+        $this->cacheNotFound = $enabled;
         return $this;
     }
 
@@ -220,7 +237,7 @@ class Client
      */
     public function deleteCacheBySlug($slug)
     {
-        $key = 'stories/' . $slug;
+        $key = $this->_getCacheKey('stories/' . $slug);
 
         if ($this->cache) {
             $this->cache->delete($key);
@@ -298,10 +315,11 @@ class Client
         }
 
         $key = 'stories/' . $slug;
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array(
@@ -312,7 +330,7 @@ class Client
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -343,10 +361,11 @@ class Client
         }
 
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -357,7 +376,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -385,10 +404,11 @@ class Client
         }
 
         $key = 'tags/' . serialize($options);
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -399,7 +419,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -422,10 +442,11 @@ class Client
         }
 
         $key = 'datasource_entries/' . $slug . '/' . serialize($options);
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -437,7 +458,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -453,12 +474,13 @@ class Client
         $version = 'published';
 
         $key = $this->linksPath;
+        $cachekey = $this->_getCacheKey($key);
 
         if ($this->editModeEnabled) {
             $version = 'draft';
         }
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array(
@@ -469,7 +491,7 @@ class Client
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -618,9 +640,10 @@ class Client
         if ($this->cache &&
             $version == 'published' &&
             $response->httpResponseHeaders &&
-            $response->httpResponseCode == 200) {
+            $response->httpResponseCode == 200 &&
+            ($this->cacheNotFound && $response->httpResponseCode == 404)) {
 
-            $this->cache->save($response, hash('sha256', $key));
+            $this->cache->save($response, $key);
         }
     }
 
@@ -652,5 +675,10 @@ class Client
        }
        array_push($prepared, join('', $keyOrder));
        return $prepared;
+    }
+
+    private function _getCacheKey($key = '')
+    {
+        return hash('sha256', $key);
     }
 }
