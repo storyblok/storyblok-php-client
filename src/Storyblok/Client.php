@@ -11,7 +11,7 @@ use Apix\Cache as ApixCache;
 class Client
 {
     const API_USER = "api";
-    const SDK_VERSION = "1.1";
+    const SDK_VERSION = "1.2";
     const CACHE_VERSION_KEY = "storyblok:cache_version";
     const SDK_USER_AGENT = "storyblok-sdk-php";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
@@ -42,9 +42,14 @@ class Client
     private $linksPath = 'links/';
 
     /**
-     * @var string
+     * @var boolean
      */
     private $editModeEnabled;
+
+    /**
+     * @var boolean
+     */
+    private $cacheNotFound;
 
     /**
      * @var Guzzle
@@ -95,6 +100,18 @@ class Client
     }
 
     /**
+     * Enables caching for 404 responses
+     *
+     * @param  boolean $enabled
+     * @return \Client
+     */
+    public function cacheNotFound($enabled = true)
+    {
+        $this->cacheNotFound = $enabled;
+        return $this;
+    }
+
+    /**
      * @param string $apiEndpoint
      * @param string $apiVersion
      * @param bool   $ssl
@@ -125,7 +142,7 @@ class Client
 
             return $this->responseHandler($responseObj);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage());
+            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
 
@@ -220,7 +237,7 @@ class Client
      */
     public function deleteCacheBySlug($slug)
     {
-        $key = 'stories/' . $slug;
+        $key = $this->_getCacheKey('stories/' . $slug);
 
         if ($this->cache) {
             $this->cache->delete($key);
@@ -298,10 +315,15 @@ class Client
         }
 
         $key = 'stories/' . $slug;
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+            if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
+                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
+            }
+
             $this->_assignState($cachedItem);
         } else {
             $options = array(
@@ -310,9 +332,21 @@ class Client
                 'cache_version' => $this->cacheVersion
             );
 
-            $response = $this->get($key, $options);
+            try {
+                $response = $this->get($key, $options);
+                $this->_save($response, $cachekey, $version);
+            } catch (\Exception $e) {
+                if ($this->cacheNotFound && $e->getCode() === 404) {
+                    $result = new \stdClass();
+                    $result->httpResponseBody = [];
+                    $result->httpResponseCode = 404;
+                    $result->httpResponseHeaders = [];
 
-            $this->_save($response, $key, $version);
+                    $this->cache->save($result, $cachekey);
+                }
+
+                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+            }
         }
 
         return $this;
@@ -343,10 +377,11 @@ class Client
         }
 
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -357,7 +392,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -385,10 +420,11 @@ class Client
         }
 
         $key = 'tags/' . serialize($options);
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -399,7 +435,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -422,10 +458,11 @@ class Client
         }
 
         $key = 'datasource_entries/' . $slug . '/' . serialize($options);
+        $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -437,7 +474,7 @@ class Client
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -453,12 +490,13 @@ class Client
         $version = 'published';
 
         $key = $this->linksPath;
+        $cachekey = $this->_getCacheKey($key);
 
         if ($this->editModeEnabled) {
             $version = 'draft';
         }
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($key)) {
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array(
@@ -469,7 +507,7 @@ class Client
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $key, $version);
+            $this->_save($response, $cachekey, $version);
         }
 
         return $this;
@@ -620,7 +658,7 @@ class Client
             $response->httpResponseHeaders &&
             $response->httpResponseCode == 200) {
 
-            $this->cache->save($response, hash('sha256', $key));
+            $this->cache->save($response, $key);
         }
     }
 
@@ -652,5 +690,10 @@ class Client
        }
        array_push($prepared, join('', $keyOrder));
        return $prepared;
+    }
+
+    private function _getCacheKey($key = '')
+    {
+        return hash('sha256', $key);
     }
 }
