@@ -142,7 +142,7 @@ class Client
 
             return $this->responseHandler($responseObj);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage());
+            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
 
@@ -320,6 +320,10 @@ class Client
         $this->reCacheOnPublish($key);
 
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+            if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
+                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
+            }
+
             $this->_assignState($cachedItem);
         } else {
             $options = array(
@@ -328,9 +332,21 @@ class Client
                 'cache_version' => $this->cacheVersion
             );
 
-            $response = $this->get($key, $options);
+            try {
+                $response = $this->get($key, $options);
+                $this->_save($response, $cachekey, $version);
+            } catch (\Exception $e) {
+                if ($this->cacheNotFound && $e->getCode() === 404) {
+                    $result = new \stdClass();
+                    $result->httpResponseBody = [];
+                    $result->httpResponseCode = 404;
+                    $result->httpResponseHeaders = [];
 
-            $this->_save($response, $cachekey, $version);
+                    $this->cache->save($result, $cachekey);
+                }
+
+                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+            }
         }
 
         return $this;
@@ -640,8 +656,7 @@ class Client
         if ($this->cache &&
             $version == 'published' &&
             $response->httpResponseHeaders &&
-            $response->httpResponseCode == 200 &&
-            ($this->cacheNotFound && $response->httpResponseCode == 404)) {
+            $response->httpResponseCode == 200) {
 
             $this->cache->save($response, $key);
         }
