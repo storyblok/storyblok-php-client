@@ -301,6 +301,20 @@ class Client
     }
 
     /**
+     * Gets cache version from cache or as timestamp
+     * 
+     * @return Integer
+     */
+    function getCacheVersion()
+    {
+        if (empty($this->cacheVersion)) {
+            return time();
+        } else {
+            return $this->cacheVersion;
+        }
+    }
+
+    /**
      * Gets a story by the slug identifier
      *
      * @param  string $slug Slug
@@ -329,7 +343,7 @@ class Client
             $options = array(
                 'token' => $this->apiKey,
                 'version' => $version,
-                'cache_version' => $this->cacheVersion
+                'cache_version' => $this->getCacheVersion()
             );
 
             try {
@@ -387,7 +401,7 @@ class Client
             $options = array_merge($options, array(
                 'token' => $this->apiKey,
                 'version' => $version,
-                'cache_version' => $this->cacheVersion
+                'cache_version' => $this->getCacheVersion()
             ));
 
             $response = $this->get($endpointUrl, $options);
@@ -430,7 +444,7 @@ class Client
             $options = array_merge($options, array(
                 'token' => $this->apiKey,
                 'version' => $version,
-                'cache_version' => $this->cacheVersion
+                'cache_version' => $this->getCacheVersion()
             ));
 
             $response = $this->get($endpointUrl, $options);
@@ -468,7 +482,7 @@ class Client
             $options = array_merge($options, array(
                 'token' => $this->apiKey,
                 'version' => $version,
-                'cache_version' => $this->cacheVersion,
+                'cache_version' => $this->getCacheVersion(),
                 'datasource' => $slug
             ));
 
@@ -502,7 +516,7 @@ class Client
             $options = array(
                 'token' => $this->apiKey,
                 'version' => $version,
-                'cache_version' => $this->cacheVersion
+                'cache_version' => $this->getCacheVersion()
             );
 
             $response = $this->get($key, $options);
