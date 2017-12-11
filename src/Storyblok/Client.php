@@ -138,7 +138,9 @@ class Client
     public function get($endpointUrl, $queryString = array())
     {
         try {
-            $responseObj = $this->client->get($endpointUrl, ['query' => $queryString]);
+            $query = http_build_query($queryString, null, '&');
+            $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
+            $responseObj = $this->client->request('GET', $endpointUrl, ['query' => $string]);
 
             return $this->responseHandler($responseObj);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
