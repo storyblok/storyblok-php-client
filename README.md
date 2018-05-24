@@ -120,7 +120,7 @@ var_dump($client->getHeaders());
 In order to flush the cache when the user clicks publish, you need to listen to the published event in javascript or define a webhook in the space settings that clears the cache on your server.
 
 ```html
-<script type="text/javascript" src="//app.storyblok.com/storyblok-latest.js"></script>
+<script type="text/javascript" src="//app.storyblok.com/f/storyblok-latest.js"></script>
 <script type="text/javascript">
 	storyblok.init()
 
