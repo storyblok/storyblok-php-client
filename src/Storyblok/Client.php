@@ -4,6 +4,7 @@ namespace Storyblok;
 
 use GuzzleHttp\Client as Guzzle;
 use Apix\Cache as ApixCache;
+use GuzzleHttp\RequestOptions;
 
 /**
 * Storyblok Client
@@ -62,6 +63,11 @@ class Client
     protected $cache;
 
     /**
+     * @var string|array
+     */
+    protected $proxy;
+
+    /**
      * @param string $apiKey
      * @param string $apiEndpoint
      * @param string $apiVersion
@@ -112,6 +118,16 @@ class Client
     }
 
     /**
+     * @param string|array $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
+     * @return Client
+     */
+    public function setProxy($proxy)
+    {
+        $this->proxy = $proxy;
+        return $this;
+    }
+
+    /**
      * @param string $apiEndpoint
      * @param string $apiVersion
      * @param bool   $ssl
@@ -140,7 +156,13 @@ class Client
         try {
             $query = http_build_query($queryString, null, '&');
             $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
-            $responseObj = $this->client->request('GET', $endpointUrl, ['query' => $string]);
+            $requestOptions = [RequestOptions::QUERY => $string];
+
+            if (isset($this->proxy)) {
+                $requestOptions[RequestOptions::PROXY] = $this->proxy;
+            }
+
+            $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
