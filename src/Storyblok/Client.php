@@ -91,7 +91,7 @@ class Client
      * Enables editmode to receive draft versions
      *
      * @param  boolean $enabled
-     * @return \Client
+     * @return Client
      */
     public function editMode($enabled = true)
     {
@@ -103,7 +103,7 @@ class Client
      * Enables caching for 404 responses
      *
      * @param  boolean $enabled
-     * @return \Client
+     * @return Client
      */
     public function cacheNotFound($enabled = true)
     {
@@ -133,7 +133,7 @@ class Client
      *
      * @return \stdClass
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function get($endpointUrl, $queryString = array())
     {
@@ -149,7 +149,7 @@ class Client
     }
 
     /**
-     * @param ResponseInterface $responseObj
+     * @param \Psr\Http\Message\ResponseInterface $responseObj
      *
      * @return \stdClass
      */
@@ -186,7 +186,7 @@ class Client
      * Set cache driver and optional the cache path
      *
      * @param string $driver Driver
-     * @param string $options Path for file cache
+     * @param array $options Path for file cache
      * @return \Storyblok\Client
      */
     public function setCache($driver, $options = array())
@@ -320,7 +320,9 @@ class Client
      * Gets a story by the slug identifier
      *
      * @param  string $slug Slug
-     * @return \Storyblok\Client
+     *
+     * @return Client
+     * @throws \Exception
      */
     public function getStoryBySlug($slug)
     {
@@ -610,7 +612,7 @@ class Client
     /**
      * Transforms links into a tree
      *
-     * @return \Client
+     * @return array
      */
     public function getAsTree()
     {
