@@ -4,6 +4,7 @@ namespace Storyblok;
 
 use GuzzleHttp\Client as Guzzle;
 use Apix\Cache as ApixCache;
+use GuzzleHttp\RequestOptions;
 
 /**
 * Storyblok Client
@@ -62,6 +63,11 @@ class Client
     protected $cache;
 
     /**
+     * @var string|array
+     */
+    protected $proxy;
+
+    /**
      * @param string $apiKey
      * @param string $apiEndpoint
      * @param string $apiVersion
@@ -91,7 +97,7 @@ class Client
      * Enables editmode to receive draft versions
      *
      * @param  boolean $enabled
-     * @return \Client
+     * @return Client
      */
     public function editMode($enabled = true)
     {
@@ -103,11 +109,21 @@ class Client
      * Enables caching for 404 responses
      *
      * @param  boolean $enabled
-     * @return \Client
+     * @return Client
      */
     public function cacheNotFound($enabled = true)
     {
         $this->cacheNotFound = $enabled;
+        return $this;
+    }
+
+    /**
+     * @param string|array $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
+     * @return Client
+     */
+    public function setProxy($proxy)
+    {
+        $this->proxy = $proxy;
         return $this;
     }
 
@@ -133,14 +149,20 @@ class Client
      *
      * @return \stdClass
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function get($endpointUrl, $queryString = array())
     {
         try {
             $query = http_build_query($queryString, null, '&');
             $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
-            $responseObj = $this->client->request('GET', $endpointUrl, ['query' => $string]);
+            $requestOptions = [RequestOptions::QUERY => $string];
+
+            if (isset($this->proxy)) {
+                $requestOptions[RequestOptions::PROXY] = $this->proxy;
+            }
+
+            $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -149,7 +171,7 @@ class Client
     }
 
     /**
-     * @param ResponseInterface $responseObj
+     * @param \Psr\Http\Message\ResponseInterface $responseObj
      *
      * @return \stdClass
      */
@@ -186,7 +208,7 @@ class Client
      * Set cache driver and optional the cache path
      *
      * @param string $driver Driver
-     * @param string $options Path for file cache
+     * @param array $options Path for file cache
      * @return \Storyblok\Client
      */
     public function setCache($driver, $options = array())
@@ -320,7 +342,9 @@ class Client
      * Gets a story by the slug identifier
      *
      * @param  string $slug Slug
-     * @return \Storyblok\Client
+     *
+     * @return Client
+     * @throws \Exception
      */
     public function getStoryBySlug($slug)
     {
@@ -610,7 +634,7 @@ class Client
     /**
      * Transforms links into a tree
      *
-     * @return \Client
+     * @return array
      */
     public function getAsTree()
     {
