@@ -167,6 +167,10 @@ foreach ($tree as $item) {
 echo '</ul>';
 ```
 
+### Nginx SSI - Server Side Includes
+
+Use the following script if you have Nginx SSI enabled and experience issues with printing the _editable html comments directly to manually parse the Storyblok HTML editable comments: https://gist.github.com/DominikAngerer/ca61d41bae3afcc646cfee286579ad36
+
 ### License
 
 This project is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
