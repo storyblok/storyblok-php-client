@@ -20,6 +20,16 @@ var_dump($data);
 echo '	</pre>';
 echo '<hr>';
 
+
+// Get the story as array
+$client->getStoryByUuid('0c092d14-5cd4-477e-922c-c7f8e330aaea');
+$data = $client->getBody();
+
+echo '<h2> getStoryByUuid "0c092d14-5cd4-477e-922c-c7f8e330aaea" </h2><pre>';
+var_dump($data);
+echo '</pre>';
+echo '<hr>';
+
 // Get the story headers
 $headers = $client->getHeaders();
 

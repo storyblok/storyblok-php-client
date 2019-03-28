@@ -23,8 +23,12 @@ $client = new \Storyblok\Client('your-storyblok-private-token');
 // Optionally set a cache
 $client->setCache('filesytem', array('path' => 'cache'));
 
-// Get the story as array
+// Get the story searching for the slug
 $client->getStoryBySlug('home');
+$data = $client->getBody();
+
+// Get the story searching for the uuid
+$client->getStoryByUuid('0c092d14-5cd4-477e-922c-c7f8e330aaea');
 $data = $client->getBody();
 ```
 
