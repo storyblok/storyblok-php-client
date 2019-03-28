@@ -351,77 +351,77 @@ class Client
         return $this->getStory($slug);
     }
 
-	/**
-	 * Gets a story by it’s UUID
-	 *
-	 * @param string $uuid UUID
-	 *
-	 * @return Client
-	 * @throws \Exception
-	 */
+    /**
+     * Gets a story by it’s UUID
+     *
+     * @param string $uuid UUID
+     *
+     * @return Client
+     * @throws \Exception
+     */
     public function getStoryByUuid($uuid)
     {
         return $this->getStory($uuid, true);
     }
 
-	/**
-	 * Gets a story
-	 *
-	 * @param  string $slug Slug
-	 * @param bool $byUuid
-	 *
-	 * @return Client
-	 * @throws \Exception
-	 */
-	private function getStory($slug, $byUuid = false)
-	{
-		$version = 'published';
+    /**
+     * Gets a story
+     *
+     * @param  string $slug Slug
+     * @param bool $byUuid
+     *
+     * @return Client
+     * @throws \Exception
+     */
+    private function getStory($slug, $byUuid = false)
+    {
+        $version = 'published';
 
-		if ($this->editModeEnabled) {
-			$version = 'draft';
-		}
+        if ($this->editModeEnabled) {
+            $version = 'draft';
+        }
 
-		$key = 'stories/' . $slug;
-		$cachekey = $this->_getCacheKey($key);
+        $key = 'stories/' . $slug;
+        $cachekey = $this->_getCacheKey($key);
 
-		$this->reCacheOnPublish($key);
+        $this->reCacheOnPublish($key);
 
-		if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
-			if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
-				throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
-			}
+        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+            if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
+                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
+            }
 
-			$this->_assignState($cachedItem);
-		} else {
-			$options = array(
-				'token' => $this->apiKey,
-				'version' => $version,
-				'cache_version' => $this->getCacheVersion()
-			);
+            $this->_assignState($cachedItem);
+        } else {
+            $options = array(
+                'token' => $this->apiKey,
+                'version' => $version,
+                'cache_version' => $this->getCacheVersion()
+            );
 
-			if ($byUuid) {
-				$options['find_by'] = 'uuid';
-			}
+            if ($byUuid) {
+                $options['find_by'] = 'uuid';
+            }
 
-			try {
-				$response = $this->get($key, $options);
-				$this->_save($response, $cachekey, $version);
-			} catch (\Exception $e) {
-				if ($this->cacheNotFound && $e->getCode() === 404) {
-					$result = new \stdClass();
-					$result->httpResponseBody = [];
-					$result->httpResponseCode = 404;
-					$result->httpResponseHeaders = [];
+            try {
+                $response = $this->get($key, $options);
+                $this->_save($response, $cachekey, $version);
+            } catch (\Exception $e) {
+                if ($this->cacheNotFound && $e->getCode() === 404) {
+                    $result = new \stdClass();
+                    $result->httpResponseBody = [];
+                    $result->httpResponseCode = 404;
+                    $result->httpResponseHeaders = [];
 
-					$this->cache->save($result, $cachekey);
-				}
+                    $this->cache->save($result, $cachekey);
+                }
 
-				throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
-			}
-		}
+                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+            }
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
     /**
      * Gets a list of stories
