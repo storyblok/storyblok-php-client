@@ -20,7 +20,7 @@ $client = new \Storyblok\Client('your-storyblok-draft-token');
 Initialize the management client with your OAuth token from the my account section for read and write operations
 
 ```php
-$management_client = new \Storyblok\ManagementClient('your-storyblok-oauth-token');
+$managementClient = new \Storyblok\ManagementClient('your-storyblok-oauth-token');
 ```
 
 ## Usage of the management client
@@ -30,14 +30,14 @@ GET calls
 
 ```php
 $spaceId = 'YOUR_SPACE_ID';
-$client->get('spaces/' . $spaceId . '/stories')->getBody();
+$managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
 ```
 
 POST calls
 
 ~~~php
 $spaceId = 'YOUR_SPACE_ID';
-$client->post('spaces/' . $spaceId . '/stories', ['space' => ['name' => 'Manage']])->getBody();
+$managementClient->post('spaces/' . $spaceId . '/stories', ['space' => ['name' => 'Manage']])->getBody();
 ~~~
 
 PUT calls
@@ -45,7 +45,7 @@ PUT calls
 ~~~php
 $spaceId = 'YOUR_SPACE_ID';
 $storyId = 'YOUR_STORY_ID';
-$client->put('spaces/' . $spaceId . '/stories/' . $storyId, ['space' => ['name' => 'Manage']])->getBody();
+$managementClient->put('spaces/' . $spaceId . '/stories/' . $storyId, ['space' => ['name' => 'Manage']])->getBody();
 ~~~
 
 DELETE calls
@@ -53,7 +53,7 @@ DELETE calls
 ~~~php
 $spaceId = 'YOUR_SPACE_ID';
 $storyId = 'YOUR_STORY_ID';
-$client->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getCode();
+$managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getCode();
 ~~~
 
 
