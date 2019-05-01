@@ -9,33 +9,15 @@ use GuzzleHttp\RequestOptions;
 /**
 * Storyblok Client
 */
-class Client
+class Client extends BaseClient
 {
-    const API_USER = "api";
-    const SDK_VERSION = "1.2";
     const CACHE_VERSION_KEY = "storyblok:cache_version";
-    const SDK_USER_AGENT = "storyblok-sdk-php";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
-
-    /**
-     * @var stdClass
-     */
-    private $responseBody;
-
-    /**
-     * @var stdClass
-     */
-    private $responseHeaders;
 
     /**
      * @var string
      */
     public $cacheVersion;
-
-    /**
-     * @var string
-     */
-    private $domain;
 
     /**
      * @var string
@@ -53,19 +35,9 @@ class Client
     private $cacheNotFound;
 
     /**
-     * @var Guzzle
-     */
-    protected $client;
-
-    /**
      * @var Cache
      */
     protected $cache;
-
-    /**
-     * @var string|array
-     */
-    protected $proxy;
 
     /**
      * @param string $apiKey
@@ -75,16 +47,7 @@ class Client
      */
     function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v1", $ssl = false)
     {
-        $this->apiKey = $apiKey;
-        $this->client = new Guzzle([
-            'base_uri'=> $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl),
-            'defaults'=> [
-                'auth' => array(self::API_USER, $this->apiKey),
-                'headers' => [
-                    'User-Agent' => self::SDK_USER_AGENT.'/'.self::SDK_VERSION,
-                ],
-            ],
-        ]);
+        parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
 
         if (isset($_GET['_storyblok'])) {
             $this->editModeEnabled = $_GET['_storyblok'];
@@ -115,93 +78,6 @@ class Client
     {
         $this->cacheNotFound = $enabled;
         return $this;
-    }
-
-    /**
-     * @param string|array $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
-     * @return Client
-     */
-    public function setProxy($proxy)
-    {
-        $this->proxy = $proxy;
-        return $this;
-    }
-
-    /**
-     * @param string $apiEndpoint
-     * @param string $apiVersion
-     * @param bool   $ssl
-     *
-     * @return string
-     */
-    private function generateEndpoint($apiEndpoint, $apiVersion, $ssl)
-    {
-        if (!$ssl) {
-            return "http://".$apiEndpoint."/".$apiVersion."/cdn/";
-        } else {
-            return "https://".$apiEndpoint."/".$apiVersion."/cdn/";
-        }
-    }
-
-    /**
-     * @param string $endpointUrl
-     * @param array  $queryString
-     *
-     * @return \stdClass
-     *
-     * @throws \Exception
-     */
-    public function get($endpointUrl, $queryString = array())
-    {
-        try {
-            $query = http_build_query($queryString, null, '&');
-            $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
-            $requestOptions = [RequestOptions::QUERY => $string];
-
-            if (isset($this->proxy)) {
-                $requestOptions[RequestOptions::PROXY] = $this->proxy;
-            }
-
-            $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
-
-            return $this->responseHandler($responseObj);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
-        }
-    }
-
-    /**
-     * @param \Psr\Http\Message\ResponseInterface $responseObj
-     *
-     * @return \stdClass
-     */
-    public function responseHandler($responseObj)
-    {
-        $httpResponseCode = $responseObj->getStatusCode();
-        $data = (string) $responseObj->getBody();
-        $jsonResponseData = (array) json_decode($data, true);
-        $result = new \stdClass();
-
-        // return response data as json if possible, raw if not
-        $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
-        $result->httpResponseCode = $httpResponseCode;
-        $result->httpResponseHeaders = $responseObj->getHeaders();
-        return $result;
-    }
-
-    /**
-     * @param \Guzzle\Http\Message\Response $responseObj
-     *
-     * @return string
-     */
-    protected function getResponseExceptionMessage(\GuzzleHttp\Message\Response $responseObj)
-    {
-        $body = (string) $responseObj->getBody();
-        $response = json_decode($body);
-
-        if (json_last_error() == JSON_ERROR_NONE && isset($response->message)) {
-            return $response->message;
-        }
     }
 
     /**
@@ -344,7 +220,7 @@ class Client
      * @param  string $slug Slug
      *
      * @return Client
-     * @throws \Exception
+     * @throws ApiException
      */
     public function getStoryBySlug($slug)
     {
@@ -357,7 +233,7 @@ class Client
      * @param string $uuid UUID
      *
      * @return Client
-     * @throws \Exception
+     * @throws ApiException
      */
     public function getStoryByUuid($uuid)
     {
@@ -371,7 +247,7 @@ class Client
      * @param bool $byUuid
      *
      * @return Client
-     * @throws \Exception
+     * @throws ApiException
      */
     private function getStory($slug, $byUuid = false)
     {
@@ -388,13 +264,13 @@ class Client
 
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
-                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
+                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
 
             $this->_assignState($cachedItem);
         } else {
             $options = array(
-                'token' => $this->apiKey,
+                'token' => $this->getApiKey(),
                 'version' => $version,
                 'cache_version' => $this->getCacheVersion()
             );
@@ -416,7 +292,7 @@ class Client
                     $this->cache->save($result, $cachekey);
                 }
 
-                throw new \Exception(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
             }
         }
 
@@ -456,7 +332,7 @@ class Client
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
-                'token' => $this->apiKey,
+                'token' => $this->getApiKey(),
                 'version' => $version,
                 'cache_version' => $this->getCacheVersion()
             ));
@@ -499,7 +375,7 @@ class Client
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
-                'token' => $this->apiKey,
+                'token' => $this->getApiKey(),
                 'version' => $version,
                 'cache_version' => $this->getCacheVersion()
             ));
@@ -537,7 +413,7 @@ class Client
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
-                'token' => $this->apiKey,
+                'token' => $this->getApiKey(),
                 'version' => $version,
                 'cache_version' => $this->getCacheVersion(),
                 'datasource' => $slug
@@ -571,7 +447,7 @@ class Client
             $this->_assignState($cachedItem);
         } else {
             $options = array(
-                'token' => $this->apiKey,
+                'token' => $this->getApiKey(),
                 'version' => $version,
                 'cache_version' => $this->getCacheVersion()
             );
@@ -582,42 +458,6 @@ class Client
         }
 
         return $this;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getStoryContent()
-    {
-        return $this->getBody();
-    }
-
-    /**
-     * Gets the json response body
-     *
-     * @return array
-     */
-    public function getBody()
-    {
-        if (isset($this->responseBody)) {
-            return $this->responseBody;
-        }
-
-        return array();
-    }
-
-    /**
-     * Gets the response headers
-     *
-     * @return array
-     */
-    public function getHeaders()
-    {
-        if (isset($this->responseHeaders)) {
-            return $this->responseHeaders;
-        }
-
-        return array();
     }
 
     /**
