@@ -95,9 +95,9 @@ $client->setCache('filesytem', array('path' => 'cache'));
 
 // Get all Stories that start with news
 $client->getStories(
-            array(
-                'starts_with' => 'news'
-            )
+    array(
+        'starts_with' => 'news'
+    )
 );
 $data = $client->getStoryContent();
 ```
