@@ -95,9 +95,9 @@ $client->setCache('filesytem', array('path' => 'cache'));
 
 // Get all Stories that start with news
 $client->getStories(
-			array(
-				'starts_with' => 'news'
-			)
+            array(
+                'starts_with' => 'news'
+            )
 );
 $data = $client->getStoryContent();
 ```
@@ -175,13 +175,13 @@ In order to flush the cache when the user clicks publish, you need to listen to 
 ```html
 <script type="text/javascript" src="//app.storyblok.com/f/storyblok-latest.js"></script>
 <script type="text/javascript">
-	storyblok.init()
+    storyblok.init()
 
-	storyblok.on('published', function() {
-		$.ajax({
-			url: '/clear.php'
-		})
-	})
+    storyblok.on('published', function() {
+        $.ajax({
+            url: '/clear.php'
+        })
+    })
 </script>
 ```
 
@@ -205,17 +205,17 @@ $tree = $client->editMode()->getLinks()->getAsTree();
 
 echo '<ul>';
 foreach ($tree as $item) {
-	echo '<li>' . $item['item']['name'];
+    echo '<li>' . $item['item']['name'];
 
-	if (!empty($item['children'])) {
-		echo '<ul>';
-		foreach ($item['children'] as $item2) {
-			echo '<li>' . $item2['item']['name'] . '</li>';
-		}
-		echo '</ul>';
-	}
+    if (!empty($item['children'])) {
+        echo '<ul>';
+        foreach ($item['children'] as $item2) {
+            echo '<li>' . $item2['item']['name'] . '</li>';
+        }
+        echo '</ul>';
+    }
 
-	echo '</li>';
+    echo '</li>';
 }
 echo '</ul>';
 ```
