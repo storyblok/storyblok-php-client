@@ -59,8 +59,8 @@ class ManagementClient extends BaseClient
             	RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()]
             ];
 
-            if (isset($this->proxy)) {
-                $requestOptions[RequestOptions::PROXY] = $this->proxy;
+            if ($this->getProxy()) {
+                $requestOptions[RequestOptions::PROXY] = $this->getProxy();
             }
 
             $responseObj = $this->client->request('POST', $endpointUrl, $requestOptions);
@@ -87,8 +87,8 @@ class ManagementClient extends BaseClient
             	RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()]
             ];
 
-            if (isset($this->proxy)) {
-                $requestOptions[RequestOptions::PROXY] = $this->proxy;
+            if ($this->getProxy()) {
+                $requestOptions[RequestOptions::PROXY] = $this->getProxy();
             }
 
             $responseObj = $this->client->request('PUT', $endpointUrl, $requestOptions);
@@ -113,8 +113,8 @@ class ManagementClient extends BaseClient
             	RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()]
             ];
 
-            if (isset($this->proxy)) {
-                $requestOptions[RequestOptions::PROXY] = $this->proxy;
+            if ($this->getProxy()) {
+                $requestOptions[RequestOptions::PROXY] = $this->getProxy();
             }
 
             $responseObj = $this->client->request('DELETE', $endpointUrl, $requestOptions);

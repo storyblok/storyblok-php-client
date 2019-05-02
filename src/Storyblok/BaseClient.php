@@ -126,6 +126,11 @@ class BaseClient
         return $this;
     }
 
+    public function getProxy()
+    {
+        return $this->proxy;
+    }
+
     /**
      * @param string $apiEndpoint
      * @param string $apiVersion
@@ -165,8 +170,8 @@ class BaseClient
             $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
             $requestOptions = [RequestOptions::QUERY => $string];
 
-            if (isset($this->proxy)) {
-                $requestOptions[RequestOptions::PROXY] = $this->proxy;
+            if ($this->getProxy()) {
+                $requestOptions[RequestOptions::PROXY] = $this->getProxy();
             }
 
             if ($this instanceof ManagementClient) {
