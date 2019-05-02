@@ -104,7 +104,7 @@ class ManagementClient extends BaseClient
      *
      * @return \stdClass
      *
-     * @throws \Exception
+     * @throws ApiException
      */
     public function delete($endpointUrl)
     {
