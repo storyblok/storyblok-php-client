@@ -1,7 +1,7 @@
 # About
-This is the Storyblok php client for easy access of the publishing api.
+This is the official Storyblok PHP client to easy access the content deliver api and management api.
 
-The library checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
+The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
 ## Install
 
@@ -9,7 +9,56 @@ The library checks the get parameters _storyblok to get the draft version of a s
 composer require storyblok/php-client dev-master
 ```
 
-## Usage
+## Initialization
+
+Initialize the content delivery client with your space draft token for read operations
+
+```php
+$client = new \Storyblok\Client('your-storyblok-draft-token');
+```
+
+Initialize the management client with your OAuth token from the my account section for read and write operations
+
+```php
+$managementClient = new \Storyblok\ManagementClient('your-storyblok-oauth-token');
+```
+
+## Usage of the management client
+
+
+GET calls
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
+```
+
+POST calls
+
+~~~php
+$spaceId = 'YOUR_SPACE_ID';
+$managementClient->post('spaces/' . $spaceId . '/stories', ['space' => ['name' => 'Manage']])->getBody();
+~~~
+
+PUT calls
+
+~~~php
+$spaceId = 'YOUR_SPACE_ID';
+$storyId = 'YOUR_STORY_ID';
+$managementClient->put('spaces/' . $spaceId . '/stories/' . $storyId, ['space' => ['name' => 'Manage']])->getBody();
+~~~
+
+DELETE calls
+
+~~~php
+$spaceId = 'YOUR_SPACE_ID';
+$storyId = 'YOUR_STORY_ID';
+$managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getCode();
+~~~
+
+
+
+## Usage of the content delivery client
 
 ### Load a Story
 
