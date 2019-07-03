@@ -38,6 +38,11 @@ class BaseClient
     private $apiKey;
 
     /**
+     * @var integer
+     */
+    protected $maxRetries = 5;
+
+    /**
      * @var Guzzle
      */
     protected $client;
@@ -46,6 +51,11 @@ class BaseClient
      * @var string|array
      */
     protected $proxy;
+
+    /**
+     * @var float
+     */
+    protected $timeout;
 
     /**
      * @param string $apiKey
@@ -73,8 +83,8 @@ class BaseClient
             $response = null,
             RequestException $exception = null
         ) {
-            // Limit the number of retries to 5
-            if ($retries >= 5) {
+            // Limit the number of retries
+            if ($retries >= $this->maxRetries) {
                 return false;
             }
 
@@ -117,6 +127,16 @@ class BaseClient
     }
 
     /**
+     * @param $maxRetries
+     * @return BaseClient
+     */
+    public function setMaxRetries($maxRetries)
+    {
+        $this->maxRetries = $maxRetries;
+        return $this;
+    }
+
+    /**
      * @param string|array $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
      * @return Client
      */
@@ -129,6 +149,26 @@ class BaseClient
     public function getProxy()
     {
         return $this->proxy;
+    }
+
+    /**
+     * set timeout in seconds
+     *
+     * @param float $timeout
+     * @return BaseClient
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
     }
 
     /**
@@ -172,6 +212,10 @@ class BaseClient
 
             if ($this->getProxy()) {
                 $requestOptions[RequestOptions::PROXY] = $this->getProxy();
+            }
+
+            if ($this->getTimeout()) {
+                $requestOptions[RequestOptions::TIMEOUT] = $this->getTimeout();
             }
 
             if ($this instanceof ManagementClient) {
