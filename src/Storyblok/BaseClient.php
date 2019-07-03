@@ -48,6 +48,11 @@ class BaseClient
     protected $proxy;
 
     /**
+     * @var float
+     */
+    protected $timeout;
+
+    /**
      * @param string $apiKey
      * @param string $apiEndpoint
      * @param string $apiVersion
@@ -132,6 +137,26 @@ class BaseClient
     }
 
     /**
+     * set timeout in seconds
+     *
+     * @param float $timeout
+     * @return BaseClient
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
      * @param string $apiEndpoint
      * @param string $apiVersion
      * @param bool   $ssl
@@ -172,6 +197,10 @@ class BaseClient
 
             if ($this->getProxy()) {
                 $requestOptions[RequestOptions::PROXY] = $this->getProxy();
+            }
+
+            if ($this->getTimeout()) {
+                $requestOptions[RequestOptions::TIMEOUT] = $this->getTimeout();
             }
 
             if ($this instanceof ManagementClient) {
