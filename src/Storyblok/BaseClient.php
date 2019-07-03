@@ -38,6 +38,11 @@ class BaseClient
     private $apiKey;
 
     /**
+     * @var integer
+     */
+    protected $maxRetries = 5;
+
+    /**
      * @var Guzzle
      */
     protected $client;
@@ -78,8 +83,8 @@ class BaseClient
             $response = null,
             RequestException $exception = null
         ) {
-            // Limit the number of retries to 5
-            if ($retries >= 5) {
+            // Limit the number of retries
+            if ($retries >= $this->maxRetries) {
                 return false;
             }
 
@@ -119,6 +124,16 @@ class BaseClient
     public function getApiKey()
     {
         return $this->apiKey;
+    }
+
+    /**
+     * @param $maxRetries
+     * @return BaseClient
+     */
+    public function setMaxRetries($maxRetries)
+    {
+        $this->maxRetries = $maxRetries;
+        return $this;
     }
 
     /**
