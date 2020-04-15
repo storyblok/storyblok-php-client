@@ -30,6 +30,11 @@ class Client extends BaseClient
     private $editModeEnabled;
 
     /**
+     * @var string
+     */
+    private $resolveRelations;
+
+    /**
      * @var boolean
      */
     private $cacheNotFound;
@@ -279,6 +284,10 @@ class Client extends BaseClient
                 $options['find_by'] = 'uuid';
             }
 
+            if ($this->resolveRelations) {
+                $options['resolve_relations'] = $this->resolveRelations;
+            }
+
             try {
                 $response = $this->get($key, $options);
                 $this->_save($response, $cachekey, $version);
@@ -345,6 +354,20 @@ class Client extends BaseClient
         return $this;
     }
 
+    /**
+     *  Sets global reference.
+     *
+     *  eg. global.global_referece
+     *
+     * @param $reference
+     * @return $this
+     */
+    public function resolveRelations($reference)
+    {
+        $this->resolveRelations = $reference;
+
+        return $this;
+    }
 
     /**
      * Gets a list of tags
