@@ -451,11 +451,17 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets a list of links
+     * Gets a list of tags
      *
+     * array(
+     *    'starts_with' => $slug
+     * )
+     *
+     *
+     * @param  array $options Options
      * @return \Storyblok\Client
      */
-    public function getLinks()
+    public function getLinks($options = array())
     {
         $version = 'published';
 
@@ -469,11 +475,11 @@ class Client extends BaseClient
         if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array(
+            $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
                 'cache_version' => $this->getCacheVersion()
-            );
+            ));
 
             $response = $this->get($key, $options);
 
