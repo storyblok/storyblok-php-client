@@ -346,6 +346,10 @@ class Client extends BaseClient
                 'cache_version' => $this->getCacheVersion()
             ));
 
+            if ($this->resolveRelations) {
+                $options['resolve_relations'] = $this->resolveRelations;
+            }
+
             $response = $this->get($endpointUrl, $options);
 
             $this->_save($response, $cachekey, $version);
