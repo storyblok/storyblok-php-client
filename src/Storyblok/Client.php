@@ -35,6 +35,11 @@ class Client extends BaseClient
     private $resolveRelations;
 
     /**
+     * @var string
+     */
+    private $resolveLinks;
+
+    /**
      * @var boolean
      */
     private $cacheNotFound;
@@ -288,6 +293,10 @@ class Client extends BaseClient
                 $options['resolve_relations'] = $this->resolveRelations;
             }
 
+            if ($this->resolveLinks) {
+                $options['resolve_links'] = $this->resolveLinks;
+            }
+
             try {
                 $response = $this->get($key, $options);
                 $this->_save($response, $cachekey, $version);
@@ -365,6 +374,19 @@ class Client extends BaseClient
     public function resolveRelations($reference)
     {
         $this->resolveRelations = $reference;
+
+        return $this;
+    }
+
+    /**
+     * Set reference for how to resolve links.
+     *
+     * @param $reference
+     * @return $this
+     */
+    public function resolveLinks($reference)
+    {
+        $this->resolveLinks = $reference;
 
         return $this;
     }
