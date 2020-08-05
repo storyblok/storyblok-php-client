@@ -13,6 +13,7 @@ class Client extends BaseClient
 {
     const CACHE_VERSION_KEY = "storyblok:cache_version";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
+    const CACHE_VERSION_PARAMETER_NAME = 'cv';
 
     /**
      * @var string
@@ -282,7 +283,7 @@ class Client extends BaseClient
             $options = array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                self::CACHE_VERSION_PARAMETER_NAME => $this->getCacheVersion()
             );
 
             if ($byUuid) {
@@ -352,7 +353,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                self::CACHE_VERSION_PARAMETER_NAME => $this->getCacheVersion()
             ));
 
             if ($this->resolveRelations) {
@@ -426,7 +427,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                self::CACHE_VERSION_PARAMETER_NAME => $this->getCacheVersion()
             ));
 
             $response = $this->get($endpointUrl, $options);
@@ -464,7 +465,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion(),
+                self::CACHE_VERSION_PARAMETER_NAME => $this->getCacheVersion(),
                 'datasource' => $slug
             ));
 
@@ -504,7 +505,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                self::CACHE_VERSION_PARAMETER_NAME => $this->getCacheVersion()
             ));
 
             $response = $this->get($key, $options);
