@@ -3,12 +3,17 @@
 namespace Storyblok;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 /**
 * Storyblok Client
@@ -138,7 +143,7 @@ class BaseClient
 
     /**
      * @param string|array $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
-     * @return Client
+     * @return BaseClient
      */
     public function setProxy($proxy)
     {
@@ -198,10 +203,8 @@ class BaseClient
     /**
      * @param string $endpointUrl
      * @param array  $queryString
-     *
-     * @return \stdClass
-     *
-     * @throws ApiException
+     * @return stdClass
+     * @throws ApiException|GuzzleException
      */
     public function get($endpointUrl, $queryString = array())
     {
@@ -225,22 +228,21 @@ class BaseClient
             $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $responseObj
-     *
-     * @return \stdClass
+     * @param ResponseInterface $responseObj
+     * @return stdClass
      */
     public function responseHandler($responseObj)
     {
         $httpResponseCode = $responseObj->getStatusCode();
         $data = (string) $responseObj->getBody();
         $jsonResponseData = (array) json_decode($data, true);
-        $result = new \stdClass();
+        $result = new stdClass();
 
         // return response data as json if possible, raw if not
         $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
@@ -250,11 +252,11 @@ class BaseClient
     }
 
     /**
-     * @param \Guzzle\Http\Message\Response $responseObj
+     * @param Response $responseObj
      *
      * @return string
      */
-    protected function getResponseExceptionMessage(\GuzzleHttp\Message\Response $responseObj)
+    protected function getResponseExceptionMessage(Response $responseObj)
     {
         $body = (string) $responseObj->getBody();
         $response = json_decode($body);
@@ -262,12 +264,14 @@ class BaseClient
         if (json_last_error() == JSON_ERROR_NONE && isset($response->message)) {
             return $response->message;
         }
+
+        return '';
     }
 
     /**
      * Gets the json response body
      *
-     * @return array
+     * @return array|stdClass
      */
     public function getBody()
     {
@@ -281,7 +285,7 @@ class BaseClient
     /**
      * Gets the response headers
      *
-     * @return array
+     * @return array|stdClass
      */
     public function getHeaders()
     {
@@ -295,7 +299,7 @@ class BaseClient
     /**
      * Gets the response status
      *
-     * @return array
+     * @return int
      */
     public function getCode()
     {

@@ -2,13 +2,10 @@
 
 namespace Storyblok;
 
-use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
+use Psr\Http\Message\ResponseInterface;
 
 /**
 * Storyblok Client
@@ -22,13 +19,12 @@ class ManagementClient extends BaseClient
      */
     function __construct($apiKey = null, $apiEndpoint = "mapi.storyblok.com", $apiVersion = "v1")
     {
-    	parent::__construct($apiKey, $apiEndpoint, $apiVersion, false);
+    	parent::__construct($apiKey, $apiEndpoint, $apiVersion);
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $responseObj
-     *
-     * @return \stdClass
+     * @param ResponseInterface $responseObj
+     * @return ManagementClient
      */
     public function responseHandler($responseObj)
     {
@@ -46,10 +42,8 @@ class ManagementClient extends BaseClient
     /**
      * @param string $endpointUrl
      * @param array  $payload
-     *
-     * @return \stdClass
-     *
-     * @throws ApiException
+     * @return ManagementClient
+     * @throws ApiException|GuzzleException
      */
     public function post($endpointUrl, $payload)
     {
@@ -66,7 +60,7 @@ class ManagementClient extends BaseClient
             $responseObj = $this->client->request('POST', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
@@ -74,10 +68,8 @@ class ManagementClient extends BaseClient
     /**
      * @param string $endpointUrl
      * @param array  $payload
-     *
-     * @return \stdClass
-     *
-     * @throws ApiException
+     * @return ManagementClient
+     * @throws ApiException|GuzzleException
      */
     public function put($endpointUrl, $payload)
     {
@@ -94,17 +86,15 @@ class ManagementClient extends BaseClient
             $responseObj = $this->client->request('PUT', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
 
     /**
      * @param string $endpointUrl
-     *
-     * @return \stdClass
-     *
-     * @throws ApiException
+     * @return ManagementClient
+     * @throws ApiException|GuzzleException
      */
     public function delete($endpointUrl)
     {
@@ -120,7 +110,7 @@ class ManagementClient extends BaseClient
             $responseObj = $this->client->request('DELETE', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }

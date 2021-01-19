@@ -2,9 +2,9 @@
 
 namespace Storyblok;
 
-use GuzzleHttp\Client as Guzzle;
 use Apix\Cache as ApixCache;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Exception\GuzzleException;
+use stdClass;
 
 /**
 * Storyblok Client
@@ -44,9 +44,6 @@ class Client extends BaseClient
      */
     private $cacheNotFound;
 
-    /**
-     * @var Cache
-     */
     protected $cache;
 
     /**
@@ -95,7 +92,7 @@ class Client extends BaseClient
      *
      * @param string $driver Driver
      * @param array $options Path for file cache
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function setCache($driver, $options = array())
     {
@@ -143,7 +140,7 @@ class Client extends BaseClient
      * Manually delete the cache of one item
      *
      * @param  string $slug Slug
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function deleteCacheBySlug($slug)
     {
@@ -163,7 +160,7 @@ class Client extends BaseClient
     /**
      * Flush all cache
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function flushCache()
     {
@@ -179,7 +176,7 @@ class Client extends BaseClient
      * Automatically delete the cache of one item if client sends published parameter
      *
      * @param  string $key Cache key
-     * @return \Storyblok\Client
+     * @return Client
      */
     private function reCacheOnPublish($key)
     {
@@ -197,7 +194,7 @@ class Client extends BaseClient
     /**
      * Sets cache version to get a fresh version from cdn after clearing the cache
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function setCacheVersion()
     {
@@ -228,9 +225,8 @@ class Client extends BaseClient
      * Gets a story by the slug identifier
      *
      * @param  string $slug Slug
-     *
      * @return Client
-     * @throws ApiException
+     * @throws ApiException|GuzzleException
      */
     public function getStoryBySlug($slug)
     {
@@ -241,9 +237,8 @@ class Client extends BaseClient
      * Gets a story by it’s UUID
      *
      * @param string $uuid UUID
-     *
      * @return Client
-     * @throws ApiException
+     * @throws ApiException|GuzzleException
      */
     public function getStoryByUuid($uuid)
     {
@@ -255,9 +250,8 @@ class Client extends BaseClient
      *
      * @param  string $slug Slug
      * @param bool $byUuid
-     *
      * @return Client
-     * @throws ApiException
+     * @throws ApiException|GuzzleException
      */
     private function getStory($slug, $byUuid = false)
     {
@@ -330,7 +324,7 @@ class Client extends BaseClient
      *
      *
      * @param  array $options Options
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getStories($options = array())
     {
@@ -402,9 +396,8 @@ class Client extends BaseClient
      *    'starts_with' => $slug
      * )
      *
-     *
      * @param  array $options Options
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getTags($options = array())
     {
@@ -442,7 +435,7 @@ class Client extends BaseClient
      *
      * @param  string $slug Slug
      * @param  array $options Options
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getDatasourceEntries($slug, $options = array())
     {
@@ -483,9 +476,10 @@ class Client extends BaseClient
      *    'starts_with' => $slug
      * )
      *
-     *
-     * @param  array $options Options
-     * @return \Storyblok\Client
+     * @param array $options Options
+     * @return Client
+     * @throws ApiException
+     * @throws GuzzleException
      */
     public function getLinks($options = array())
     {
@@ -578,17 +572,17 @@ class Client extends BaseClient
             $tree[$item['parent_id']][] = $item;
         }
 
-        return $this->_generateTree(0, $tree);
+        return $this->_generateTree($tree);
     }
 
     /**
      * Recursive function to generate tree
      *
-     * @param  integer $parent
      * @param  array  $items
+     * @param  integer $parent
      * @return array
      */
-    private function _generateTree($parent = 0, $items)
+    private function _generateTree($items, $parent = 0)
     {
         $tree = array();
 
@@ -601,7 +595,7 @@ class Client extends BaseClient
                 }
 
                 $tree[$item['id']]['item']  = $item;
-                $tree[$item['id']]['children']  = $this->_generateTree($item['id'], $items);
+                $tree[$item['id']]['children']  = $this->_generateTree($items, $item['id']);
             }
         }
 
@@ -611,7 +605,7 @@ class Client extends BaseClient
     /**
      * Save's the current response in the cache if version is published
      *
-     * @param  array $response
+     * @param  stdClass $response
      * @param  string $key
      * @param  string $version
      */
@@ -631,9 +625,7 @@ class Client extends BaseClient
     /**
      * Assigns the httpResponseBody and httpResponseHeader to '$this';
      *
-     * @param  array $response
-     * @param  string $key
-     * @param  string $version
+     * @param stdClass $response
      */
     private function _assignState($response) {
         $this->responseBody = $response->httpResponseBody;
@@ -643,9 +635,8 @@ class Client extends BaseClient
     /**
      * prepares to Options for the cache key. Fixes some issues for too long filenames if filecache is used.
      *
-     * @param  array $response
-     * @param  string $key
-     * @param  string $version
+     * @param $options
+     * @return array
      */
     private function _prepareOptionsForKey($options) {
         $prepared = array();
