@@ -7,8 +7,8 @@ use Apix\Cache as ApixCache;
 use GuzzleHttp\RequestOptions;
 
 /**
-* Storyblok Client
-*/
+ * Storyblok Client
+ */
 class Client extends BaseClient
 {
     const CACHE_VERSION_KEY = "storyblok:cache_version";
@@ -219,9 +219,9 @@ class Client extends BaseClient
     {
         if (empty($this->cacheVersion)) {
             return time();
-        } else {
-            return $this->cacheVersion;
         }
+
+        return $this->cacheVersion;
     }
 
     /**
@@ -272,7 +272,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
@@ -346,7 +346,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -420,7 +420,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -458,7 +458,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -498,7 +498,7 @@ class Client extends BaseClient
             $version = 'draft';
         }
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, array(
@@ -551,7 +551,7 @@ class Client extends BaseClient
         $array = [];
 
         foreach ($this->responseBody['tags'] as $entry) {
-            array_push($array, $entry['name']);
+            $array[] = $entry['name'];
         }
 
         return $array;
@@ -578,17 +578,17 @@ class Client extends BaseClient
             $tree[$item['parent_id']][] = $item;
         }
 
-        return $this->_generateTree(0, $tree);
+        return $this->_generateTree($tree, 0);
     }
 
     /**
      * Recursive function to generate tree
      *
-     * @param  integer $parent
      * @param  array  $items
+     * @param  integer $parent
      * @return array
      */
-    private function _generateTree($parent = 0, $items)
+    private function _generateTree($items, $parent = 0)
     {
         $tree = array();
 
@@ -601,7 +601,7 @@ class Client extends BaseClient
                 }
 
                 $tree[$item['id']]['item']  = $item;
-                $tree[$item['id']]['children']  = $this->_generateTree($item['id'], $items);
+                $tree[$item['id']]['children']  = $this->_generateTree($items, $item['id']);
             }
         }
 
@@ -620,7 +620,7 @@ class Client extends BaseClient
         $this->_assignState($response);
 
         if ($this->cache &&
-            $version == 'published' &&
+            $version === 'published' &&
             $response->httpResponseHeaders &&
             $response->httpResponseCode == 200) {
 
@@ -651,11 +651,11 @@ class Client extends BaseClient
         $prepared = array();
         $keyOrder = array();
         foreach($options as $key => $value) {
-           array_push($prepared, $value);
-           array_push($keyOrder, substr($key, 0, 1));
-       }
-       array_push($prepared, join('', $keyOrder));
-       return $prepared;
+            $prepared[] = $value;
+            $keyOrder[] = substr($key, 0, 1);
+        }
+        $prepared[] = implode('', $keyOrder);
+        return $prepared;
     }
 
     private function _getCacheKey($key = '')
