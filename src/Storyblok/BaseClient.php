@@ -5,7 +5,7 @@ namespace Storyblok;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
@@ -81,7 +81,7 @@ class BaseClient
             $retries,
             $request,
             $response = null,
-            RequestException $exception = null
+            TransferException $exception = null
         ) {
             // Limit the number of retries
             if ($retries >= $this->maxRetries) {
