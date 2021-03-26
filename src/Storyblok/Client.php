@@ -32,6 +32,11 @@ class Client extends BaseClient
     /**
      * @var string
      */
+    private $release;
+
+    /**
+     * @var string
+     */
     private $resolveRelations;
 
     /**
@@ -61,6 +66,7 @@ class Client extends BaseClient
 
         if (isset($_GET['_storyblok'])) {
             $this->editModeEnabled = $_GET['_storyblok'];
+            $this->release = $_GET['_storyblok_release'] ?? null;
         } else {
             $this->editModeEnabled = false;
         }
@@ -225,6 +231,18 @@ class Client extends BaseClient
     }
 
     /**
+     * Pull story from a release for preview
+     *
+     * @param  string $release
+     * @return Client
+     */
+    public function setRelease($release)
+    {
+        $this->release = $release;
+        return $this;
+    }
+
+    /**
      * Gets a story by the slug identifier
      *
      * @param  string $slug Slug
@@ -295,6 +313,10 @@ class Client extends BaseClient
 
             if ($this->resolveLinks) {
                 $options['resolve_links'] = $this->resolveLinks;
+            }
+
+            if ($this->release) {
+                $options['from_release'] = $this->release;
             }
 
             try {
