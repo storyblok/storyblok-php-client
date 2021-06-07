@@ -610,7 +610,7 @@ class Client extends BaseClient
      * @param  array  $items
      * @return array
      */
-    private function _generateTree($parent = 0, $items)
+    private function _generateTree($parent = 0, $items = [])
     {
         $tree = array();
 
