@@ -19,11 +19,6 @@
 
 The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
-# About
-This is the official Storyblok PHP client to easy access the content deliver api and management api.
-
-The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
-
 ### Install
 
 ```bash
