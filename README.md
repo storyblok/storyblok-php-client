@@ -256,6 +256,8 @@ This repository is published under the [MIT](./LICENSE) license.
 
 ## 🔗 Related Resources
 
+Take a look at all the other [Storyblok's PHP Resources on GitHub](https://github.com/search?q=org%3Astoryblok+topic%3Aphp). You can find a selection of them here:
+
 * **[Storyblok PHP Richtext Renderer](https://github.com/storyblok/storyblok-php-richtext-renderer)** : This package allows you to get an HTML string from the richtext field of Storyblok;
 
 * **[Storyblok Laravel Tutorial](https://www.storyblok.com/tp/add-a-headless-cms-to-laravel-in-5-minutes?utm_source=github.com&utm_medium=referral&utm_campaign=php-client)** : Add a Headless CMS to Laravel in 5 minutes.
