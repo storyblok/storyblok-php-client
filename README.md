@@ -1,15 +1,36 @@
+<div  align="center">
+	<a  href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client"  align="center">
+		<img  src="https://a.storyblok.com/f/51376/x/19b4879a86/logo.svg"  width="200"  alt="Storyblok Logo">
+	</a>
+	<h1  align="center">Storyblok PHP Client</h1>
+	<p  align="center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easy access the content deliver api and management api.</p>
+</div>
+
+<p align="center">
+  <a href="">
+   <img src="https://img.shields.io/discord/700316478792138842?label=Join%20Our%20Discord%20Community&style=flat-square&logo=discord&color=09b3af">
+   </a>
+<a href="https://twitter.com/intent/follow?screen_name=storyblok">
+    <img src="https://img.shields.io/twitter/follow/storyblok?style=social" alt="Follow @Storyblok" />
+  </a>
+</p>
+
+## 🚀 Getting Started
+
+The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
+
 # About
 This is the official Storyblok PHP client to easy access the content deliver api and management api.
 
 The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
-## Install
+### Install
 
 ```bash
 composer require storyblok/php-client dev-master
 ```
 
-## Initialization
+### Initialization
 
 Initialize the content delivery client with your space draft token for read operations
 
@@ -23,7 +44,7 @@ Initialize the management client with your OAuth token from the my account secti
 $managementClient = new \Storyblok\ManagementClient('your-storyblok-oauth-token');
 ```
 
-## Usage of the management client
+### Usage of the management client
 
 
 GET calls
@@ -58,9 +79,9 @@ $managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getCod
 
 
 
-## Usage of the content delivery client
+### Usage of the content delivery client
 
-### Load a Story
+#### Load a Story
 
 ```php
 // Require composer autoload
@@ -81,7 +102,7 @@ $client->getStoryByUuid('0c092d14-5cd4-477e-922c-c7f8e330aaea');
 $data = $client->getBody();
 ```
 
-### Load a list of Stories
+#### Load a list of Stories
 
 ```php
 // Require composer autoload
@@ -102,7 +123,7 @@ $client->getStories(
 $data = $client->getStoryContent();
 ```
 
-### Load a list of datasource entries
+#### Load a list of datasource entries
 
 ```php
 // Require composer autoload
@@ -125,7 +146,7 @@ $nameValueArray = $client->getAsNameValueArray();
 
 ```
 
-### Load a list of tags
+#### Load a list of tags
 
 ```php
 // Require composer autoload
@@ -148,7 +169,7 @@ $stringArray = $client->getAsStringArray();
 
 ```
 
-### Load a list of tags and get the Respones Headers
+#### Load a list of tags and get the Respones Headers
 
 ```php
 // Require composer autoload
@@ -168,7 +189,7 @@ var_dump($client->getHeaders());
 
 ```
 
-## Clearing the cache (Optionally if using setCache)
+### Clearing the cache (Optionally if using setCache)
 
 In order to flush the cache when the user clicks publish, you need to listen to the published event in javascript or define a webhook in the space settings that clears the cache on your server.
 
@@ -198,7 +219,7 @@ $client->deleteCacheBySlug('home');
 ```
 
 
-## Generate a navigation tree
+### Generate a navigation tree
 
 ```php
 $tree = $client->editMode()->getLinks()->getAsTree();
@@ -220,10 +241,26 @@ foreach ($tree as $item) {
 echo '</ul>';
 ```
 
-### Nginx SSI - Server Side Includes
+#### Nginx SSI - Server Side Includes
 
 Use the following script if you have Nginx SSI enabled and experience issues with printing the _editable html comments directly to manually parse the Storyblok HTML editable comments: https://gist.github.com/DominikAngerer/ca61d41bae3afcc646cfee286579ad36
 
-### License
+## ℹ️ Support
 
-This project is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+* Bugs or Feature Requests? [Submit an issue](https://github.com/storyblok/wordpress-importer/issues/new);
+
+* Do you have questions about Storyblok or you need help? [Join our Discord Community](https://discord.gg/jKrbAMz).
+
+## 🤝  Contributing
+
+Please see our [contributing guidelines](https://github.com/storyblok/.github/blob/master/contributing.md) and our [code of conduct](https://www.storyblok.com/trust-center#code-of-conduct).
+
+## 📄 License
+
+This repository is published under the [MIT](./LICENSE) license.
+
+## 🔗 Related Resources
+
+* **[Storyblok PHP Richtext Renderer](https://github.com/storyblok/storyblok-php-richtext-renderer)** : This package allows you to get an HTML string from the richtext field of Storyblok;
+
+* **[Storyblok Laravel Tutorial](https://www.storyblok.com/tp/add-a-headless-cms-to-laravel-in-5-minutes?utm_source=github.com&utm_medium=referral&utm_campaign=php-client)** : Add a Headless CMS to Laravel in 5 minutes.
