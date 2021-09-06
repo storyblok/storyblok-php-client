@@ -11,7 +11,7 @@ use GuzzleHttp\RequestOptions;
  */
 class Client extends BaseClient
 {
-    const CACHE_VERSION_KEY = "storyblok:cache_version";
+    const CACHE_VERSION_KEY = "storyblok:cv";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
 
     /**
@@ -60,7 +60,7 @@ class Client extends BaseClient
      * @param string $apiVersion
      * @param bool   $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v1", $ssl = false)
+    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v2", $ssl = false)
     {
         parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
 
@@ -136,9 +136,9 @@ class Client extends BaseClient
                 break;
         }
 
-        $this->cacheVersion = $this->cache->load(self::CACHE_VERSION_KEY);
+        $this->cv = $this->cache->load(self::CACHE_VERSION_KEY);
 
-        if (!$this->cacheVersion) {
+        if (!$this->cv) {
             $this->setCacheVersion();
         }
 
@@ -210,7 +210,7 @@ class Client extends BaseClient
         if ($this->cache) {
             $timestamp = time();
             $this->cache->save($timestamp, self::CACHE_VERSION_KEY);
-            $this->cacheVersion = $timestamp;
+            $this->cv = $timestamp;
         }
 
         return $this;
@@ -223,11 +223,11 @@ class Client extends BaseClient
      */
     function getCacheVersion()
     {
-        if (empty($this->cacheVersion)) {
+        if (empty($this->cv)) {
             return time();
         }
 
-        return $this->cacheVersion;
+        return $this->cv;
     }
 
     /**
@@ -251,7 +251,7 @@ class Client extends BaseClient
      * @throws ApiException
      */
     public function getStoryBySlug($slug)
-    {
+    {   
         return $this->getStory($slug);
     }
 
@@ -300,7 +300,7 @@ class Client extends BaseClient
             $options = array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                'cv' => $this->getCacheVersion()
             );
 
             if ($byUuid) {
@@ -310,7 +310,7 @@ class Client extends BaseClient
             if ($this->resolveRelations) {
                 $options['resolve_relations'] = $this->resolveRelations;
             }
-
+            
             if ($this->resolveLinks) {
                 $options['resolve_links'] = $this->resolveLinks;
             }
@@ -318,7 +318,7 @@ class Client extends BaseClient
             if ($this->release) {
                 $options['from_release'] = $this->release;
             }
-
+            
             try {
                 $response = $this->get($key, $options);
                 $this->_save($response, $cachekey, $version);
@@ -374,11 +374,15 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                'cv' => $this->getCacheVersion()
             ));
 
             if ($this->resolveRelations) {
                 $options['resolve_relations'] = $this->resolveRelations;
+            }
+            
+            if ($this->resolveLinks) {
+                $options['resolve_links'] = $this->resolveLinks;
             }
 
             $response = $this->get($endpointUrl, $options);
@@ -400,7 +404,11 @@ class Client extends BaseClient
     public function resolveRelations($reference)
     {
         $this->resolveRelations = $reference;
-
+        $this->_relationsList = [];
+        foreach(explode(',', $this->resolveRelations) as $relation) {
+            $relationVars = explode('.', $relation);
+            $this->_relationsList[$relationVars[0]] = $relationVars[1];
+        }
         return $this;
     }
 
@@ -448,7 +456,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                'cv' => $this->getCacheVersion()
             ));
 
             $response = $this->get($endpointUrl, $options);
@@ -486,7 +494,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion(),
+                'cv' => $this->getCacheVersion(),
                 'datasource' => $slug
             ));
 
@@ -526,7 +534,7 @@ class Client extends BaseClient
             $options = array_merge($options, array(
                 'token' => $this->getApiKey(),
                 'version' => $version,
-                'cache_version' => $this->getCacheVersion()
+                'cv' => $this->getCacheVersion()
             ));
 
             $response = $this->get($key, $options);
@@ -645,7 +653,7 @@ class Client extends BaseClient
             $version === 'published' &&
             $response->httpResponseHeaders &&
             $response->httpResponseCode == 200) {
-
+            
             $this->cache->save($response, $key);
         }
     }
