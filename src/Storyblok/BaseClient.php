@@ -246,6 +246,7 @@ class BaseClient
         $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
         $result->httpResponseCode = $httpResponseCode;
         $result->httpResponseHeaders = $responseObj->getHeaders();
+
         if (is_array($result->httpResponseBody) && isset($result->httpResponseBody['story']) || isset($result->httpResponseBody['stories'])) {
             $result->httpResponseBody = $this->enrichStories($result->httpResponseBody, $queryString);
         }
@@ -308,7 +309,7 @@ class BaseClient
     private function enrichStories($data, $queryString) {
         $enrichedData = $data;
         $this->getResolvedRelations($data, $queryString);
-        $this->getResolveLinks($data, $queryString);
+        $this->getResolvedLinks($data, $queryString);
         
         if(isset($data['story'])) {
             $enrichedData['story']['content'] = $this->enrichContent($data['story']['content']);
@@ -379,7 +380,7 @@ class BaseClient
         }
     }
 
-    function getResolveLinks($data) {
+    function getResolvedLinks($data) {
         $this->resolvedLinks = [];
         $links = [];
 
@@ -405,8 +406,7 @@ class BaseClient
                 $links = array_merge($links, $linksRes->responseBody['stories']);
             }
         }
-
-        foreach($data['links'] as $link) {
+        foreach($links as $link) {
             $this->resolvedLinks[$link['uuid']] = $link;    
         }
     }
@@ -422,7 +422,7 @@ class BaseClient
             } else if(is_array($value)) {
                 $filteredNode = [];
                 foreach($value as $item) {
-                    if(isset($this->resolvedRelations[$item])) {
+                    if(is_string($item) && isset($this->resolvedRelations[$item])) {
                         $story = $this->resolvedRelations[$item];
                         $story['_stopResolving'] = true;
                         $filteredNode[] = $story;
