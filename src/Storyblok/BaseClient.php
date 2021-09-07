@@ -232,10 +232,11 @@ class BaseClient
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $responseObj
+     * @param array $queryString
      *
      * @return \stdClass
      */
-    public function responseHandler($responseObj, $queryString = [])
+    public function responseHandler($responseObj, $queryString = array())
     {
         $httpResponseCode = $responseObj->getStatusCode();
         $data = (string) $responseObj->getBody();
@@ -325,6 +326,12 @@ class BaseClient
         return $enrichedData;
     }
 
+    /**
+     * Enrich the Stories with resolved links and stories
+     * @param \stdClass
+     *
+     * @return \stdClass
+     */
     function enrichContent($data) {
         $enrichedContent = $data;
         if (empty($data)) {
@@ -348,6 +355,13 @@ class BaseClient
         return $enrichedContent;
     }
 
+    /**
+     * Retrieve or resolve the relations
+     * @param \stdClass $data
+     * @param array $queryString 
+     *
+     * @return null
+     */
     function getResolvedRelations($data, $queryString) {
         $this->resolvedRelations = [];
         $relations = [];
@@ -380,6 +394,14 @@ class BaseClient
         }
     }
 
+
+    /**
+     * Retrieve or resolve the Links
+     * @param \stdClass $data
+     * @param array $queryString 
+     *
+     * @return null
+     */
     function getResolvedLinks($data) {
         $this->resolvedLinks = [];
         $links = [];
@@ -411,6 +433,14 @@ class BaseClient
         }
     }
     
+    /**
+     * Insert the resolved relations in a story
+     * @param string $component
+     * @param string $field
+     * @param string|array $value
+     *
+     * @return null
+     */
     private function insertRelations($component, $field, $value) {
         $filteredNode = $value;
         if(isset($this->_relationsList[$component]) && $field == $this->_relationsList[$component]) {
@@ -433,6 +463,14 @@ class BaseClient
         return $filteredNode;
     }
     
+    /**
+     * Insert the resolved links in a story
+     * @param string $component
+     * @param string $field
+     * @param string|array $value
+     *
+     * @return null
+     */
     private function insertLinks($node) {
         $filteredNode = $node;
         if(isset($node['fieldtype']) && $node['fieldtype'] == 'multilink' && $node['linktype'] == 'story') {
