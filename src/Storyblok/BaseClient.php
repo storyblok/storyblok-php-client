@@ -2,13 +2,18 @@
 
 namespace Storyblok;
 
+use Closure;
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Message\Response;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 /**
 * Storyblok Client
@@ -75,6 +80,9 @@ class BaseClient
         ]);
     }
 
+    /**
+     * @return Closure
+     */
     public function retryDecider()
     {
         return function (
@@ -116,11 +124,17 @@ class BaseClient
         };
     }
 
+    /**
+     * @param string $apiKey
+     */
     public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
     }
 
+    /**
+     * @return string
+     */
     public function getApiKey()
     {
         return $this->apiKey;
@@ -146,6 +160,9 @@ class BaseClient
         return $this;
     }
 
+    /**
+     * @return array|string
+     */
     public function getProxy()
     {
         return $this->proxy;
@@ -226,22 +243,22 @@ class BaseClient
             $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $responseObj
+     * @param ResponseInterface $responseObj
      *
-     * @return \stdClass
+     * @return stdClass
      */
     public function responseHandler($responseObj)
     {
         $httpResponseCode = $responseObj->getStatusCode();
         $data = (string) $responseObj->getBody();
         $jsonResponseData = (array) json_decode($data, true);
-        $result = new \stdClass();
+        $result = new stdClass();
 
         // return response data as json if possible, raw if not
         $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
@@ -255,7 +272,7 @@ class BaseClient
      *
      * @return string
      */
-    protected function getResponseExceptionMessage(\GuzzleHttp\Message\Response $responseObj)
+    protected function getResponseExceptionMessage(Response $responseObj)
     {
         $body = (string) $responseObj->getBody();
         $response = json_decode($body);
@@ -268,7 +285,7 @@ class BaseClient
     /**
      * Gets the json response body
      *
-     * @return array
+     * @return array|stdClass
      */
     public function getBody()
     {
@@ -282,7 +299,7 @@ class BaseClient
     /**
      * Gets the response headers
      *
-     * @return array
+     * @return array|stdClass
      */
     public function getHeaders()
     {
@@ -296,7 +313,7 @@ class BaseClient
     /**
      * Gets the response status
      *
-     * @return array
+     * @return int
      */
     public function getCode()
     {

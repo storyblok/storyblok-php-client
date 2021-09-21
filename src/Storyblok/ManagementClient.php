@@ -28,7 +28,7 @@ class ManagementClient extends BaseClient
     /**
      * @param \Psr\Http\Message\ResponseInterface $responseObj
      *
-     * @return \stdClass
+     * @return ManagementClient
      */
     public function responseHandler($responseObj)
     {
@@ -47,7 +47,7 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @return \stdClass
+     * @return ManagementClient
      *
      * @throws ApiException
      */
@@ -75,7 +75,7 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @return \stdClass
+     * @return ManagementClient
      *
      * @throws ApiException
      */
@@ -102,7 +102,7 @@ class ManagementClient extends BaseClient
     /**
      * @param string $endpointUrl
      *
-     * @return \stdClass
+     * @return ManagementClient
      *
      * @throws ApiException
      */
