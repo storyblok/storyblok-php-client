@@ -465,11 +465,9 @@ class BaseClient
     
     /**
      * Insert the resolved links in a story
-     * @param string $component
-     * @param string $field
-     * @param string|array $value
+     * @param \stdClass $node
      *
-     * @return null
+     * @return \stdClass
      */
     private function insertLinks($node) {
         $filteredNode = $node;
