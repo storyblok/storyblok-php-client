@@ -97,17 +97,25 @@ class Client extends BaseClient
     }
 
     /**
+     * Returns the requested version of the content
+     *
+     * @return String
+     */
+    public function getVersion()
+    {   
+        return $this->editModeEnabled ? 'draft' : 'published';
+    }
+
+    /**
      * Returns the commond API parameters
      *
      * @return Array
      */
     public function getApiParameters()
     {
-        $version = $this->editModeEnabled ? 'draft' : 'published';
-
         return array(
             'token' => $this->getApiKey(),
-            'version' => $version,
+            'version' => $this->getVersion(),
             'cv' => $this->getCacheVersion()
         );
     }
@@ -295,18 +303,12 @@ class Client extends BaseClient
      */
     private function getStory($slug, $byUuid = false)
     {
-        $version = 'published';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
-
         $key = 'stories/' . $slug;
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
@@ -333,7 +335,7 @@ class Client extends BaseClient
             
             try {
                 $response = $this->get($key, $options);
-                $this->_save($response, $cachekey, $version);
+                $this->_save($response, $cachekey, $this->getVersion());
             } catch (\Exception $e) {
                 if ($this->cacheNotFound && $e->getCode() === 404) {
                     $result = new \stdClass();
@@ -368,19 +370,14 @@ class Client extends BaseClient
      */
     public function getStories($options = array())
     {
-        $version = 'published';
         $endpointUrl = 'stories/';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
 
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
@@ -395,7 +392,7 @@ class Client extends BaseClient
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -446,26 +443,21 @@ class Client extends BaseClient
      */
     public function getTags($options = array())
     {
-        $version = 'published';
         $endpointUrl = 'tags/';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
 
         $key = 'tags/' . serialize($options);
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -480,19 +472,14 @@ class Client extends BaseClient
      */
     public function getDatasourceEntries($slug, $options = array())
     {
-        $version = 'published';
         $endpointUrl = 'datasource_entries/';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
 
         $key = 'datasource_entries/' . $slug . '/' . serialize($options);
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, 
@@ -501,7 +488,7 @@ class Client extends BaseClient
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -520,23 +507,17 @@ class Client extends BaseClient
      */
     public function getLinks($options = array())
     {
-        $version = 'published';
-
         $key = $this->linksPath;
         $cachekey = $this->_getCacheKey($key);
 
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
-
-        if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
