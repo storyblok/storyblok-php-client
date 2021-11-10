@@ -379,11 +379,14 @@ class BaseClient
             }
       
             for ($chunkIndex = 0; $chunkIndex < count($chunks); $chunkIndex++) {
-                $relationsRes = $this->getStories(array(
-                  'per_page' => $chunkSize,
-                  'language' => isset($queryString['language']) ? $queryString['language'] : 'default',
-                  'by_uuids' => implode(',', $chunks[$chunkIndex])
-                ));
+                $relationsParams = array(
+                    'per_page' => $chunkSize,
+                    'by_uuids' => implode(',', $chunks[$chunkIndex])
+                )
+                if(isset($queryString['language'])) {
+                    $relationsParams['language'] = $queryString['language'];
+                }
+                $relationsRes = $this->getStories($relationsParams);
                 
                 $relations = array_merge($relations, $relationsRes->responseBody['stories']);
             }
