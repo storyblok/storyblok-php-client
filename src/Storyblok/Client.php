@@ -97,6 +97,22 @@ class Client extends BaseClient
     }
 
     /**
+     * Returns the commond API parameters
+     *
+     * @return Array
+     */
+    public function getApiParameters()
+    {
+        $version = $this->editModeEnabled ? 'draft' : 'published';
+
+        return array(
+            'token' => $this->getApiKey(),
+            'version' => $version,
+            'cv' => $this->getCacheVersion()
+        );
+    }
+
+    /**
      * Set cache driver and optional the cache path
      *
      * @param string $driver Driver
@@ -297,11 +313,7 @@ class Client extends BaseClient
 
             $this->_assignState($cachedItem);
         } else {
-            $options = array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cv' => $this->getCacheVersion()
-            );
+            $options = $this->getApiParameters();
 
             if ($byUuid) {
                 $options['find_by'] = 'uuid';
@@ -371,11 +383,7 @@ class Client extends BaseClient
         if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cv' => $this->getCacheVersion()
-            ));
+            $options = array_merge($options, $this->getApiParameters());
 
             if ($this->resolveRelations) {
                 $options['resolve_relations'] = $this->resolveRelations;
@@ -453,11 +461,7 @@ class Client extends BaseClient
         if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cv' => $this->getCacheVersion()
-            ));
+            $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
@@ -491,12 +495,9 @@ class Client extends BaseClient
         if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cv' => $this->getCacheVersion(),
-                'datasource' => $slug
-            ));
+            $options = array_merge($options, 
+                array('datasource' => $slug),
+                $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
@@ -531,11 +532,7 @@ class Client extends BaseClient
         if ($version === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cv' => $this->getCacheVersion()
-            ));
+            $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($key, $options);
 

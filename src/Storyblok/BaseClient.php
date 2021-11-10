@@ -382,7 +382,7 @@ class BaseClient
                 $relationsParams = array(
                     'per_page' => $chunkSize,
                     'by_uuids' => implode(',', $chunks[$chunkIndex])
-                )
+                );
                 if(isset($queryString['language'])) {
                     $relationsParams['language'] = $queryString['language'];
                 }
