@@ -161,7 +161,6 @@ class Client extends BaseClient
         }
 
         $this->cv = $this->cache->load(self::CACHE_VERSION_KEY);
-        echo 'CV' . $this->cv;
 
         if (!$this->cv) {
             $this->setCacheVersion();
@@ -233,7 +232,7 @@ class Client extends BaseClient
     public function setCacheVersion()
     {
         if ($this->cache) {
-            $res = $this->getStories(Array('per_page' => 1, 'version' => $this->getVersion()));
+            $res = $this->getStories(Array('per_page' => 1, 'version' => 'published'));
             $this->cv = $res->responseBody['cv'];
             $this->cache->save($this->cv, self::CACHE_VERSION_KEY);
         }
