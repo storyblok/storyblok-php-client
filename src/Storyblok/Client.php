@@ -248,7 +248,7 @@ class Client extends BaseClient
     function getCacheVersion()
     {
         if (empty($this->cv)) {
-            return time();
+            return '';
         }
 
         return $this->cv;
