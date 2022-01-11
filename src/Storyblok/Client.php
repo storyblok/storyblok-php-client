@@ -209,7 +209,7 @@ class Client extends BaseClient
     {
         if ($this->cache) {
             $timestamp = time();
-            $this->cache->save($timestamp, self::CACHE_VERSION_KEY);
+            $this->cache->save($timestamp, self::CACHE_VERSION_KEY, null, $this->cacheTtl);
             $this->cacheVersion = $timestamp;
         }
 
