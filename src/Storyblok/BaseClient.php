@@ -334,9 +334,6 @@ class BaseClient
      */
     function enrichContent($data) {
         $enrichedContent = $data;
-        if (empty($data)) {
-            return '';
-        }
 
         if (is_array($data) && isset($data['component'])) {
             if(!isset($story['_stopResolving'])) {
