@@ -6,7 +6,7 @@
     "license": "MIT",
     "minimum-stability": "dev",
     "require": {
-        "guzzlehttp/guzzle": "^7.0",
+        "guzzlehttp/guzzle": "^6.2|^7.0",
         "apix/cache": "^1.2"
     },
     "authors": [
