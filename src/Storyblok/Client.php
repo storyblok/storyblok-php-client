@@ -7,11 +7,11 @@ use Apix\Cache as ApixCache;
 use GuzzleHttp\RequestOptions;
 
 /**
-* Storyblok Client
-*/
+ * Storyblok Client
+ */
 class Client extends BaseClient
 {
-    const CACHE_VERSION_KEY = "storyblok:cache_version";
+    const CACHE_VERSION_KEY = "storyblok:cv";
     const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
 
     /**
@@ -28,6 +28,11 @@ class Client extends BaseClient
      * @var boolean
      */
     private $editModeEnabled;
+
+    /**
+     * @var string
+     */
+    private $release;
 
     /**
      * @var string
@@ -53,6 +58,16 @@ class Client extends BaseClient
      * @var Cache
      */
     protected $cache;
+    
+    /**
+     * @var string
+     */
+    protected $language = 'default';
+    
+    /**
+     * @var string
+     */
+    protected $fallbackLanguage = 'default';
 
     /**
      * @param string $apiKey
@@ -60,12 +75,13 @@ class Client extends BaseClient
      * @param string $apiVersion
      * @param bool   $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v1", $ssl = false)
+    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v2", $ssl = false)
     {
         parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
 
         if (isset($_GET['_storyblok'])) {
             $this->editModeEnabled = $_GET['_storyblok'];
+            $this->release = $_GET['_storyblok_release'] ?? null;
         } else {
             $this->editModeEnabled = false;
         }
@@ -82,6 +98,30 @@ class Client extends BaseClient
         $this->editModeEnabled = $enabled;
         return $this;
     }
+    
+    /**
+     * Set the language the story should be retrieved in
+     *
+     * @param  string $language
+     * @return Client
+     */
+    public function language($language = 'default')
+    {
+        $this->language = $language;
+        return $this;
+    }
+    
+    /**
+     * Set the fallback language the story should be retrieved in
+     *
+     * @param  string $fallbackLanguage
+     * @return Client
+     */
+    public function fallbackLanguage($fallbackLanguage = 'default')
+    {
+        $this->fallbackLanguage = $fallbackLanguage;
+        return $this;
+    }
 
     /**
      * Enables caching for 404 responses
@@ -93,6 +133,30 @@ class Client extends BaseClient
     {
         $this->cacheNotFound = $enabled;
         return $this;
+    }
+
+    /**
+     * Returns the requested version of the content
+     *
+     * @return String
+     */
+    public function getVersion()
+    {   
+        return $this->editModeEnabled ? 'draft' : 'published';
+    }
+
+    /**
+     * Returns the commond API parameters
+     *
+     * @return Array
+     */
+    public function getApiParameters()
+    {
+        return array(
+            'token' => $this->getApiKey(),
+            'version' => $this->getVersion(),
+            'cv' => $this->getCacheVersion()
+        );
     }
 
     /**
@@ -136,9 +200,9 @@ class Client extends BaseClient
                 break;
         }
 
-        $this->cacheVersion = $this->cache->load(self::CACHE_VERSION_KEY);
+        $this->cv = $this->cache->load(self::CACHE_VERSION_KEY);
 
-        if (!$this->cacheVersion) {
+        if (!$this->cv) {
             $this->setCacheVersion();
         }
 
@@ -208,9 +272,9 @@ class Client extends BaseClient
     public function setCacheVersion()
     {
         if ($this->cache) {
-            $timestamp = time();
-            $this->cache->save($timestamp, self::CACHE_VERSION_KEY, null, $this->cacheTtl);
-            $this->cacheVersion = $timestamp;
+            $res = $this->getStories(Array('per_page' => 1, 'version' => 'published'));
+            $this->cv = $res->responseBody['cv'];
+            $this->cache->save($this->cv, self::CACHE_VERSION_KEY, null, $this->cacheTtl);
         }
 
         return $this;
@@ -223,11 +287,23 @@ class Client extends BaseClient
      */
     function getCacheVersion()
     {
-        if (empty($this->cacheVersion)) {
-            return time();
-        } else {
-            return $this->cacheVersion;
+        if (empty($this->cv)) {
+            return '';
         }
+
+        return $this->cv;
+    }
+
+    /**
+     * Pull story from a release for preview
+     *
+     * @param  string $release
+     * @return Client
+     */
+    public function setRelease($release)
+    {
+        $this->release = $release;
+        return $this;
     }
 
     /**
@@ -239,7 +315,7 @@ class Client extends BaseClient
      * @throws ApiException
      */
     public function getStoryBySlug($slug)
-    {
+    {   
         return $this->getStory($slug);
     }
 
@@ -267,29 +343,19 @@ class Client extends BaseClient
      */
     private function getStory($slug, $byUuid = false)
     {
-        $version = 'published';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
-
         $key = 'stories/' . $slug;
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
 
             $this->_assignState($cachedItem);
         } else {
-            $options = array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cache_version' => $this->getCacheVersion()
-            );
+            $options = $this->getApiParameters();
 
             if ($byUuid) {
                 $options['find_by'] = 'uuid';
@@ -298,14 +364,28 @@ class Client extends BaseClient
             if ($this->resolveRelations) {
                 $options['resolve_relations'] = $this->resolveRelations;
             }
-
+            
             if ($this->resolveLinks) {
                 $options['resolve_links'] = $this->resolveLinks;
             }
 
+            if ($this->release) {
+                $options['from_release'] = $this->release;
+            }
+            
+            if($byUuid) {
+                if ($this->language) {
+                    $options['language'] = $this->language;
+                }
+
+                if ($this->fallbackLanguage) {
+                    $options['fallback_lang'] = $this->fallbackLanguage;
+                }
+            }
+
             try {
                 $response = $this->get($key, $options);
-                $this->_save($response, $cachekey, $version);
+                $this->_save($response, $cachekey, $this->getVersion());
             } catch (\Exception $e) {
                 if ($this->cacheNotFound && $e->getCode() === 404) {
                     $result = new \stdClass();
@@ -340,34 +420,37 @@ class Client extends BaseClient
      */
     public function getStories($options = array())
     {
-        $version = 'published';
         $endpointUrl = 'stories/';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
 
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cache_version' => $this->getCacheVersion()
-            ));
+            $options = array_merge($options, $this->getApiParameters());
 
             if ($this->resolveRelations) {
                 $options['resolve_relations'] = $this->resolveRelations;
             }
+            
+            if ($this->language) {
+                $options['language'] = $this->language;
+            }
+            
+            if ($this->fallbackLanguage) {
+                $options['fallback_lang'] = $this->fallbackLanguage;
+            }
+
+            if ($this->resolveLinks) {
+                $options['resolve_links'] = $this->resolveLinks;
+            }
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -384,7 +467,11 @@ class Client extends BaseClient
     public function resolveRelations($reference)
     {
         $this->resolveRelations = $reference;
-
+        $this->_relationsList = [];
+        foreach(explode(',', $this->resolveRelations) as $relation) {
+            $relationVars = explode('.', $relation);
+            $this->_relationsList[$relationVars[0]] = $relationVars[1];
+        }
         return $this;
     }
 
@@ -414,30 +501,21 @@ class Client extends BaseClient
      */
     public function getTags($options = array())
     {
-        $version = 'published';
         $endpointUrl = 'tags/';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
 
         $key = 'tags/' . serialize($options);
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cache_version' => $this->getCacheVersion()
-            ));
+            $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -452,31 +530,23 @@ class Client extends BaseClient
      */
     public function getDatasourceEntries($slug, $options = array())
     {
-        $version = 'published';
         $endpointUrl = 'datasource_entries/';
-
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
 
         $key = 'datasource_entries/' . $slug . '/' . serialize($options);
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cache_version' => $this->getCacheVersion(),
-                'datasource' => $slug
-            ));
+            $options = array_merge($options, 
+                array('datasource' => $slug),
+                $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -495,27 +565,17 @@ class Client extends BaseClient
      */
     public function getLinks($options = array())
     {
-        $version = 'published';
-
         $key = $this->linksPath;
         $cachekey = $this->_getCacheKey($key);
 
-        if ($this->editModeEnabled) {
-            $version = 'draft';
-        }
-
-        if ($version == 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, array(
-                'token' => $this->getApiKey(),
-                'version' => $version,
-                'cache_version' => $this->getCacheVersion()
-            ));
+            $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $cachekey, $version);
+            $this->_save($response, $cachekey, $this->getVersion());
         }
 
         return $this;
@@ -557,7 +617,7 @@ class Client extends BaseClient
         $array = [];
 
         foreach ($this->responseBody['tags'] as $entry) {
-            array_push($array, $entry['name']);
+            $array[] = $entry['name'];
         }
 
         return $array;
@@ -584,17 +644,17 @@ class Client extends BaseClient
             $tree[$item['parent_id']][] = $item;
         }
 
-        return $this->_generateTree(0, $tree);
+        return $this->_generateTree($tree, 0);
     }
 
     /**
      * Recursive function to generate tree
      *
-     * @param  integer $parent
      * @param  array  $items
+     * @param  integer $parent
      * @return array
      */
-    private function _generateTree($parent = 0, $items)
+    private function _generateTree($items, $parent = 0)
     {
         $tree = array();
 
@@ -607,7 +667,7 @@ class Client extends BaseClient
                 }
 
                 $tree[$item['id']]['item']  = $item;
-                $tree[$item['id']]['children']  = $this->_generateTree($item['id'], $items);
+                $tree[$item['id']]['children']  = $this->_generateTree($items, $item['id']);
             }
         }
 
@@ -626,10 +686,9 @@ class Client extends BaseClient
         $this->_assignState($response);
 
         if ($this->cache &&
-            $version == 'published' &&
+            $version === 'published' &&
             $response->httpResponseHeaders &&
             $response->httpResponseCode == 200) {
-
             $this->cache->save($response, $key, null, $this->cacheTtl);
         }
     }
@@ -657,11 +716,11 @@ class Client extends BaseClient
         $prepared = array();
         $keyOrder = array();
         foreach($options as $key => $value) {
-           array_push($prepared, $value);
-           array_push($keyOrder, substr($key, 0, 1));
-       }
-       array_push($prepared, join('', $keyOrder));
-       return $prepared;
+            $prepared[] = $value;
+            $keyOrder[] = substr($key, 0, 1);
+        }
+        $prepared[] = implode('', $keyOrder);
+        return $prepared;
     }
 
     private function _getCacheKey($key = '')
