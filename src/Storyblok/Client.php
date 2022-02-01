@@ -70,9 +70,9 @@ class Client extends BaseClient
      * @param string $apiVersion
      * @param bool   $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v2", $ssl = false)
+    function __construct($apiKey = null, $apiEndpoint = null, $apiVersion = "v2", $ssl = false, $apiRegion = null)
     {
-        parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
+        parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl, $apiRegion);
 
         if (isset($_GET['_storyblok'])) {
             $this->editModeEnabled = $_GET['_storyblok'];
