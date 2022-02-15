@@ -1,7 +1,7 @@
 <?php
 require '../vendor/autoload.php';
 
-$client = new \Storyblok\Client('Iw3XKcJb6MwkdZEwoQ9BCQtt'); //
+$client = new \Storyblok\Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
 
 // Optionally set a cache
 $client->setCache('filesytem', array('path' => 'cache'));

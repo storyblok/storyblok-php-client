@@ -63,14 +63,14 @@ class BaseClient
      * @param string $apiVersion
      * @param bool   $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = "api.storyblok.com", $apiVersion = "v2", $ssl = false)
+    function __construct($apiKey = null, $apiEndpoint = null, $apiVersion = "v2", $ssl = false, $apiRegion = null)
     {
         $handlerStack = HandlerStack::create(new CurlHandler());
         $handlerStack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));
 
         $this->setApiKey($apiKey);
         $this->client = new Guzzle([
-            'base_uri'=> $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl),
+            'base_uri'=> $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl, $apiRegion),
             'handler' => $handlerStack
         ]);
     }
@@ -178,7 +178,7 @@ class BaseClient
      *
      * @return string
      */
-    private function generateEndpoint($apiEndpoint, $apiVersion, $ssl)
+    private function generateEndpoint($apiEndpoint, $apiVersion, $ssl, $apiRegion)
     {
         if ($this instanceof ManagementClient) {
             $prefix = "";
@@ -190,6 +190,11 @@ class BaseClient
             $protocol = "http://";
         } else {
             $protocol = "https://";
+        }
+
+        if (!$apiEndpoint) {
+            $region = $apiRegion ? "-{$apiRegion}" : "";
+            $apiEndpoint = "api{$region}.storyblok.com";
         }
 
         return $protocol . $apiEndpoint . "/" . $apiVersion . $prefix . "/";
