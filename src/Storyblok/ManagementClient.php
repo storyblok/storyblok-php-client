@@ -30,7 +30,7 @@ class ManagementClient extends BaseClient
      *
      * @return \stdClass
      */
-    public function responseHandler($responseObj)
+    public function responseHandler($responseObj, $queryString = null)
     {
         $httpResponseCode = $responseObj->getStatusCode();
         $data = (string) $responseObj->getBody();
