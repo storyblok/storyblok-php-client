@@ -20,9 +20,9 @@ class ManagementClient extends BaseClient
      * @param string $apiEndpoint
      * @param string $apiVersion
      */
-    function __construct($apiKey = null, $apiEndpoint = "mapi.storyblok.com", $apiVersion = "v1")
+    function __construct($apiKey = null, $apiEndpoint = "mapi.storyblok.com", $apiVersion = "v1", $ssl = false)
     {
-    	parent::__construct($apiKey, $apiEndpoint, $apiVersion, false);
+    	parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
     }
 
     /**
