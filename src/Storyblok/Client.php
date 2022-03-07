@@ -2,17 +2,15 @@
 
 namespace Storyblok;
 
-use GuzzleHttp\Client as Guzzle;
 use Apix\Cache as ApixCache;
-use GuzzleHttp\RequestOptions;
 
 /**
- * Storyblok Client
+ * Storyblok Client.
  */
 class Client extends BaseClient
 {
-    const CACHE_VERSION_KEY = "storyblok:cv";
-    const EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!";
+    const CACHE_VERSION_KEY = 'storyblok:cv';
+    const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
     /**
      * @var string
@@ -20,12 +18,27 @@ class Client extends BaseClient
     public $cacheVersion;
 
     /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
+     * @var string
+     */
+    protected $language = 'default';
+
+    /**
+     * @var string
+     */
+    protected $fallbackLanguage = 'default';
+
+    /**
      * @var string
      */
     private $linksPath = 'links/';
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $editModeEnabled;
 
@@ -45,32 +58,18 @@ class Client extends BaseClient
     private $resolveLinks;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $cacheNotFound;
 
     /**
-     * @var Cache
+     * @param string     $apiKey
+     * @param string     $apiEndpoint
+     * @param string     $apiVersion
+     * @param bool       $ssl
+     * @param null|mixed $apiRegion
      */
-    protected $cache;
-    
-    /**
-     * @var string
-     */
-    protected $language = 'default';
-    
-    /**
-     * @var string
-     */
-    protected $fallbackLanguage = 'default';
-
-    /**
-     * @param string $apiKey
-     * @param string $apiEndpoint
-     * @param string $apiVersion
-     * @param bool   $ssl
-     */
-    function __construct($apiKey = null, $apiEndpoint = null, $apiVersion = "v2", $ssl = false, $apiRegion = null)
+    function __construct($apiKey = null, $apiEndpoint = null, $apiVersion = 'v2', $ssl = false, $apiRegion = null)
     {
         parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl, $apiRegion);
 
@@ -83,85 +82,94 @@ class Client extends BaseClient
     }
 
     /**
-     * Enables editmode to receive draft versions
+     * Enables editmode to receive draft versions.
      *
-     * @param  boolean $enabled
+     * @param bool $enabled
+     *
      * @return Client
      */
     public function editMode($enabled = true)
     {
         $this->editModeEnabled = $enabled;
+
         return $this;
     }
-    
+
     /**
-     * Set the language the story should be retrieved in
+     * Set the language the story should be retrieved in.
      *
-     * @param  string $language
+     * @param string $language
+     *
      * @return Client
      */
     public function language($language = 'default')
     {
         $this->language = $language;
+
         return $this;
     }
-    
+
     /**
-     * Set the fallback language the story should be retrieved in
+     * Set the fallback language the story should be retrieved in.
      *
-     * @param  string $fallbackLanguage
+     * @param string $fallbackLanguage
+     *
      * @return Client
      */
     public function fallbackLanguage($fallbackLanguage = 'default')
     {
         $this->fallbackLanguage = $fallbackLanguage;
+
         return $this;
     }
 
     /**
-     * Enables caching for 404 responses
+     * Enables caching for 404 responses.
      *
-     * @param  boolean $enabled
+     * @param bool $enabled
+     *
      * @return Client
      */
     public function cacheNotFound($enabled = true)
     {
         $this->cacheNotFound = $enabled;
+
         return $this;
     }
 
     /**
-     * Returns the requested version of the content
+     * Returns the requested version of the content.
      *
-     * @return String
+     * @return string
      */
     public function getVersion()
-    {   
+    {
         return $this->editModeEnabled ? 'draft' : 'published';
     }
 
     /**
-     * Returns the commond API parameters
+     * Returns the commond API parameters.
      *
-     * @return Array
+     * @return array
      */
     public function getApiParameters()
     {
-        return array(
+        return [
             'token' => $this->getApiKey(),
             'version' => $this->getVersion(),
-            'cv' => $this->getCacheVersion()
-        );
+            'cv' => $this->getCacheVersion(),
+        ];
     }
 
     /**
-     * Set cache driver and optional the cache path
+     * Set cache driver and optional the cache path.
      *
-     * @param string $driver Driver
-     * @param array $options Path for file cache
+     * @param string $driver  Driver
+     * @param array  $options Path for file cache
+     *
      * @return \Storyblok\Client
      */
-    public function setCache($driver, $options = array())
+    public function setCache($driver, $options = [])
     {
         $options['serializer'] = 'php';
         $options['prefix_key'] = 'storyblok:';
@@ -204,9 +212,10 @@ class Client extends BaseClient
     }
 
     /**
-     * Manually delete the cache of one item
+     * Manually delete the cache of one item.
      *
-     * @param  string $slug Slug
+     * @param string $slug Slug
+     *
      * @return \Storyblok\Client
      */
     public function deleteCacheBySlug($slug)
@@ -225,7 +234,7 @@ class Client extends BaseClient
     }
 
     /**
-     * Flush all cache
+     * Flush all cache.
      *
      * @return \Storyblok\Client
      */
@@ -240,33 +249,14 @@ class Client extends BaseClient
     }
 
     /**
-     * Automatically delete the cache of one item if client sends published parameter
-     *
-     * @param  string $key Cache key
-     * @return \Storyblok\Client
-     */
-    private function reCacheOnPublish($key)
-    {
-        if (isset($_GET['_storyblok_published']) && $this->cache) {
-            $this->cache->delete($key);
-
-            // Always refresh cache of links
-            $this->cache->delete($this->linksPath);
-            $this->setCacheVersion();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Sets cache version to get a fresh version from cdn after clearing the cache
+     * Sets cache version to get a fresh version from cdn after clearing the cache.
      *
      * @return \Storyblok\Client
      */
     public function setCacheVersion()
     {
         if ($this->cache) {
-            $res = $this->getStories(Array('per_page' => 1, 'version' => 'published'));
+            $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
             $this->cv = $res->responseBody['cv'];
             $this->cache->save($this->cv, self::CACHE_VERSION_KEY);
         }
@@ -275,9 +265,9 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets cache version from cache or as timestamp
+     * Gets cache version from cache or as timestamp.
      *
-     * @return Integer
+     * @return int
      */
     function getCacheVersion()
     {
@@ -289,37 +279,41 @@ class Client extends BaseClient
     }
 
     /**
-     * Pull story from a release for preview
+     * Pull story from a release for preview.
      *
-     * @param  string $release
+     * @param string $release
+     *
      * @return Client
      */
     public function setRelease($release)
     {
         $this->release = $release;
+
         return $this;
     }
 
     /**
-     * Gets a story by the slug identifier
+     * Gets a story by the slug identifier.
      *
-     * @param  string $slug Slug
+     * @param string $slug Slug
+     *
+     * @throws ApiException
      *
      * @return Client
-     * @throws ApiException
      */
     public function getStoryBySlug($slug)
-    {   
+    {
         return $this->getStory($slug);
     }
 
     /**
-     * Gets a story by it’s UUID
+     * Gets a story by it’s UUID.
      *
      * @param string $uuid UUID
      *
-     * @return Client
      * @throws ApiException
+     *
+     * @return Client
      */
     public function getStoryByUuid($uuid)
     {
@@ -327,78 +321,7 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets a story
-     *
-     * @param  string $slug Slug
-     * @param bool $byUuid
-     *
-     * @return Client
-     * @throws ApiException
-     */
-    private function getStory($slug, $byUuid = false)
-    {
-        $key = 'stories/' . $slug;
-        $cachekey = $this->_getCacheKey($key);
-
-        $this->reCacheOnPublish($key);
-
-        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
-            if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
-                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
-            }
-
-            $this->_assignState($cachedItem);
-        } else {
-            $options = $this->getApiParameters();
-
-            if ($byUuid) {
-                $options['find_by'] = 'uuid';
-            }
-
-            if ($this->resolveRelations) {
-                $options['resolve_relations'] = $this->resolveRelations;
-            }
-            
-            if ($this->resolveLinks) {
-                $options['resolve_links'] = $this->resolveLinks;
-            }
-
-            if ($this->release) {
-                $options['from_release'] = $this->release;
-            }
-            
-            if($byUuid) {
-                if ($this->language) {
-                    $options['language'] = $this->language;
-                }
-
-                if ($this->fallbackLanguage) {
-                    $options['fallback_lang'] = $this->fallbackLanguage;
-                }
-            }
-
-            try {
-                $response = $this->get($key, $options);
-                $this->_save($response, $cachekey, $this->getVersion());
-            } catch (\Exception $e) {
-                if ($this->cacheNotFound && $e->getCode() === 404) {
-                    $result = new \stdClass();
-                    $result->httpResponseBody = [];
-                    $result->httpResponseCode = 404;
-                    $result->httpResponseHeaders = [];
-
-                    $this->cache->save($result, $cachekey);
-                }
-
-                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Gets a list of stories
+     * Gets a list of stories.
      *
      * array(
      *    'starts_with' => $slug,
@@ -408,11 +331,11 @@ class Client extends BaseClient
      *    'page' => 0
      * )
      *
+     * @param array $options Options
      *
-     * @param  array $options Options
      * @return \Storyblok\Client
      */
-    public function getStories($options = array())
+    public function getStories($options = [])
     {
         $endpointUrl = 'stories/';
 
@@ -421,7 +344,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
@@ -429,11 +352,11 @@ class Client extends BaseClient
             if ($this->resolveRelations) {
                 $options['resolve_relations'] = $this->resolveRelations;
             }
-            
+
             if ($this->language) {
                 $options['language'] = $this->language;
             }
-            
+
             if ($this->fallbackLanguage) {
                 $options['fallback_lang'] = $this->fallbackLanguage;
             }
@@ -456,16 +379,18 @@ class Client extends BaseClient
      *  eg. global.global_referece
      *
      * @param $reference
+     *
      * @return $this
      */
     public function resolveRelations($reference)
     {
         $this->resolveRelations = $reference;
         $this->_relationsList = [];
-        foreach(explode(',', $this->resolveRelations) as $relation) {
+        foreach (explode(',', $this->resolveRelations) as $relation) {
             $relationVars = explode('.', $relation);
             $this->_relationsList[$relationVars[0]] = $relationVars[1];
         }
+
         return $this;
     }
 
@@ -473,6 +398,7 @@ class Client extends BaseClient
      * Set reference for how to resolve links.
      *
      * @param $reference
+     *
      * @return $this
      */
     public function resolveLinks($reference)
@@ -483,17 +409,17 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets a list of tags
+     * Gets a list of tags.
      *
      * array(
      *    'starts_with' => $slug
      * )
      *
+     * @param array $options Options
      *
-     * @param  array $options Options
      * @return \Storyblok\Client
      */
-    public function getTags($options = array())
+    public function getTags($options = [])
     {
         $endpointUrl = 'tags/';
 
@@ -502,7 +428,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
@@ -516,13 +442,14 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets a list of datasource entries
+     * Gets a list of datasource entries.
      *
-     * @param  string $slug Slug
-     * @param  array $options Options
+     * @param string $slug    Slug
+     * @param array  $options Options
+     *
      * @return \Storyblok\Client
      */
-    public function getDatasourceEntries($slug, $options = array())
+    public function getDatasourceEntries($slug, $options = [])
     {
         $endpointUrl = 'datasource_entries/';
 
@@ -531,12 +458,14 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
-            $options = array_merge($options, 
-                array('datasource' => $slug),
-                $this->getApiParameters());
+            $options = array_merge(
+                $options,
+                ['datasource' => $slug],
+                $this->getApiParameters()
+            );
 
             $response = $this->get($endpointUrl, $options);
 
@@ -547,22 +476,22 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets a list of tags
+     * Gets a list of tags.
      *
      * array(
      *    'starts_with' => $slug
      * )
      *
+     * @param array $options Options
      *
-     * @param  array $options Options
      * @return \Storyblok\Client
      */
-    public function getLinks($options = array())
+    public function getLinks($options = [])
     {
         $key = $this->linksPath;
         $cachekey = $this->_getCacheKey($key);
 
-        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
@@ -583,7 +512,7 @@ class Client extends BaseClient
     public function getAsNameValueArray()
     {
         if (!isset($this->responseBody)) {
-            return array();
+            return [];
         }
 
         $array = [];
@@ -605,7 +534,7 @@ class Client extends BaseClient
     public function getTagsAsStringArray()
     {
         if (!isset($this->responseBody)) {
-            return array();
+            return [];
         }
 
         $array = [];
@@ -618,21 +547,21 @@ class Client extends BaseClient
     }
 
     /**
-     * Transforms links into a tree
+     * Transforms links into a tree.
      *
      * @return array
      */
     public function getAsTree()
     {
         if (!isset($this->responseBody)) {
-            return array();
+            return [];
         }
 
         $tree = [];
 
         foreach ($this->responseBody['links'] as $item) {
             if (!isset($tree[$item['parent_id']])) {
-                $tree[$item['parent_id']] = array();
+                $tree[$item['parent_id']] = [];
             }
 
             $tree[$item['parent_id']][] = $item;
@@ -642,26 +571,119 @@ class Client extends BaseClient
     }
 
     /**
-     * Recursive function to generate tree
+     * Automatically delete the cache of one item if client sends published parameter.
      *
-     * @param  array  $items
-     * @param  integer $parent
+     * @param string $key Cache key
+     *
+     * @return \Storyblok\Client
+     */
+    private function reCacheOnPublish($key)
+    {
+        if (isset($_GET['_storyblok_published']) && $this->cache) {
+            $this->cache->delete($key);
+
+            // Always refresh cache of links
+            $this->cache->delete($this->linksPath);
+            $this->setCacheVersion();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Gets a story.
+     *
+     * @param string $slug   Slug
+     * @param bool   $byUuid
+     *
+     * @throws ApiException
+     *
+     * @return Client
+     */
+    private function getStory($slug, $byUuid = false)
+    {
+        $key = 'stories/' . $slug;
+        $cachekey = $this->_getCacheKey($key);
+
+        $this->reCacheOnPublish($key);
+
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+            if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
+                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
+            }
+
+            $this->_assignState($cachedItem);
+        } else {
+            $options = $this->getApiParameters();
+
+            if ($byUuid) {
+                $options['find_by'] = 'uuid';
+            }
+
+            if ($this->resolveRelations) {
+                $options['resolve_relations'] = $this->resolveRelations;
+            }
+
+            if ($this->resolveLinks) {
+                $options['resolve_links'] = $this->resolveLinks;
+            }
+
+            if ($this->release) {
+                $options['from_release'] = $this->release;
+            }
+
+            if ($byUuid) {
+                if ($this->language) {
+                    $options['language'] = $this->language;
+                }
+
+                if ($this->fallbackLanguage) {
+                    $options['fallback_lang'] = $this->fallbackLanguage;
+                }
+            }
+
+            try {
+                $response = $this->get($key, $options);
+                $this->_save($response, $cachekey, $this->getVersion());
+            } catch (\Exception $e) {
+                if ($this->cacheNotFound && 404 === $e->getCode()) {
+                    $result = new \stdClass();
+                    $result->httpResponseBody = [];
+                    $result->httpResponseCode = 404;
+                    $result->httpResponseHeaders = [];
+
+                    $this->cache->save($result, $cachekey);
+                }
+
+                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Recursive function to generate tree.
+     *
+     * @param array $items
+     * @param int   $parent
+     *
      * @return array
      */
     private function _generateTree($items, $parent = 0)
     {
-        $tree = array();
+        $tree = [];
 
         if (isset($items[$parent])) {
             $result = $items[$parent];
 
             foreach ($result as $item) {
                 if (!isset($tree[$item['id']])) {
-                    $tree[$item['id']] = array();
+                    $tree[$item['id']] = [];
                 }
 
-                $tree[$item['id']]['item']  = $item;
-                $tree[$item['id']]['children']  = $this->_generateTree($items, $item['id']);
+                $tree[$item['id']]['item'] = $item;
+                $tree[$item['id']]['children'] = $this->_generateTree($items, $item['id']);
             }
         }
 
@@ -669,33 +691,33 @@ class Client extends BaseClient
     }
 
     /**
-     * Save's the current response in the cache if version is published
+     * Save's the current response in the cache if version is published.
      *
-     * @param  array $response
-     * @param  string $key
-     * @param  string $version
+     * @param array  $response
+     * @param string $key
+     * @param string $version
      */
     private function _save($response, $key, $version)
     {
         $this->_assignState($response);
 
-        if ($this->cache &&
-            $version === 'published' &&
-            $response->httpResponseHeaders &&
-            $response->httpResponseCode == 200) {
-            
+        if ($this->cache
+            && 'published' === $version
+            && $response->httpResponseHeaders
+            && 200 === $response->httpResponseCode) {
             $this->cache->save($response, $key);
         }
     }
 
     /**
-     * Assigns the httpResponseBody and httpResponseHeader to '$this';
+     * Assigns the httpResponseBody and httpResponseHeader to '$this';.
      *
-     * @param  array $response
-     * @param  string $key
-     * @param  string $version
+     * @param array  $response
+     * @param string $key
+     * @param string $version
      */
-    private function _assignState($response) {
+    private function _assignState($response)
+    {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;
     }
@@ -703,18 +725,21 @@ class Client extends BaseClient
     /**
      * prepares to Options for the cache key. Fixes some issues for too long filenames if filecache is used.
      *
-     * @param  array $response
-     * @param  string $key
-     * @param  string $version
+     * @param array  $response
+     * @param string $key
+     * @param string $version
+     * @param mixed  $options
      */
-    private function _prepareOptionsForKey($options) {
-        $prepared = array();
-        $keyOrder = array();
-        foreach($options as $key => $value) {
+    private function _prepareOptionsForKey($options)
+    {
+        $prepared = [];
+        $keyOrder = [];
+        foreach ($options as $key => $value) {
             $prepared[] = $value;
             $keyOrder[] = substr($key, 0, 1);
         }
         $prepared[] = implode('', $keyOrder);
+
         return $prepared;
     }
 

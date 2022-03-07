@@ -3,7 +3,8 @@
 namespace Storyblok;
 
 /**
-* Storyblok Exception
-*/
-class ApiException extends \Exception {
+ * Storyblok Exception.
+ */
+class ApiException extends \Exception
+{
 }

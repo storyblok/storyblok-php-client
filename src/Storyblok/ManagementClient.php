@@ -2,31 +2,27 @@
 
 namespace Storyblok;
 
-use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\RequestOptions;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 
 /**
-* Storyblok Client
-*/
+ * Storyblok Client.
+ */
 class ManagementClient extends BaseClient
 {
     /**
      * @param string $apiKey
      * @param string $apiEndpoint
      * @param string $apiVersion
+     * @param mixed  $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = "mapi.storyblok.com", $apiVersion = "v1", $ssl = false)
+    function __construct($apiKey = null, $apiEndpoint = 'mapi.storyblok.com', $apiVersion = 'v1', $ssl = false)
     {
-    	parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
+        parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
     }
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $responseObj
+     * @param null|mixed                          $queryString
      *
      * @return \stdClass
      */
@@ -40,6 +36,7 @@ class ManagementClient extends BaseClient
         $this->responseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
         $this->responseCode = $httpResponseCode;
         $this->responseHeaders = $responseObj->getHeaders();
+
         return $this;
     }
 
@@ -47,16 +44,16 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @return \stdClass
-     *
      * @throws ApiException
+     *
+     * @return \stdClass
      */
     public function post($endpointUrl, $payload)
     {
         try {
             $requestOptions = [
-            	RequestOptions::JSON => $payload,
-            	RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()]
+                RequestOptions::JSON => $payload,
+                RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()],
             ];
 
             if ($this->getProxy()) {
@@ -75,16 +72,16 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @return \stdClass
-     *
      * @throws ApiException
+     *
+     * @return \stdClass
      */
     public function put($endpointUrl, $payload)
     {
         try {
             $requestOptions = [
-            	RequestOptions::JSON => $payload,
-            	RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()]
+                RequestOptions::JSON => $payload,
+                RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()],
             ];
 
             if ($this->getProxy()) {
@@ -102,15 +99,15 @@ class ManagementClient extends BaseClient
     /**
      * @param string $endpointUrl
      *
-     * @return \stdClass
-     *
      * @throws ApiException
+     *
+     * @return \stdClass
      */
     public function delete($endpointUrl)
     {
         try {
             $requestOptions = [
-            	RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()]
+                RequestOptions::HEADERS => ['Authorization' => $this->getApiKey()],
             ];
 
             if ($this->getProxy()) {
