@@ -26,5 +26,10 @@
         "psr-0": {
             "Storyblok": "src"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
