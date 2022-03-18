@@ -38,20 +38,20 @@ jobs:
           - "8.0"
           - "8.1"
 
-      steps:
-        - uses: actions/checkout@master
+    steps:
+      - uses: actions/checkout@master
 
-        - name: Setup PHP
-          uses: shivammathur/setup-php@master
-          with:
-            php-version: ${{ matrix.php-version }}
-            coverage: xdebug
+      - name: Setup PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: xdebug
 
-        - name: Validate composer.json and composer.lock
-          run: composer validate
+      - name: Validate composer.json and composer.lock
+        run: composer validate
 
-        - name: Install dependencies
-          run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-        - name: Run test suite
-          run: /vendor/bin/pest --ci
+      - name: Run test suite
+        run: /vendor/bin/pest --ci
