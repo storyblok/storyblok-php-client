@@ -30,7 +30,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Storyblok\\Tests": [
+            "Storyblok\\Tests\\": [
                 "tests",
                 "tests/Storyblok/"
             ]
