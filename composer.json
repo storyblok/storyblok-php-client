@@ -10,7 +10,8 @@
         "apix/cache": "^1.2"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "dev-master"
+        "friendsofphp/php-cs-fixer": "dev-master",
+        "pestphp/pest": "dev-master"
     },
     "authors": [
         {
@@ -25,6 +26,14 @@
     "autoload": {
         "psr-0": {
             "Storyblok": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Storyblok\\Tests": [
+                "tests",
+                "tests/Storyblok/"
+            ]
         }
     },
     "config": {
