@@ -47,6 +47,9 @@ jobs:
           php-version: ${{ matrix.php-version }}
           coverage: xdebug
 
+      - name: Trim dependency
+        run: composer remove --dev friendsofphp/php-cs-fixer
+
       - name: Validate composer.json and composer.lock
         run: composer validate
 
