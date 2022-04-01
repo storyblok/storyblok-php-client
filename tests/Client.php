@@ -10,7 +10,6 @@ $client->setCache('filesytem', array('path' => 'cache'));
 $client->getStoryBySlug('home');
 $data = $client->getBody();
 
-
 echo '<link href="https://getuikit.com/css/theme.css?174" rel="stylesheet" type="text/css">';
 echo '<div class="uk-container uk-container-center uk-margin-large-top uk-margin-large-bottom">
 				<h1> PHP Client Runable Test </h1>

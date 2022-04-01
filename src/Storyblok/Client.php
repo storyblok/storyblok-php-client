@@ -632,7 +632,7 @@ class Client extends BaseClient
                 $options['from_release'] = $this->release;
             }
 
-            if ($byUuid) {
+            // if ($byUuid) {
                 if ($this->language) {
                     $options['language'] = $this->language;
                 }
@@ -640,7 +640,7 @@ class Client extends BaseClient
                 if ($this->fallbackLanguage) {
                     $options['fallback_lang'] = $this->fallbackLanguage;
                 }
-            }
+            // }
 
             try {
                 $response = $this->get($key, $options);
