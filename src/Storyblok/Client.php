@@ -323,75 +323,6 @@ class Client extends BaseClient
     /**
      * Gets a list of stories.
      *
-     * @param  string $slug Slug
-     * @param bool $byUuid
-     *
-     * @return Client
-     * @throws ApiException
-     */
-    private function getStory($slug, $byUuid = false)
-    {
-        $key = 'stories/' . $slug;
-        $cachekey = $this->_getCacheKey($key);
-
-        $this->reCacheOnPublish($key);
-
-        if ($this->getVersion() === 'published' && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
-            if ($this->cacheNotFound && $cachedItem->httpResponseCode == 404) {
-                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
-            }
-
-            $this->_assignState($cachedItem);
-        } else {
-            $options = $this->getApiParameters();
-
-            if ($byUuid) {
-                $options['find_by'] = 'uuid';
-            }
-
-            if ($this->resolveRelations) {
-                $options['resolve_relations'] = $this->resolveRelations;
-            }
-            
-            if ($this->resolveLinks) {
-                $options['resolve_links'] = $this->resolveLinks;
-            }
-
-            if ($this->release) {
-                $options['from_release'] = $this->release;
-            }
-                        
-            if ($this->language) {
-                $options['language'] = $this->language;
-            }
-
-            if ($this->fallbackLanguage) {
-                $options['fallback_lang'] = $this->fallbackLanguage;
-            }            
-
-            try {
-                $response = $this->get($key, $options);
-                $this->_save($response, $cachekey, $this->getVersion());
-            } catch (\Exception $e) {
-                if ($this->cacheNotFound && $e->getCode() === 404) {
-                    $result = new \stdClass();
-                    $result->httpResponseBody = [];
-                    $result->httpResponseCode = 404;
-                    $result->httpResponseHeaders = [];
-
-                    $this->cache->save($result, $cachekey);
-                }
-
-                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Gets a list of stories
-     *
      * array(
      *    'starts_with' => $slug,
      *    'with_tag' => $tag,
@@ -637,6 +568,76 @@ class Client extends BaseClient
         }
 
         return $this->_generateTree($tree, 0);
+    }
+
+    /**
+     * Gets a list of stories.
+     *
+     * @param string $slug   Slug
+     * @param bool   $byUuid
+     *
+     * @throws ApiException
+     *
+     * @return Client
+     */
+    private function getStory($slug, $byUuid = false)
+    {
+        $key = 'stories/' . $slug;
+        $cachekey = $this->_getCacheKey($key);
+
+        $this->reCacheOnPublish($key);
+
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+            if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
+                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
+            }
+
+            $this->_assignState($cachedItem);
+        } else {
+            $options = $this->getApiParameters();
+
+            if ($byUuid) {
+                $options['find_by'] = 'uuid';
+            }
+
+            if ($this->resolveRelations) {
+                $options['resolve_relations'] = $this->resolveRelations;
+            }
+
+            if ($this->resolveLinks) {
+                $options['resolve_links'] = $this->resolveLinks;
+            }
+
+            if ($this->release) {
+                $options['from_release'] = $this->release;
+            }
+
+            if ($this->language) {
+                $options['language'] = $this->language;
+            }
+
+            if ($this->fallbackLanguage) {
+                $options['fallback_lang'] = $this->fallbackLanguage;
+            }
+
+            try {
+                $response = $this->get($key, $options);
+                $this->_save($response, $cachekey, $this->getVersion());
+            } catch (\Exception $e) {
+                if ($this->cacheNotFound && 404 === $e->getCode()) {
+                    $result = new \stdClass();
+                    $result->httpResponseBody = [];
+                    $result->httpResponseCode = 404;
+                    $result->httpResponseHeaders = [];
+
+                    $this->cache->save($result, $cachekey);
+                }
+
+                throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+            }
+        }
+
+        return $this;
     }
 
     /**
