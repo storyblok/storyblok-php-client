@@ -6,6 +6,7 @@ use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\RequestOptions;
@@ -74,6 +75,19 @@ class BaseClient
             'base_uri' => $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl, $apiRegion),
             'handler' => $handlerStack,
         ]);
+    }
+
+    public function mockable(array $mocks, $version = 'v2')
+    {
+        $handlerStack = HandlerStack::create(new MockHandler($mocks));
+        $handlerStack->push(Middleware::retry($this->retryDecider(), fn() => 0));
+
+        $this->client = new Guzzle([
+            'base_uri' => "http://api.storyblok.com/$version/cdn/",
+            'handler' => $handlerStack,
+        ]);
+
+        return $this;
     }
 
     public function retryDecider()
