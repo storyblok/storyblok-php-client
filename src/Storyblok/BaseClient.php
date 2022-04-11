@@ -203,7 +203,7 @@ class BaseClient
     public function get($endpointUrl, $queryString = [])
     {
         try {
-            $query = http_build_query($queryString, null, '&');
+            $query = http_build_query($queryString, '', '&');
             $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
             $string = preg_replace('/%5B__or%5D%5B\d+%5D%/', '%5B__or%5D%5B%5D%', $string);
             $requestOptions = [RequestOptions::QUERY => $string];
