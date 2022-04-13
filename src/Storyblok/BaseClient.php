@@ -154,6 +154,14 @@ class BaseClient
     }
 
     /**
+     * @return int
+     */
+    public function getMaxRetries()
+    {
+        return $this->maxRetries;
+    }
+
+    /**
      * @param array|string $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
      *
      * @return Client

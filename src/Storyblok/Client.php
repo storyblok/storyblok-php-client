@@ -738,6 +738,7 @@ class Client extends BaseClient
     {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;
+        $this->responseCode = $response->httpResponseCode;
     }
 
     /**
