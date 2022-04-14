@@ -110,6 +110,16 @@ class Client extends BaseClient
     }
 
     /**
+     * Get the language the story should be retrieved in.
+     *
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
      * Set the fallback language the story should be retrieved in.
      *
      * @param string $fallbackLanguage
@@ -121,6 +131,16 @@ class Client extends BaseClient
         $this->fallbackLanguage = $fallbackLanguage;
 
         return $this;
+    }
+
+    /**
+     * Get the fallback language the story should be retrieved in.
+     *
+     * @return string
+     */
+    public function getFallbackLanguage()
+    {
+        return $this->fallbackLanguage;
     }
 
     /**
@@ -718,6 +738,7 @@ class Client extends BaseClient
     {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;
+        $this->responseCode = $response->httpResponseCode;
     }
 
     /**
