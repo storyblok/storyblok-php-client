@@ -243,6 +243,30 @@ echo '</ul>';
 
 Use the following script if you have Nginx SSI enabled and experience issues with printing the _editable html comments directly to manually parse the Storyblok HTML editable comments: https://gist.github.com/DominikAngerer/ca61d41bae3afcc646cfee286579ad36
 
+### Relationships and Links Resolving
+
+In order to resolve relations you can use the `resolveRelations` method of the client passing a comma separated list of fields:
+
+```php
+$client = new \Storyblok\Client('your-storyblok-private-token');
+
+$client->resolveRelations('component_name1.field_name1,component_name2.field_name2')
+$client->getStoryBySlug('home');
+```
+
+In order to resolve links, you can use the `resolveLinks` method passing the specific type of resolving you want to perform among `url`, `story` or `link`:
+
+```php
+$client = new \Storyblok\Client('your-storyblok-private-token');
+
+$client->resolveLinks('url')
+$client->getStoryBySlug('home');
+```
+
+When using the CDN API V1, you can't resolve relationships of resolved entries and the resolved entries are injected in the field of the relationship. The same happens with links resolving. 
+When using the CDN API V2 you can resolve also nested relationships in the resolved entries (just 2 levels deep), but the resolved entries are not injected in the fields, they are inserted in an array called `rels` which is in the root object. The resolved links will be placed in an array called `links`.
+In case you are using the API V2, to keep a consistent behaviour with the API V1, this client will inject the resolved entries and links inside the fields for you.
+
 ## 🔗 Related Links
 
 * **[Storyblok & PHP on GitHub](https://github.com/search?q=org%3Astoryblok+topic%3Aphp)**:  Check all of our PHP open source repos;
