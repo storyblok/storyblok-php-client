@@ -34,7 +34,7 @@ test('set max retries', function () {
 test('get headers', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version, headers: [ 'server' => 'nginx/1.18.0' ])
+        mockResponse($endpoint, [ 'server' => 'nginx/1.18.0' ], $version)
     ]);
 
     $headers = $client->getStories()->getHeaders();
@@ -45,7 +45,7 @@ test('get headers', function () {
 test('get body', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version)
+        mockResponse($endpoint, [], $version)
     ]);
     
     $body = $client->getStories()->getBody();
@@ -56,7 +56,7 @@ test('get body', function () {
 test('get status code', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version, statusCode: 202)
+        mockResponse($endpoint, [], $version, 202)
     ]);
     
     $statusCode = $client->getStories()->getCode();

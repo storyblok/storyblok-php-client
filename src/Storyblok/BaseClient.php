@@ -80,7 +80,7 @@ class BaseClient
     public function mockable(array $mocks, $version = 'v2')
     {
         $handlerStack = HandlerStack::create(new MockHandler($mocks));
-        $handlerStack->push(Middleware::retry($this->retryDecider(), fn() => 0));
+        $handlerStack->push(Middleware::retry($this->retryDecider(), function () { return 0; }));
 
         $this->client = new Guzzle([
             'base_uri' => "http://api.storyblok.com/$version/cdn/",

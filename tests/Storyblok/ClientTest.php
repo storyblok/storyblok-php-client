@@ -36,7 +36,7 @@ test('default content version is set to only published stories', function () {
 
 test('set content to receive draft versions', function () {
     $client = new Client('test');
-    $client->editMode(enabled: true);
+    $client->editMode(true);
 
     $this->assertEquals('draft', $client->getVersion());
 });
@@ -44,7 +44,7 @@ test('set content to receive draft versions', function () {
 test('v1: get stories', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version)
+        mockResponse($endpoint, [], $version)
     ]);
 
     $stories = $client->getStories()->getBody();
@@ -58,7 +58,7 @@ test('v1: get stories', function () {
 test('v1: get story by uuid', function () {
     $client = new Client('test', $endpoint = 'storyByUuid', $version = 'v1');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version)
+        mockResponse($endpoint, [], $version)
     ]);
 
     $story = $client->getStoryByUuid('d637be7f-8187-4e8b-9434-93390541f42b')->getBody();
@@ -72,7 +72,7 @@ test('v1: get story by uuid', function () {
 test('v2: get stories', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v2');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version)
+        mockResponse($endpoint, [], $version)
     ]);
     
     $stories = $client->getStories()->getBody();
@@ -86,7 +86,7 @@ test('v2: get stories', function () {
 test('v2: get story by uuid', function () {
     $client = new Client('test', $endpoint = 'storyByUuid', $version = 'v2');
     $client->mockable([
-        mockResponse(endpoint: $endpoint, version: $version)
+        mockResponse($endpoint, [], $version)
     ]);
     
     $story = $client->getStoryByUuid('d637be7f-8187-4e8b-9434-93390541f42b')->getBody();
