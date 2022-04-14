@@ -1,3 +1,5 @@
 /vendor/
 /tests/cache/*
 .git
+.phpunit.result.cache
+.phpunit.result.cache
