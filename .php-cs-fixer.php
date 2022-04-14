@@ -1,6 +1,14 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create();
+$finder = PhpCsFixer\Finder::create()
+//$finder = Symfony\Component\Finder\Finder::create()
+    ->in([
+        __DIR__ . '/src',
+        //__DIR__ . '/tests',
+    ])
+    ->name('*.php')
+    ->ignoreDotFiles(true)
+    ->ignoreVCS(true);
 
 $config = new PhpCsFixer\Config();
 $config->setRiskyAllowed(true);
