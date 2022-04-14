@@ -30,7 +30,7 @@ test('fallback language can be set', function () {
 
 test('default content version is set to only published stories', function () {
     $client = new Client('test');
-    
+
     $this->assertEquals('published', $client->getVersion());
 });
 
@@ -44,7 +44,7 @@ test('set content to receive draft versions', function () {
 test('v1: get stories', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse($endpoint, [], $version)
+        mockResponse($endpoint, [], $version),
     ]);
 
     $stories = $client->getStories()->getBody();
@@ -58,23 +58,23 @@ test('v1: get stories', function () {
 test('v1: get story by uuid', function () {
     $client = new Client('test', $endpoint = 'storyByUuid', $version = 'v1');
     $client->mockable([
-        mockResponse($endpoint, [], $version)
+        mockResponse($endpoint, [], $version),
     ]);
 
     $story = $client->getStoryByUuid('d637be7f-8187-4e8b-9434-93390541f42b')->getBody();
 
-    $this->assertEquals('d637be7f-8187-4e8b-9434-93390541f42b', $story['story']['uuid']); 
+    $this->assertEquals('d637be7f-8187-4e8b-9434-93390541f42b', $story['story']['uuid']);
     $this->assertArrayNotHasKey('cv', $story);
     $this->assertArrayNotHasKey('rels', $story);
-    $this->assertArrayNotHasKey('links', $story);   
+    $this->assertArrayNotHasKey('links', $story);
 });
 
 test('v2: get stories', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v2');
     $client->mockable([
-        mockResponse($endpoint, [], $version)
+        mockResponse($endpoint, [], $version),
     ]);
-    
+
     $stories = $client->getStories()->getBody();
 
     $this->assertCount(13, $stories['stories']);
@@ -86,13 +86,13 @@ test('v2: get stories', function () {
 test('v2: get story by uuid', function () {
     $client = new Client('test', $endpoint = 'storyByUuid', $version = 'v2');
     $client->mockable([
-        mockResponse($endpoint, [], $version)
+        mockResponse($endpoint, [], $version),
     ]);
-    
+
     $story = $client->getStoryByUuid('d637be7f-8187-4e8b-9434-93390541f42b')->getBody();
 
-    $this->assertEquals('d637be7f-8187-4e8b-9434-93390541f42b', $story['story']['uuid']); 
+    $this->assertEquals('d637be7f-8187-4e8b-9434-93390541f42b', $story['story']['uuid']);
     $this->assertArrayHasKey('cv', $story);
     $this->assertArrayHasKey('rels', $story);
-    $this->assertArrayHasKey('links', $story);   
+    $this->assertArrayHasKey('links', $story);
 });

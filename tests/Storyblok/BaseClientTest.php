@@ -1,7 +1,7 @@
 <?php
 
-use Storyblok\Client;
 use Storyblok\BaseClient;
+use Storyblok\Client;
 
 test('set api key', function () {
     $client = new BaseClient('test');
@@ -34,7 +34,7 @@ test('set max retries', function () {
 test('get headers', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse($endpoint, [ 'server' => 'nginx/1.18.0' ], $version)
+        mockResponse($endpoint, ['server' => 'nginx/1.18.0'], $version),
     ]);
 
     $headers = $client->getStories()->getHeaders();
@@ -45,9 +45,9 @@ test('get headers', function () {
 test('get body', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse($endpoint, [], $version)
+        mockResponse($endpoint, [], $version),
     ]);
-    
+
     $body = $client->getStories()->getBody();
 
     $this->assertArrayHasKey('stories', $body);
@@ -56,9 +56,9 @@ test('get body', function () {
 test('get status code', function () {
     $client = new Client('test', $endpoint = 'stories', $version = 'v1');
     $client->mockable([
-        mockResponse($endpoint, [], $version, 202)
+        mockResponse($endpoint, [], $version, 202),
     ]);
-    
+
     $statusCode = $client->getStories()->getCode();
 
     $this->assertEquals(202, $statusCode);

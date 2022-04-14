@@ -111,7 +111,7 @@ class Client extends BaseClient
 
     /**
      * Get the language the story should be retrieved in.
-     * 
+     *
      * @return string
      */
     public function getLanguage()
@@ -135,7 +135,7 @@ class Client extends BaseClient
 
     /**
      * Get the fallback language the story should be retrieved in.
-     * 
+     *
      * @return string
      */
     public function getFallbackLanguage()

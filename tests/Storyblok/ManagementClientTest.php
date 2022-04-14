@@ -1,11 +1,10 @@
 <?php
 
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Storyblok\ManagementClient;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
 use Storyblok\ApiException;
+use Storyblok\ManagementClient;
 
 test('can be instanced', function () {
     $this->assertInstanceOf(ManagementClient::class, new ManagementClient('token'));
@@ -69,7 +68,7 @@ test('post request throws exception on error', function () {
     ]);
 
     $this->expectException(ApiException::class);
-    
+
     $client->post('test', []);
 });
 
@@ -80,7 +79,7 @@ test('put request throws exception on error', function () {
     ]);
 
     $this->expectException(ApiException::class);
-    
+
     $client->put('test', []);
 });
 
@@ -91,6 +90,6 @@ test('delete request throws exception on error', function () {
     ]);
 
     $this->expectException(ApiException::class);
-    
+
     $client->delete('test', []);
 });

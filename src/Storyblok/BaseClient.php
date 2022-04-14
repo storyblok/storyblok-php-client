@@ -83,7 +83,7 @@ class BaseClient
         $handlerStack->push(Middleware::retry($this->retryDecider(), function () { return 0; }));
 
         $this->client = new Guzzle([
-            'base_uri' => "http://api.storyblok.com/$version/cdn/",
+            'base_uri' => "http://api.storyblok.com/{$version}/cdn/",
             'handler' => $handlerStack,
         ]);
 
