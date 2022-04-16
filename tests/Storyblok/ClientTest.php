@@ -1,5 +1,6 @@
 <?php
 
+use Storyblok\ApiException;
 use Storyblok\Client;
 
 test('can be instanced', function () {
@@ -110,4 +111,22 @@ test('v1: get tags', function () {
     expect($tags['tags'][0]['name'])->toEqual('red');
     expect($tags['tags'][0])->toHaveKey('taggings_count');
     expect($tags['tags'][0]['taggings_count'])->toEqual(14);
+});
+
+test('v1: get tags with 401 error', function () {
+    $client = new Client('test', $endpoint = 'tags', $version = 'v1');
+    $client->mockable([
+        mockResponse($endpoint, [], $version, 401),
+        mockResponse($endpoint, [], $version, 401),
+    ]);
+
+    try {
+        $tags = $client->getTags();
+    } catch (ApiException $e) {
+        expect($e->getCode())->toEqual(401);
+        expect($e->getMessage())->toContain('401 Unauthorize');
+    }
+
+    $this->expectException(ApiException::class);
+    $tags = $client->getTags();
 });
