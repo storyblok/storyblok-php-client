@@ -96,3 +96,18 @@ test('v2: get story by uuid', function () {
     $this->assertArrayHasKey('rels', $story);
     $this->assertArrayHasKey('links', $story);
 });
+
+test('v1: get tags', function () {
+    $client = new Client('test', $endpoint = 'tags', $version = 'v1');
+    $client->mockable([
+        mockResponse($endpoint, [], $version),
+    ]);
+
+    $tags = $client->getTags()->getBody();
+    expect($tags)->toHaveKey('tags');
+    expect($tags['tags'])->toHaveCount(2);
+    expect($tags['tags'][0])->toHaveKey('name');
+    expect($tags['tags'][0]['name'])->toEqual('red');
+    expect($tags['tags'][0])->toHaveKey('taggings_count');
+    expect($tags['tags'][0]['taggings_count'])->toEqual(14);
+});
