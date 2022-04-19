@@ -267,10 +267,11 @@ When using the CDN API V1, you can't resolve relationships of resolved entries a
 When using the CDN API V2 you can resolve also nested relationships in the resolved entries (just 2 levels deep), but the resolved entries are not injected in the fields, they are inserted in an array called `rels` which is in the root object. The resolved links will be placed in an array called `links`.
 In case you are using the API V2, to keep a consistent behaviour with the API V1, this client will inject the resolved entries and links inside the fields for you.
 
-## Code Quality
+## 💅 Code Quality
 
-The package includes tools for tests and code formatting:
+The package includes tools for tests, static code analysis and code formatting:
 - [PestPHP](https://pestphp.com/)
+- [PHPStan](https://phpstan.org/)
 - [PHP CS Fixer](https://cs.symfony.com/)
 To execute the code quality suite you can use:
 ```shell
@@ -278,6 +279,7 @@ composer run all-check
 ```
 that executes:
 - vendor/bin/php-cs-fixer fix
+- vendor/bin/phpstan analyse
 - vendor/bin/pest
 
 
