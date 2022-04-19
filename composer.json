@@ -42,5 +42,14 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes",
+        "all-check": [
+            "@format",
+            "@test"
+        ]
     }
 }
