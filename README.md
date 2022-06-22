@@ -133,7 +133,7 @@ $client = new \Storyblok\Client('your-storyblok-private-token');
 // Optionally set a cache
 $client->setCache('filesytem', array('path' => 'cache'));
 
-// Get all Stories that start with news
+// Get category entries from datasource
 $client->getDatasourceEntries('categories');
 
 // will return the whole response
@@ -143,6 +143,22 @@ $data = $client->getBody();
 $nameValueArray = $client->getAsNameValueArray();
 
 ```
+
+If you want to receive also the dimension values besides the default values in one datasource entry you can use the option _dimension_ when you call _getDatasourceEntries()_ method.
+You could use dimensions for example when you are using datasource for storing a list of values and you want a translation for the values. In this case, you should create one dimension for each language.
+
+```php
+require 'vendor/autoload.php';
+$client = new \Storyblok\Client('your-storyblok-private-token');
+// Get product entries with dimension 'de-at'
+$client->getDatasourceEntries('products', ['dimension'=> 'de-at']);
+// show the dimension values:
+foreach ($client->getBody()['datasource_entries'] as $key => $value) {
+    echo $value['dimension_value'] . PHP_EOL;
+}
+
+```
+
 
 #### Load a list of tags
 
