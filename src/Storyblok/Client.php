@@ -508,7 +508,7 @@ class Client extends BaseClient
      */
     public function getLinks($options = [])
     {
-        $key = $this->linksPath;
+        $key = $this->linksPath.serialize($this->_prepareOptionsForKey($options));
         $cachekey = $this->_getCacheKey($key);
 
         if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
