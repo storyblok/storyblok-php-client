@@ -42,6 +42,32 @@ Initialize the management client with your OAuth token from the my account secti
 $managementClient = new \Storyblok\ManagementClient('your-storyblok-oauth-token');
 ```
 
+### Initialization for US spaces
+
+In order to use the US spaces you need to initialize the client passing all the required parameters, like this:
+
+```php
+$client = new \Storyblok\Client(
+    'your-storyblok-draft-token',
+    null,
+    'v2',
+    false,
+    'us'
+);
+```
+
+The same goes for the management client:
+
+```php
+$managementClient = new \Storyblok\ManagementClient(
+    'your-storyblok-oauth-token',
+    null,
+    'v2',
+    false,
+    'us'
+);
+```
+
 ### Usage of the management client
 
 
