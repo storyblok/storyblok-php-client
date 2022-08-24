@@ -55,19 +55,6 @@ $client = new \Storyblok\Client(
     'us'
 );
 ```
-
-The same goes for the management client:
-
-```php
-$managementClient = new \Storyblok\ManagementClient(
-    'your-storyblok-oauth-token',
-    null,
-    'v2',
-    false,
-    'us'
-);
-```
-
 ### Usage of the management client
 
 
