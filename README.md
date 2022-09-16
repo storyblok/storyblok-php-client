@@ -65,6 +65,16 @@ $spaceId = 'YOUR_SPACE_ID';
 $managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
 ```
 
+GET calls with included pagination handling
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$responses = $managementClient->getAll('spaces/' . $spaceId . '/stories');
+foreach ($allResponses as $response) {
+    $response->getBody();
+}
+```
+
 POST calls
 
 ~~~php
