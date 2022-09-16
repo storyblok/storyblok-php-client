@@ -17,6 +17,7 @@ use GuzzleHttp\RequestOptions;
 class BaseClient
 {
     const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
+    const DEFAULT_PER_PAGE = 25;
 
     /**
      * @var stdClass
@@ -233,6 +234,38 @@ class BaseClient
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * Uses the `get()` method, but with included pagination handling.
+     *
+     * @throws ApiException
+     *
+     * @return array<stdClass> array of responses
+     */
+    public function getAll(string $endpointUrl, array $queryString = []): array
+    {
+        $queryString['per_page'] = $queryString['per_page'] ?? self::DEFAULT_PER_PAGE;
+        $queryString['page'] = 1;
+
+        $firstResponse = $this->get($endpointUrl, $queryString);
+        $perPage = (int) $firstResponse->getHeaders()['Per-Page'][0] ?? null;
+        $totalRecords = (int) $firstResponse->getHeaders()['Total'][0] ?? null;
+
+        if (null === $perPage || null === $totalRecords || $totalRecords <= $perPage) {
+            return $firstResponse;
+        }
+
+        $lastPage = (int) ceil($totalRecords / $perPage);
+
+        $allResponses[] = $firstResponse;
+        foreach (range(2, $lastPage) as $page) {
+            $queryString['page'] = $page;
+            $nextResponse = $this->get($endpointUrl, $queryString);
+            $allResponses[] = $nextResponse;
+        }
+
+        return $allResponses;
     }
 
     /**
