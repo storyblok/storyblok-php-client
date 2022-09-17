@@ -249,16 +249,18 @@ class BaseClient
         $queryString['page'] = 1;
 
         $firstResponse = $this->get($endpointUrl, $queryString);
-        $perPage = (int) $firstResponse->getHeaders()['Per-Page'][0] ?? null;
-        $totalRecords = (int) $firstResponse->getHeaders()['Total'][0] ?? null;
+
+        $perPage = isset($firstResponse->getHeaders()['Per-Page'][0]) ? $firstResponse->getHeaders()['Per-Page'][0] : null;
+        $totalRecords = isset($firstResponse->getHeaders()['Per-Total'][0]) ? $firstResponse->getHeaders()['Total'][0] : null;
+
+        $allResponses[] = $firstResponse;
 
         if (null === $perPage || null === $totalRecords || $totalRecords <= $perPage) {
-            return $firstResponse;
+            return $allResponses;
         }
 
         $lastPage = (int) ceil($totalRecords / $perPage);
 
-        $allResponses[] = $firstResponse;
         foreach (range(2, $lastPage) as $page) {
             $queryString['page'] = $page;
             $nextResponse = $this->get($endpointUrl, $queryString);
