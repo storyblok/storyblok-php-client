@@ -250,10 +250,10 @@ class BaseClient
 
         $firstResponse = $this->get($endpointUrl, $queryString);
 
-        $perPage = isset($firstResponse->getHeaders()['Per-Page'][0]) ? $firstResponse->getHeaders()['Per-Page'][0] : null;
-        $totalRecords = isset($firstResponse->getHeaders()['Per-Total'][0]) ? $firstResponse->getHeaders()['Total'][0] : null;
+        $perPage = (isset($firstResponse->getHeaders()['Per-Page'][0])) ? $firstResponse->getHeaders()['Per-Page'][0] : null;
+        $totalRecords = (isset($firstResponse->getHeaders()['Total'][0])) ? $firstResponse->getHeaders()['Total'][0] : null;
 
-        $allResponses[] = $firstResponse;
+        $allResponses[] = clone $firstResponse;
 
         if (null === $perPage || null === $totalRecords || $totalRecords <= $perPage) {
             return $allResponses;
