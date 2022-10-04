@@ -264,7 +264,7 @@ class BaseClient
         foreach (range(2, $lastPage) as $page) {
             $queryString['page'] = $page;
             $nextResponse = $this->get($endpointUrl, $queryString);
-            $allResponses[] = $nextResponse;
+            $allResponses[] = clone $nextResponse;
         }
 
         return $allResponses;
