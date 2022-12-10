@@ -48,8 +48,8 @@
         "test": "vendor/bin/pest",
         "phpstan": "phpstan analyse",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --allow-risky=yes",
-        "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run",
+        "format": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --allow-risky=yes --using-cache=no",
+        "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --using-cache=no",
         "all-check": [
             "@format",
             "@test"
