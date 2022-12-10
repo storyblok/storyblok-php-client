@@ -72,7 +72,8 @@ $managementClient = new ManagementClient('your-storyblok-oauth-token');
 
 ### Initialization for US spaces
 
-In order to use the US spaces you need to define the `apiREgion` parameter with 'us' (or 'US'):
+When you create a Space, you can select the region: EU or US.
+If you want to access to a Space created in US region, you need to define the `apiREgion` parameter with 'us' (or 'US'):
 
 ```php
 use Storyblok\Client;
@@ -97,36 +98,71 @@ $client = new Client(
 
 ### Usage of the management client
 
+#### Retrieve data, get() method
+If you need to retrieve data, you have to perform a HTTP request with GET method.
+The ManagementClient provides a `get()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories`).
+For retrieving a list of Stories:
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$result = $managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
+print_r($result['stories']);
+```
 
-GET calls
+#### Create data, post() method
+If you need to create data, you have to perform a HTTP request with POST method.
+The ManagementClient provides a `post()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/`), and the Story payload.
+For creating a new story:
 
 ```php
 $spaceId = 'YOUR_SPACE_ID';
-$managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
+$story = [
+    "name" => "New Page",
+    "slug" => "page-1",
+    "content" =>  [
+        "component" =>  "page",
+        "body" =>  []
+    ]
+];
+$result = $managementClient->post(
+    'spaces/' . $spaceId . '/stories/',
+    [ 'space' => $story ]
+    )->getBody();
+print_r($result);
+```
+#### Update data, put() method
+If you need to update data, you have to perform an HTTP request with PUT method.
+The ManagementClient provides a `put()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`), and the Story payload.
+For updating story:
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$storyId= 'theStoryId';
+$story = [
+    "name" => "Update Home Page"
+];
+$result = $managementClient->put(
+    'spaces/' . $spaceId . '/stories/' . $storyId,
+    [ 'space' => $story ]
+    )->getBody();
+print_r($result);
 ```
 
-POST calls
+#### Delete data, delete() method
+If you need to delete data, you have to perform an HTTP request with DELETE method.
+The ManagementClient provides a `delete()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`).
+For deleting a story:
 
-~~~php
-$spaceId = 'YOUR_SPACE_ID';
-$managementClient->post('spaces/' . $spaceId . '/stories', ['space' => ['name' => 'Manage']])->getBody();
-~~~
 
-PUT calls
-
-~~~php
+```php
 $spaceId = 'YOUR_SPACE_ID';
 $storyId = 'YOUR_STORY_ID';
-$managementClient->put('spaces/' . $spaceId . '/stories/' . $storyId, ['space' => ['name' => 'Manage']])->getBody();
-~~~
-
-DELETE calls
-
-~~~php
-$spaceId = 'YOUR_SPACE_ID';
-$storyId = 'YOUR_STORY_ID';
-$managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getCode();
-~~~
+$result = $managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getbody();
+print_r($result);
+```
 
 
 
