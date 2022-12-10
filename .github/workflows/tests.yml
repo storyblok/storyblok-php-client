@@ -9,18 +9,6 @@ on:
     branches: [ master ]
 
 jobs:
-  php-cs-fixer:
-    name: PHP-CS-Fixer
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@master
-
-      - name: PHP-CS-Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga:3.4.0
-        with:
-          args: --format=txt --diff --dry-run --using-cache=no --verbose .
 
   tests:
     name: Tests
@@ -54,6 +42,9 @@ jobs:
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run PHP CS
+        run: composer run format
 
       - name: Run test suite
         run: ./vendor/bin/pest --ci
