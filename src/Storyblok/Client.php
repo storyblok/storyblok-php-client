@@ -402,6 +402,8 @@ class Client extends BaseClient
      *
      *  eg. global.global_referece
      *
+     * @param mixed $reference
+     *
      * @return $this
      */
     public function resolveRelations($reference)
@@ -418,6 +420,8 @@ class Client extends BaseClient
 
     /**
      * Set reference for how to resolve links.
+     *
+     * @param mixed $reference
      *
      * @return $this
      */

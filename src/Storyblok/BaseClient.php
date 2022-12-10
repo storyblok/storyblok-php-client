@@ -159,6 +159,8 @@ class BaseClient
     }
 
     /**
+     * @param mixed $maxRetries
+     *
      * @return BaseClient
      */
     public function setMaxRetries($maxRetries)
