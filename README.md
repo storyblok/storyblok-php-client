@@ -1,14 +1,14 @@
-<div align="center">
+<div style="text-align:center">
 	<a  href="https://www.storyblok.com?utm_source=github.com&utm_medium=readme&utm_campaign=php-client"  align="center">
 		<img  src="https://a.storyblok.com/f/88751/1776x360/dc6e51a5fd/sb-php.png"  alt="Storyblok Logo">
 	</a>
-	<h1  align="center">Storyblok PHP Client</h1>
-	<p  align="center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easy access the content deliver api and management api.</p>
+	<h1  style="text-align:center">Storyblok PHP Client</h1>
+	<p  style="text-align:center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easy access the content deliver api and management api.</p>
 </div>
 
-<p align="center">
+<p style="text-align:center">
   <a href="https://discord.gg/jKrbAMz">
-   <img src="https://img.shields.io/discord/700316478792138842?label=Join%20Our%20Discord%20Community&style=appveyor&logo=discord&color=09b3af">
+   <img src="https://img.shields.io/discord/700316478792138842?label=Join%20Our%20Discord%20Community&style=appveyor&logo=discord&color=09b3af" alt="Join the Storyblok Discord Community">
    </a>
   <a href="https://twitter.com/intent/follow?screen_name=storyblok">
     <img src="https://img.shields.io/badge/Follow-%40storyblok-09b3af?style=appveyor&logo=twitter" alt="Follow @Storyblok" />
@@ -23,31 +23,70 @@
 The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
 ### Install
+You can install the Storyblok PHP Client via composer.
+You need to have composer installed on your development environment.
+If you want to install the _stable_ release:
+```bash
+composer require storyblok/php-client
+```
 
+If you want to install the _current_ development release:
 ```bash
 composer require storyblok/php-client dev-master
 ```
 
+If you need to install Composer, you can follow the official Composer documentation:
+
+- Install Composer on [GNU Linux / Unix / macOS](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
+- Install Composer on [Windows](https://getcomposer.org/doc/00-intro.md#installation-windows)
+
+We suggest to use the latest version of PHP.
+
 ### Initialization
 
-Initialize the content delivery client with your space draft token for read operations
+Initialize the Storyblok Client class for consume the [Content Delivery API V2](https://www.storyblok.com/docs/api/content-delivery/v2).
+You have to use the Access token to access to the content.
 
 ```php
-$client = new \Storyblok\Client('your-storyblok-draft-token');
+<?php
+// Require composer autoload
+require 'vendor/autoload.php';
+// Use the Storyblok\Client class
+use Storyblok\Client;
+// Use the Client class
+$client = new Client('your-storyblok-draft-token');
 ```
 
-Initialize the management client with your OAuth token from the my account section for read and write operations
+Initialize the Storyblok Management Client  for the [Management API](https://www.storyblok.com/docs/api/management) with your Personal OAuth Token.
+The Personal OAuth token is taken from the my account section for read and write operations.
 
 ```php
-$managementClient = new \Storyblok\ManagementClient('your-storyblok-oauth-token');
+<?php
+// Require composer autoload
+require 'vendor/autoload.php';
+// Use the Storyblok\ManagementClient class
+use Storyblok\ManagementClient;
+// Use the ManagementClient class
+$managementClient = new ManagementClient('your-storyblok-oauth-token');
 ```
 
 ### Initialization for US spaces
 
-In order to use the US spaces you need to initialize the client passing all the required parameters, like this:
+In order to use the US spaces you need to define the `apiREgion` parameter with 'us' (or 'US'):
 
 ```php
-$client = new \Storyblok\Client(
+use Storyblok\Client;
+
+$client = new Client(
+    apiKey: 'your-storyblok-draft-token',
+    apiRegion: 'us'
+);
+```
+
+If you are still using PHP 7.x, you have to use the old notation (without named arguments):
+```php
+use Storyblok\Client;
+$client = new Client(
     'your-storyblok-draft-token',
     null,
     'v2',
@@ -55,6 +94,7 @@ $client = new \Storyblok\Client(
     'us'
 );
 ```
+
 ### Usage of the management client
 
 
