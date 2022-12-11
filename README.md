@@ -24,10 +24,13 @@ With the Storyblok PHP client you can integrate two kinds of Storyblok APIs:
 - Management API: typically used for managing data, like create data, blocks, settings etc.
 - Content Delivery API: typically used for retrieving data, for example when you want to build your public Web application.
 
-Topics covered:
+Topics covered with the Storyblok PHP client are:
 - [Installing Storyblok PHP client](#install)
-- [Using the Management API with the Storyblok PHP client](#management-api)
-- [Using the Content Delivery API with the Storyblok PHP client](#content-delivery-api)
+- [Using the Management API](#management-api)
+- [Using the Content Delivery API](#content-delivery-api)
+- [Retrieving Draft or Published content](#retrieving-draft-or-published-content)
+- [Managing cache](#managing-cache)
+- [Resolve Relations and Links](#relationships-and-links-resolving)
 
 
 ## Install
