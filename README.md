@@ -19,10 +19,18 @@
 </p>
 
 ## 🚀 Usage
+With the Storyblok PHP client you can integrate two kinds of Storyblok APIs:
 
-The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
+- Management API: typically used for managing data, like create data, blocks, settings etc.
+- Content Delivery API: typically used for retrieving data, for example when you want to build your public Web application.
 
-### Install
+Topics covered:
+- [Installing Storyblok PHP client](#install)
+- [Using the Management API with the Storyblok PHP client](#management-api)
+- [Using the Content Delivery API with the Storyblok PHP client](#content-delivery-api)
+
+
+## Install
 You can install the Storyblok PHP Client via composer.
 You need to have composer installed on your development environment.
 If you want to install the _stable_ release:
@@ -42,20 +50,9 @@ If you need to install Composer, you can follow the official Composer documentat
 
 We suggest to use the latest version of PHP.
 
-### Initialization
+## Management API
 
-Initialize the Storyblok Client class for consume the [Content Delivery API V2](https://www.storyblok.com/docs/api/content-delivery/v2).
-You have to use the Access token to access to the content.
-
-```php
-<?php
-// Require composer autoload
-require 'vendor/autoload.php';
-// Use the Storyblok\Client class
-use Storyblok\Client;
-// Use the Client class
-$client = new Client('your-storyblok-draft-token');
-```
+### The Storyblok\ManagementClient instance
 
 Initialize the Storyblok Management Client  for the [Management API](https://www.storyblok.com/docs/api/management) with your Personal OAuth Token.
 The Personal OAuth token is taken from the my account section for read and write operations.
@@ -70,7 +67,93 @@ use Storyblok\ManagementClient;
 $managementClient = new ManagementClient('your-storyblok-oauth-token');
 ```
 
-### Initialization for US spaces
+Now, you have the instance of `ManagementClient` you can start to manage your Storyblok data
+
+### Retrieve data, get() method
+If you need to retrieve data, you have to perform a HTTP request with GET method.
+The ManagementClient provides a `get()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories`).
+For retrieving a list of Stories:
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$result = $managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
+print_r($result['stories']);
+```
+
+### Create data, post() method
+If you need to create data, you have to perform a HTTP request with POST method.
+The ManagementClient provides a `post()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/`), and the Story payload.
+For creating a new story:
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$story = [
+    "name" => "New Page",
+    "slug" => "page-1",
+    "content" =>  [
+        "component" =>  "page",
+        "body" =>  []
+    ]
+];
+$result = $managementClient->post(
+    'spaces/' . $spaceId . '/stories/',
+    [ 'space' => $story ]
+    )->getBody();
+print_r($result);
+```
+### Update data, put() method
+If you need to update data, you have to perform an HTTP request with PUT method.
+The ManagementClient provides a `put()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`), and the Story payload.
+For updating story:
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$storyId= 'theStoryId';
+$story = [
+    "name" => "Update Home Page"
+];
+$result = $managementClient->put(
+    'spaces/' . $spaceId . '/stories/' . $storyId,
+    [ 'space' => $story ]
+    )->getBody();
+print_r($result);
+```
+
+### Delete data, delete() method
+If you need to delete data, you have to perform an HTTP request with DELETE method.
+The ManagementClient provides a `delete()` method for performing the HTTP request.
+The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`).
+For deleting a story:
+
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$storyId = 'YOUR_STORY_ID';
+$result = $managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getbody();
+print_r($result);
+```
+
+
+## Content Delivery API
+
+### The Storyblok\Client instance
+
+Initialize the Storyblok Client class for consume the [Content Delivery API V2](https://www.storyblok.com/docs/api/content-delivery/v2).
+You have to use the Access token to access to the content.
+
+```php
+<?php
+// Require composer autoload
+require 'vendor/autoload.php';
+// Use the Storyblok\Client class
+use Storyblok\Client;
+// Use the Client class
+$client = new Client('your-storyblok-draft-token');
+```
+
+### Using spaces created in US region
 
 When you create a Space, you can select the region: EU or US.
 If you want to access to a Space created in US region, you need to define the `apiREgion` parameter with 'us' (or 'US'):
@@ -96,100 +179,40 @@ $client = new Client(
 );
 ```
 
-### Usage of the management client
+Now you have the `Storyblok\Client` instance you can start consuming data
 
-#### Retrieve data, get() method
-If you need to retrieve data, you have to perform a HTTP request with GET method.
-The ManagementClient provides a `get()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories`).
-For retrieving a list of Stories:
-```php
-$spaceId = 'YOUR_SPACE_ID';
-$result = $managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
-print_r($result['stories']);
-```
-
-#### Create data, post() method
-If you need to create data, you have to perform a HTTP request with POST method.
-The ManagementClient provides a `post()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/`), and the Story payload.
-For creating a new story:
+### Load a Story by slug
 
 ```php
-$spaceId = 'YOUR_SPACE_ID';
-$story = [
-    "name" => "New Page",
-    "slug" => "page-1",
-    "content" =>  [
-        "component" =>  "page",
-        "body" =>  []
-    ]
-];
-$result = $managementClient->post(
-    'spaces/' . $spaceId . '/stories/',
-    [ 'space' => $story ]
-    )->getBody();
-print_r($result);
-```
-#### Update data, put() method
-If you need to update data, you have to perform an HTTP request with PUT method.
-The ManagementClient provides a `put()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`), and the Story payload.
-For updating story:
-
-```php
-$spaceId = 'YOUR_SPACE_ID';
-$storyId= 'theStoryId';
-$story = [
-    "name" => "Update Home Page"
-];
-$result = $managementClient->put(
-    'spaces/' . $spaceId . '/stories/' . $storyId,
-    [ 'space' => $story ]
-    )->getBody();
-print_r($result);
-```
-
-#### Delete data, delete() method
-If you need to delete data, you have to perform an HTTP request with DELETE method.
-The ManagementClient provides a `delete()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`).
-For deleting a story:
-
-
-```php
-$spaceId = 'YOUR_SPACE_ID';
-$storyId = 'YOUR_STORY_ID';
-$result = $managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyId)->getbody();
-print_r($result);
-```
-
-
-
-### Usage of the content delivery client
-
-#### Load a Story
-
-```php
-// Require composer autoload
 require 'vendor/autoload.php';
+use Storyblok\Client as StoryblokClient; // you can use also an alias
+$client = new StoryblokClient('your-storyblok-private-token');
+$data = $client->getStoryBySlug('home')->getBody();
+print_r($data["story"]);
+echo $data["cv"] . PHP_EOL;
+print_r($data["rels"]);
+print_r($data["links"]);
+```
+Once you obtain the body of the response you can use the `getBody()` method for retrieving a structured associative array. With the body of the response, you can access to:
+- `story`: the story
+- `cv`: the cache timestamp (useful for managing cached response)
+- `rels`: the (optional) relations
+- `links`: the resolved links
 
-// Initialize
-$client = new \Storyblok\Client('your-storyblok-private-token');
+### Load a Story by UUID
 
-// Optionally set a cache
-$client->setCache('filesytem', array('path' => 'cache'));
-
-// Get the story searching for the slug
-$client->getStoryBySlug('home');
-$data = $client->getBody();
-
-// Get the story searching for the uuid
+```php
+require 'vendor/autoload.php';
+use Storyblok\Client as StoryblokClient; // you can use also an alias
+$client = new StoryblokClient('your-storyblok-private-token');
 $client->getStoryByUuid('0c092d14-5cd4-477e-922c-c7f8e330aaea');
 $data = $client->getBody();
 ```
+The structure of the data returned by the `getBody()` of the `getStoryByUuid()` method, has the same structure of the `getStoryBySlug()` so: `story`, `cv`, `rels`, `links`
 
-#### Load a list of Stories
+
+
+### Load a list of Stories
 
 ```php
 // Require composer autoload
@@ -210,7 +233,7 @@ $client->getStories(
 $data = $client->getStoryContent();
 ```
 
-#### Load a list of datasource entries
+### Load a list of datasource entries
 
 ```php
 // Require composer autoload
@@ -249,7 +272,7 @@ foreach ($client->getBody()['datasource_entries'] as $key => $value) {
 ```
 
 
-#### Load a list of tags
+### Load a list of tags
 
 ```php
 // Require composer autoload
@@ -272,7 +295,7 @@ $stringArray = $client->getAsStringArray();
 
 ```
 
-#### Load a list of tags and get the Respones Headers
+### Load a list of tags and get the Respones Headers
 
 ```php
 // Require composer autoload
@@ -291,6 +314,9 @@ $client->getTags();
 var_dump($client->getHeaders());
 
 ```
+
+## Managing cache
+The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
 ### Clearing the cache (Optionally if using setCache)
 
@@ -312,7 +338,7 @@ In order to flush the cache when the user clicks publish, you need to listen to 
 In clear.php:
 ```php
 $client = new \Storyblok\Client('your-storyblok-private-token');
-$client->setCache('filesytem', array('path' => 'cache'));
+$client->setCache('filesystem', array('path' => 'cache'));
 
 // Flush the whole cache when a story has been published
 $client->flushCache();
