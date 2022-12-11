@@ -165,7 +165,7 @@ $client = new StoryblokClient('your-storyblok-draft-token');
 ### Using spaces created in US region
 
 When you create a Space, you can select the region: EU or US.
-If you want to access to a Space created in US region, you need to define the `apiREgion` parameter with 'us' (or 'US'):
+If you want to access to a Space created in US region, you need to define the `apiRegion` parameter with 'us' value (or 'US'):
 
 ```php
 use Storyblok\Client;
@@ -188,7 +188,7 @@ $client = new Client(
 );
 ```
 
-Now you have the `Storyblok\Client` instance you can start consuming data
+Now you have the `Storyblok\Client` instance you can start consuming data.
 
 ### Load a Story by slug
 
@@ -197,6 +197,7 @@ require 'vendor/autoload.php';
 use Storyblok\Client as StoryblokClient; // you can use also an alias
 $client = new StoryblokClient('your-storyblok-private-token');
 $data = $client->getStoryBySlug('home')->getBody();
+// access to the body response...
 print_r($data["story"]);
 echo $data["cv"] . PHP_EOL;
 print_r($data["rels"]);
@@ -217,59 +218,44 @@ $client = new StoryblokClient('your-storyblok-private-token');
 $client->getStoryByUuid('0c092d14-5cd4-477e-922c-c7f8e330aaea');
 $data = $client->getBody();
 ```
-The structure of the data returned by the `getBody()` of the `getStoryByUuid()` method, has the same structure of the `getStoryBySlug()` so: `story`, `cv`, `rels`, `links`
+The structure of the data returned by the `getBody()` of the `getStoryByUuid()` method, has the same structure of the `getStoryBySlug()` so: `story`, `cv`, `rels`, `links`.
 
 
 
 ### Load a list of Stories
 
+If you need to retrieve a list of stories you can use the `getStories()` method.
+You can use the parameter to filter the stories.
+For example, if you want to retrieve all entries from a specific folder you can use `starts_with` option in this way:
 ```php
-// Require composer autoload
-require 'vendor/autoload.php';
-
-// Initialize
 $client = new \Storyblok\Client('your-storyblok-private-token');
-
-// Optionally set a cache
-$client->setCache('filesytem', array('path' => 'cache'));
-
-// Get all Stories that start with news
-$client->getStories(
-    array(
-        'starts_with' => 'news'
-    )
-);
-$data = $client->getStoryContent();
+// Get all Stories from the article folder
+$client->getStories(['starts_with' => 'article']);
+$data = $client->getBody();
+print_r($data["stories"]);
+echo $data["cv"] . PHP_EOL;
+print_r($data["rels"]);
+print_r($data["links"]);
 ```
 
+Under the hood, the `starts_with` option, filters entries by `full_slug`.
+
 ### Load a list of datasource entries
-
+With the `Storyblok\Client` you have also the `getDatasourceEntries()` method for retrieving the list of key/values of the datasource:
 ```php
-// Require composer autoload
-require 'vendor/autoload.php';
-
-// Initialize
 $client = new \Storyblok\Client('your-storyblok-private-token');
-
-// Optionally set a cache
-$client->setCache('filesytem', array('path' => 'cache'));
-
 // Get category entries from datasource
 $client->getDatasourceEntries('categories');
-
-// will return the whole response
-$data = $client->getBody();
-
 // will return as ['name']['value'] Array for easy access
 $nameValueArray = $client->getAsNameValueArray();
-
+// instead, if you want to retrieve the whole response, you can use getBody() method:
+$data = $client->getBody();
 ```
 
 If you want to receive also the dimension values besides the default values in one datasource entry you can use the option _dimension_ when you call _getDatasourceEntries()_ method.
 You could use dimensions for example when you are using datasource for storing a list of values and you want a translation for the values. In this case, you should create one dimension for each language.
 
 ```php
-require 'vendor/autoload.php';
 $client = new \Storyblok\Client('your-storyblok-private-token');
 // Get product entries with dimension 'de-at'
 $client->getDatasourceEntries('products', ['dimension'=> 'de-at']);
@@ -277,55 +263,62 @@ $client->getDatasourceEntries('products', ['dimension'=> 'de-at']);
 foreach ($client->getBody()['datasource_entries'] as $key => $value) {
     echo $value['dimension_value'] . PHP_EOL;
 }
-
 ```
 
 
 ### Load a list of tags
 
 ```php
-// Require composer autoload
-require 'vendor/autoload.php';
-
-// Initialize
 $client = new \Storyblok\Client('your-storyblok-private-token');
-
-// Optionally set a cache
-$client->setCache('filesytem', array('path' => 'cache'));
-
 // Get all Tags
 $client->getTags();
-
 // will return the whole response
 $data = $client->getBody();
-
 // will return as ['tagName1', 'tagName2'] Array for easy access
 $stringArray = $client->getAsStringArray();
-
 ```
 
-### Load a list of tags and get the Respones Headers
+### Access to the Responses Headers
 
+When you perform a request to Content Delivery API, you can access to the headers of the HTTP response.
+For example after you call the `getStories()` method (for retrieving a list of stories) you can access to the HTTP response headers via `getHeaders()` method:
 ```php
-// Require composer autoload
-require 'vendor/autoload.php';
-
-// Initialize
 $client = new \Storyblok\Client('your-storyblok-private-token');
-
-// Optionally set a cache
-$client->setCache('filesytem', array('path' => 'cache'));
-
-// Get all Tags
-$client->getTags();
-
-// Let's you acces the Headers
-var_dump($client->getHeaders());
-
+$result = $client->getStories();
+$headersData = $client->getHeaders();
+print_r($headersData);
 ```
+
+### Retrieving Draft or Published content
+The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
+
+If you want to retrieve the draft content (for example a not yet published story) you have to use the `editMode()` method.
+If you want to retrieve the published content (for example a published story) you have to use the `editMode(false)` method with `false` parameter.
+```php
+require 'vendor/autoload.php';
+use Storyblok\Client as StoryblokClient; // you can use also an alias
+$client = new StoryblokClient('your-storyblok-private-token');
+$client->editMode();
+$data = $client->getStoryBySlug('home')->getBody();
+// access to the body response...
+print_r($data["story"]);
+echo $data["cv"] . PHP_EOL;
+print_r($data["rels"]);
+print_r($data["links"]);
+```
+
+
 
 ## Managing cache
-The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
+When you perform a API request you can use the caching mechanism provided by the Storyblok PHP client.
+When you initialize the `Storyblok\Client` you can set the cache provider.
+For example, using the `setCache()` method you can define the provider (for example filesystem) and an array of options. In case you are using the filesystem as storage of cache items, you can set the path with
+```php
+$client = new \Storyblok\Client('your-storyblok-private-token');
+$client->setCache('filesystem', [ 'path' => 'cache']);
+$result = $client->getStories();
+print_r($result);
+```
 
 ### Clearing the cache (Optionally if using setCache)
 
@@ -348,10 +341,8 @@ In clear.php:
 ```php
 $client = new \Storyblok\Client('your-storyblok-private-token');
 $client->setCache('filesystem', array('path' => 'cache'));
-
 // Flush the whole cache when a story has been published
 $client->flushCache();
-
 // Or empty the cache for one specific item only
 $client->deleteCacheBySlug('home');
 ```
