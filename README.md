@@ -153,6 +153,15 @@ use Storyblok\Client;
 $client = new Client('your-storyblok-draft-token');
 ```
 
+If you want to use an alias to refer to the `Storyblok\Client` class, you can use the `use ... as ...` statement:
+
+```php
+require 'vendor/autoload.php';
+use Storyblok\Client as StoryblokClient;
+// Use the Storyblok\Client class via alias
+$client = new StoryblokClient('your-storyblok-draft-token');
+```
+
 ### Using spaces created in US region
 
 When you create a Space, you can select the region: EU or US.
