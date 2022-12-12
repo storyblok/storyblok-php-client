@@ -10,6 +10,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Storyblok Client.
@@ -52,11 +53,27 @@ class BaseClient
      * @var float
      */
     protected $timeout;
+    /**
+     * @var array
+     */
+    protected $_relationsList;
 
     /**
      * @var string
      */
     private $apiKey;
+    /**
+     * List of resolved relations.
+     *
+     * @var array
+     */
+    private $resolvedRelations;
+    /**
+     * List of resolved relations.
+     *
+     * @var array
+     */
+    private $resolvedLinks;
 
     /**
      * @param string     $apiKey
@@ -142,7 +159,7 @@ class BaseClient
     }
 
     /**
-     * @param $maxRetries
+     * @param mixed $maxRetries
      *
      * @return BaseClient
      */
@@ -204,9 +221,9 @@ class BaseClient
      * @param string $endpointUrl
      * @param array  $queryString
      *
-     * @throws ApiException
-     *
      * @return \stdClass
+     *
+     * @throws ApiException
      */
     public function get($endpointUrl, $queryString = [])
     {
@@ -373,9 +390,8 @@ class BaseClient
      * Retrieve or resolve the Links.
      *
      * @param \stdClass $data
-     * @param array     $queryString
      */
-    function getResolvedLinks($data)
+    function getResolvedLinks($data, array $queryString)
     {
         $this->resolvedLinks = [];
         $links = [];
@@ -408,11 +424,9 @@ class BaseClient
     }
 
     /**
-     * @param \Guzzle\Http\Message\Response $responseObj
-     *
      * @return string
      */
-    protected function getResponseExceptionMessage(\GuzzleHttp\Message\Response $responseObj)
+    protected function getResponseExceptionMessage(ResponseInterface $responseObj)
     {
         $body = (string) $responseObj->getBody();
         $response = json_decode($body);
@@ -420,6 +434,8 @@ class BaseClient
         if (JSON_ERROR_NONE === json_last_error() && isset($response->message)) {
             return $response->message;
         }
+
+        return '';
     }
 
     /**

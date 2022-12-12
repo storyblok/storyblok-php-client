@@ -44,9 +44,9 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @throws ApiException
-     *
      * @return \stdClass
+     *
+     * @throws ApiException
      */
     public function post($endpointUrl, $payload)
     {
@@ -72,9 +72,9 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @throws ApiException
-     *
      * @return \stdClass
+     *
+     * @throws ApiException
      */
     public function put($endpointUrl, $payload)
     {
@@ -99,9 +99,9 @@ class ManagementClient extends BaseClient
     /**
      * @param string $endpointUrl
      *
-     * @throws ApiException
-     *
      * @return \stdClass
+     *
+     * @throws ApiException
      */
     public function delete($endpointUrl)
     {

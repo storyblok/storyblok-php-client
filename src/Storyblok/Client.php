@@ -61,6 +61,10 @@ class Client extends BaseClient
      * @var bool
      */
     private $cacheNotFound;
+    /**
+     * @var null|mixed
+     */
+    private $cv;
 
     /**
      * @param string     $apiKey
@@ -317,9 +321,9 @@ class Client extends BaseClient
      *
      * @param string $slug Slug
      *
-     * @throws ApiException
-     *
      * @return Client
+     *
+     * @throws ApiException
      */
     public function getStoryBySlug($slug)
     {
@@ -331,9 +335,9 @@ class Client extends BaseClient
      *
      * @param string $uuid UUID
      *
-     * @throws ApiException
-     *
      * @return Client
+     *
+     * @throws ApiException
      */
     public function getStoryByUuid($uuid)
     {
@@ -398,7 +402,7 @@ class Client extends BaseClient
      *
      *  eg. global.global_referece
      *
-     * @param $reference
+     * @param mixed $reference
      *
      * @return $this
      */
@@ -417,7 +421,7 @@ class Client extends BaseClient
     /**
      * Set reference for how to resolve links.
      *
-     * @param $reference
+     * @param mixed $reference
      *
      * @return $this
      */
@@ -596,9 +600,9 @@ class Client extends BaseClient
      * @param string $slug   Slug
      * @param bool   $byUuid
      *
-     * @throws ApiException
-     *
      * @return Client
+     *
+     * @throws ApiException
      */
     private function getStory($slug, $byUuid = false)
     {
@@ -606,7 +610,6 @@ class Client extends BaseClient
         $cachekey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
-
         if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
             if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);

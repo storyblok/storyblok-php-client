@@ -2,23 +2,38 @@ name: Tests
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - feature/**
   pull_request:
     branches: [ master ]
 
 jobs:
-  php-cs-fixer:
-    name: PHP-CS-Fixer
-
+  cs:
+    name: Syntax Check
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.1"
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
-      - name: PHP-CS-Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga:3.4.0
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          args: --format=txt --diff --dry-run --using-cache=no --verbose .
+          php-version: ${{ matrix.php-version }}
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run PHP CS
+        run: composer run cs
 
   tests:
     name: Tests
@@ -33,18 +48,16 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@master
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
           coverage: xdebug
-
-      - name: Trim dependency
-        run: composer remove --dev friendsofphp/php-cs-fixer
 
       - name: Validate composer.json and composer.lock
         run: composer validate
