@@ -3,7 +3,7 @@
 		<img  src="https://a.storyblok.com/f/88751/1776x360/dc6e51a5fd/sb-php.png"  alt="Storyblok Logo">
 	</a>
 	<h1  style="text-align:center">Storyblok PHP Client</h1>
-	<p  style="text-align:center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easy access the content deliver api and management api.</p>
+	<p  style="text-align:center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easily access the Content Deliver API and Management API.</p>
 </div>
 
 <p style="text-align:center">
@@ -21,11 +21,12 @@
 ## 🚀 Usage
 With the Storyblok PHP client you can integrate two kinds of Storyblok APIs:
 
-- Management API: typically used for managing data, like create data, blocks, settings etc.
+- Management API: typically used for managing data, like creating data, blocks, settings etc.
 - Content Delivery API: typically used for retrieving data, for example when you want to build your public Web application.
 
-Topics covered with the Storyblok PHP client are:
-- [Installing Storyblok PHP client](#install)
+In this README file you will find information for using the Storyblok PHP client, like:
+
+- [Installing Storyblok PHP client](#installing-the-storyblok-php-client)
 - [Using the Management API](#management-api)
 - [Using the Content Delivery API](#content-delivery-api)
 - [Retrieving Draft or Published content](#retrieving-draft-or-published-content)
@@ -33,32 +34,34 @@ Topics covered with the Storyblok PHP client are:
 - [Resolve Relations and Links](#relationships-and-links-resolving)
 
 
-## Install
+## Installing the Storyblok PHP client
 You can install the Storyblok PHP Client via composer.
-You need to have composer installed on your development environment.
-If you want to install the _stable_ release:
+
+If you want to install the _stable_ release of Storyblok PHP client you can launch:
 ```bash
 composer require storyblok/php-client
 ```
 
-If you want to install the _current_ development release:
+If you want to install the _current_ development release, you can add the version `dev-master`:
 ```bash
 composer require storyblok/php-client dev-master
 ```
 
+For executing the command above, you need to have composer installed on your development environment.
 If you need to install Composer, you can follow the official Composer documentation:
 
 - Install Composer on [GNU Linux / Unix / macOS](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
 - Install Composer on [Windows](https://getcomposer.org/doc/00-intro.md#installation-windows)
 
-We suggest to use the latest version of PHP.
+We suggest using the latest version of PHP.
 
 ## Management API
 
 ### The Storyblok\ManagementClient instance
 
-Initialize the Storyblok Management Client  for the [Management API](https://www.storyblok.com/docs/api/management) with your Personal OAuth Token.
-The Personal OAuth token is taken from the my account section for read and write operations.
+Now we are going to see how to initialize the Storyblok Management Client for the [Management](https://www.storyblok.com/docs/api/management) API](https://www.storyblok.com/docs/api/management) with your Personal OAuth Token.
+The Personal OAuth token is taken from the "My Account" section. This token is used for read and write operations.
+The class for using the Management API is the `Storyblok\ManagementClient` class. When you are going to instance a new `ManagementClient` object you can use the Personal OAuth Token as a parameter.
 
 ```php
 <?php
@@ -70,12 +73,13 @@ use Storyblok\ManagementClient;
 $managementClient = new ManagementClient('your-storyblok-oauth-token');
 ```
 
-Now, you have the instance of `ManagementClient` you can start to manage your Storyblok data
+Now, you have the `ManagementClient` object (`$managementClient`), you can start to manage your Storyblok data.
 
 ### Retrieve data, get() method
-If you need to retrieve data, you have to perform a HTTP request with GET method.
+If you need to retrieve data, you have to perform an HTTP request with the `GET` method.
 The ManagementClient provides a `get()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories`).
+The mandatory parameter is the path of the API ( for example `spaces/<yourSpaceId/stories`). The path defines which endpoint you want to use.
+
 For retrieving a list of Stories:
 ```php
 $spaceId = 'YOUR_SPACE_ID';
@@ -83,10 +87,12 @@ $result = $managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
 print_r($result['stories']);
 ```
 
+With `getBody()` method you can access the body response, and then access the `'`stories'` key, to access the story list.
+
 ### Create data, post() method
-If you need to create data, you have to perform a HTTP request with POST method.
+If you need to create data, you have to perform an HTTP request with the `POST` method.
 The ManagementClient provides a `post()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/`), and the Story payload.
+The mandatory parameter is the path of the API ( for example `spaces/<yourSpaceId/stories/`), and the Story payload.
 For creating a new story:
 
 ```php
@@ -105,11 +111,12 @@ $result = $managementClient->post(
     )->getBody();
 print_r($result);
 ```
+
 ### Update data, put() method
-If you need to update data, you have to perform an HTTP request with PUT method.
+If you need to update data, you have to perform an HTTP request with `PUT` method.
 The ManagementClient provides a `put()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`), and the Story payload.
-For updating story:
+The mandatory parameter is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`), and the Story payload.
+For updating the story:
 
 ```php
 $spaceId = 'YOUR_SPACE_ID';
@@ -125,9 +132,10 @@ print_r($result);
 ```
 
 ### Delete data, delete() method
-If you need to delete data, you have to perform an HTTP request with DELETE method.
+
+If you need to delete data, you have to perform an HTTP request with the `DELETE` method.
 The ManagementClient provides a `delete()` method for performing the HTTP request.
-The mandatory parameters is the path of the API ( for example `spaces/<yourSpaceId/stories/<storyId>`).
+The mandatory parameter is the path of the API, defining also the identifier of the entry you want to delete ( for example `spaces/<yourSpaceId/stories/<storyId>`).
 For deleting a story:
 
 
@@ -143,8 +151,9 @@ print_r($result);
 
 ### The Storyblok\Client instance
 
-Initialize the Storyblok Client class for consume the [Content Delivery API V2](https://www.storyblok.com/docs/api/content-delivery/v2).
-You have to use the Access token to access to the content.
+Now we are going to see how to initialize the Storyblok Client class for consuming the [Content Delivery API V2](https://www.storyblok.com/docs/api/content-delivery/v2), with the Access Token.
+You can retrieve the access token from the "Settings > Access Tokens" tab (in your space, in Stroyblok UI).
+
 
 ```php
 <?php
@@ -165,10 +174,10 @@ use Storyblok\Client as StoryblokClient;
 $client = new StoryblokClient('your-storyblok-draft-token');
 ```
 
-### Using spaces created in US region
+### Using spaces created in the US region
 
 When you create a Space, you can select the region: EU or US.
-If you want to access to a Space created in US region, you need to define the `apiRegion` parameter with 'us' value (or 'US'):
+If you want to access a Space created in US region, you need to define the `apiRegion` parameter with 'us' value (or 'US'):
 
 ```php
 use Storyblok\Client;
@@ -206,7 +215,7 @@ echo $data["cv"] . PHP_EOL;
 print_r($data["rels"]);
 print_r($data["links"]);
 ```
-Once you obtain the body of the response you can use the `getBody()` method for retrieving a structured associative array. With the body of the response, you can access to:
+You can use the `getBody()` method for retrieving the content in a structured associative array. With the body of the response, you can access to:
 - `story`: the story
 - `cv`: the cache timestamp (useful for managing cached response)
 - `rels`: the (optional) relations
@@ -283,8 +292,8 @@ $stringArray = $client->getAsStringArray();
 
 ### Access to the Responses Headers
 
-When you perform a request to Content Delivery API, you can access to the headers of the HTTP response.
-For example after you call the `getStories()` method (for retrieving a list of stories) you can access to the HTTP response headers via `getHeaders()` method:
+When you perform a request to Content Delivery API, you can access the headers of the HTTP response.
+For example, after you call the `getStories()` method (for retrieving a list of stories) you can access to the HTTP response headers via `getHeaders()` method:
 ```php
 $client = new \Storyblok\Client('your-storyblok-private-token');
 $result = $client->getStories();
@@ -293,15 +302,18 @@ print_r($headersData);
 ```
 
 ### Retrieving Draft or Published content
-The content delivery client checks the get parameters _storyblok to get the draft version of a specific story and _storyblok_published to clear the cache.
 
-If you want to retrieve the draft content (for example a not yet published story) you have to use the `editMode()` method.
+In a Web application where the query string is available, the content delivery client checks automatically the GET parameters:
+- `_storyblok` to get the draft version of a specific story
+- `_storyblok_published` to clear the cache.
+
+If you want to override this "default" behavior, or you are in a non-web context (for example you are implementing a command line tool), to retrieve the draft content (for example a not yet published story) you have to use the `editMode()` method.
 If you want to retrieve the published content (for example a published story) you have to use the `editMode(false)` method with `false` parameter.
 ```php
 require 'vendor/autoload.php';
 use Storyblok\Client as StoryblokClient; // you can use also an alias
 $client = new StoryblokClient('your-storyblok-private-token');
-$client->editMode();
+$client->editMode(); // forcing draft mode
 $data = $client->getStoryBySlug('home')->getBody();
 // access to the body response...
 print_r($data["story"]);
@@ -313,9 +325,11 @@ print_r($data["links"]);
 
 
 ## Managing cache
-When you perform a API request you can use the caching mechanism provided by the Storyblok PHP client.
+
+When you perform an API request you can use the caching mechanism provided by the Storyblok PHP client.
 When you initialize the `Storyblok\Client` you can set the cache provider.
-For example, using the `setCache()` method you can define the provider (for example filesystem) and an array of options. In case you are using the filesystem as storage of cache items, you can set the path with
+For example, using the `setCache()` method you can define the provider (for example filesystem) and an array of options. In case you are using the filesystem as storage of cache items, you can set the path with `path` option:
+
 ```php
 $client = new \Storyblok\Client('your-storyblok-private-token');
 $client->setCache('filesystem', [ 'path' => 'cache']);
@@ -397,7 +411,7 @@ $client->resolveLinks('url')
 $client->getStoryBySlug('home');
 ```
 
-When using the CDN API V1, you can't resolve relationships of resolved entries and the resolved entries are injected in the field of the relationship. The same happens with links resolving. 
+When using the CDN API V1, you can't resolve relationships of resolved entries and the resolved entries are injected in the field of the relationship. The same happens with links resolving.
 When using the CDN API V2 you can resolve also nested relationships in the resolved entries (just 2 levels deep), but the resolved entries are not injected in the fields, they are inserted in an array called `rels` which is in the root object. The resolved links will be placed in an array called `links`.
 In case you are using the API V2, to keep a consistent behaviour with the API V1, this client will inject the resolved entries and links inside the fields for you.
 
@@ -428,7 +442,7 @@ that executes:
 
 * Bugs or Feature Requests? [Submit an issue](../../../issues/new);
 
-* Do you have questions about Storyblok or you need help? [Join our Discord Community](https://discord.gg/jKrbAMz).
+* Do you have questions about Storyblok or do you need help? [Join our Discord Community](https://discord.gg/jKrbAMz).
 
 ### Contributing
 
