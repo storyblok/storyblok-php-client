@@ -79,6 +79,30 @@ test('v2: get stories', function () {
     $stories = $client->getStories()->getBody();
 
     $this->assertCount(13, $stories['stories']);
+    $this->assertEquals('Overview', $stories['stories'][0]['name']);
+    $this->assertArrayHasKey('cv', $stories);
+    $this->assertArrayHasKey('rels', $stories);
+    $this->assertArrayHasKey('links', $stories);
+});
+test('v2: get stories with Cache', function () {
+    $client = new Client('test', $endpoint = 'stories', $version = 'v2');
+    $client->setCache('filesystem', ['path' => './cache']);
+    $client->editMode(false);
+    $client->mockable([
+        mockResponse($endpoint, ['x-test' => 1], $version),
+        mockResponse('stories2', ['x-test' => 2], $version),
+    ]);
+
+    $stories = $client->getStories()->getBody();
+    $this->assertCount(13, $stories['stories']);
+    $this->assertEquals('Overview', $stories['stories'][0]['name']);
+    $this->assertArrayHasKey('cv', $stories);
+    $this->assertArrayHasKey('rels', $stories);
+    $this->assertArrayHasKey('links', $stories);
+
+    $stories = $client->getStories()->getBody();
+    $this->assertCount(13, $stories['stories']);
+    $this->assertEquals('Overview', $stories['stories'][0]['name']);
     $this->assertArrayHasKey('cv', $stories);
     $this->assertArrayHasKey('rels', $stories);
     $this->assertArrayHasKey('links', $stories);

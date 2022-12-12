@@ -714,14 +714,14 @@ class Client extends BaseClient
     /**
      * Save's the current response in the cache if version is published.
      *
-     * @param array  $response
-     * @param string $key
-     * @param string $version
+     * @param array|\stdClass $response
+     * @param string          $key
+     * @param string          $version
      */
     private function _save($response, $key, $version)
     {
         $this->_assignState($response);
-
+        var_dump($response->httpResponseHeaders);
         if ($this->cache
             && 'published' === $version
             && $response->httpResponseHeaders
