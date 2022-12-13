@@ -85,11 +85,12 @@ test('v2: get stories', function () {
     $this->assertArrayHasKey('links', $stories);
 });
 test('v2: get stories with Cache', function () {
-    $client = new Client('test', $endpoint = 'stories', $version = 'v2');
+    $client = new Client('test', null, $version = 'v2');
     $client->setCache('filesystem', ['path' => './cache']);
+    $client->cacheClear();
     $client->editMode(false);
     $client->mockable([
-        mockResponse($endpoint, ['x-test' => 1], $version),
+        mockResponse('stories', ['x-test' => 1], $version),
         mockResponse('stories2', ['x-test' => 2], $version),
     ]);
 
