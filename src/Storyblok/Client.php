@@ -536,16 +536,16 @@ class Client extends BaseClient
     public function getLinks($options = [])
     {
         $key = $this->linksPath;
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key . serialize($this->_prepareOptionsForKey($options)));
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cacheKey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
