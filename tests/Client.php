@@ -59,7 +59,7 @@ echo '</ul>';
 
 echo '<h2> Check: $client->cacheVersion </h2>
 			<pre>';
-var_dump($client->cacheVersion);
+var_dump($client->getCacheVersion());
 echo '</pre>
 			<hr>
 			<p> Wait 2 Seconds </p>';
@@ -67,7 +67,7 @@ echo '</pre>
 sleep(2);
 
 echo '<pre>';
-var_dump($client->cacheVersion);
+var_dump($client->getCacheVersion());
 echo '</pre>
 			<hr>
 			<h2> deleteCacheBySlug "home" | flushCache </h2>';
@@ -75,7 +75,7 @@ echo '</pre>
 $client->deleteCacheBySlug('home');
 
 echo '<pre>';
-var_dump($client->cacheVersion);
+var_dump($client->getCacheVersion());
 echo '</pre>';
 
 $client->flushCache();

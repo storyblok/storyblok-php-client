@@ -2,14 +2,16 @@
 
 namespace Storyblok;
 
-use Apix\Cache as ApixCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\PdoAdapter;
+use Symfony\Component\Cache as SymfonyCache;
 
 /**
  * Storyblok Client.
  */
 class Client extends BaseClient
 {
-    const CACHE_VERSION_KEY = 'storyblok:cv';
+    const CACHE_VERSION_KEY = 'storyblok_cv';
     const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
     /**
@@ -18,7 +20,7 @@ class Client extends BaseClient
     public $cacheVersion;
 
     /**
-     * @var Cache
+     * @var SymfonyCache
      */
     protected $cache;
 
@@ -196,40 +198,60 @@ class Client extends BaseClient
     public function setCache($driver, $options = [])
     {
         $options['serializer'] = 'php';
-        $options['prefix_key'] = 'storyblok:';
-        $options['prefix_tag'] = 'storyblok:';
+        $options['prefix_key'] = 'storyblokcache';
+        $options['prefix_tag'] = 'storyblokcachetag';
 
         switch ($driver) {
             case 'mysql':
                 $dbh = $options['pdo'];
-                $this->cache = new ApixCache\Pdo\Mysql($dbh, $options);
+                $this->cache = new PdoAdapter(
+                    $dbh,
+                    $options['prefix_key'],
+                    0,
+                    $options
+                );
 
                 break;
 
             case 'sqlite':
                 $dbh = $options['pdo'];
-                $this->cache = new ApixCache\Pdo\Sqlite($dbh, $options);
+                $this->cache = new PdoAdapter(
+                    $dbh,
+                    $options['prefix_key'],
+                    0,
+                    $options
+                );
 
                 break;
 
             case 'postgres':
                 $dbh = $options['pdo'];
-                $this->cache = new ApixCache\Pdo\Pgsql($dbh, $options);
+                $this->cache = new PdoAdapter(
+                    $dbh,
+                    $options['prefix_key'],
+                    0,
+                    $options
+                );
 
                 break;
 
             default:
                 $options['directory'] = $options['path'];
 
-                $this->cache = new ApixCache\Files($options);
+                $this->cache = new FilesystemAdapter(
+                    $options['prefix_key'],
+                    0,
+                    $options['directory']
+                );
 
                 break;
         }
 
-        $this->cv = $this->cache->load(self::CACHE_VERSION_KEY);
+        $this->cv = $this->cacheGet(self::CACHE_VERSION_KEY);
 
         if (!$this->cv) {
-            $this->setCacheVersion();
+            $this->cacheSave('', self::CACHE_VERSION_KEY);
+            // $this->setCacheVersion();
         }
 
         return $this;
@@ -245,12 +267,12 @@ class Client extends BaseClient
     public function deleteCacheBySlug($slug)
     {
         $key = $this->_getCacheKey('stories/' . $slug);
-
+        $linksCacheKey = $this->_getCacheKey($this->linksPath);
         if ($this->cache) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
-            $this->cache->delete($this->linksPath);
+            $this->cache->delete($linksCacheKey);
             $this->setCacheVersion();
         }
 
@@ -265,7 +287,7 @@ class Client extends BaseClient
     public function flushCache()
     {
         if ($this->cache) {
-            $this->cache->flush();
+            $this->cache->clear();
             $this->setCacheVersion();
         }
 
@@ -282,7 +304,7 @@ class Client extends BaseClient
         if ($this->cache) {
             $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
             $this->cv = $res->responseBody['cv'];
-            $this->cache->save($this->cv, self::CACHE_VERSION_KEY);
+            $this->cacheSave($this->cv, self::CACHE_VERSION_KEY);
         }
 
         return $this;
@@ -366,9 +388,9 @@ class Client extends BaseClient
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
         $cachekey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($key);
+        $this->reCacheOnPublish($cachekey);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
@@ -452,7 +474,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
@@ -482,7 +504,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($key);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge(
@@ -513,16 +535,16 @@ class Client extends BaseClient
     public function getLinks($options = [])
     {
         $key = $this->linksPath;
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key . serialize($this->_prepareOptionsForKey($options)));
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cacheKey)) {
             $this->_assignState($cachedItem);
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($key, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -594,6 +616,11 @@ class Client extends BaseClient
         return $this->_generateTree($tree, 0);
     }
 
+    public function cacheClear()
+    {
+        $this->cache->clear();
+    }
+
     /**
      * Gets a list of stories.
      *
@@ -609,8 +636,8 @@ class Client extends BaseClient
         $key = 'stories/' . $slug;
         $cachekey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($key);
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cache->load($cachekey)) {
+        $this->reCacheOnPublish($cachekey);
+        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
             if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
@@ -652,8 +679,7 @@ class Client extends BaseClient
                     $result->httpResponseBody = [];
                     $result->httpResponseCode = 404;
                     $result->httpResponseHeaders = [];
-
-                    $this->cache->save($result, $cachekey);
+                    $this->cacheSave($result, $cachekey);
                 }
 
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
@@ -676,7 +702,8 @@ class Client extends BaseClient
             $this->cache->delete($key);
 
             // Always refresh cache of links
-            $this->cache->delete($this->linksPath);
+            $linksCacheKey = $this->_getCacheKey($this->linksPath);
+            $this->cache->delete($linksCacheKey);
             $this->setCacheVersion();
         }
 
@@ -714,20 +741,40 @@ class Client extends BaseClient
     /**
      * Save's the current response in the cache if version is published.
      *
-     * @param array  $response
-     * @param string $key
-     * @param string $version
+     * @param array|\stdClass $response
+     * @param string          $key
+     * @param string          $version
      */
     private function _save($response, $key, $version)
     {
         $this->_assignState($response);
-
         if ($this->cache
             && 'published' === $version
             && $response->httpResponseHeaders
             && 200 === $response->httpResponseCode) {
-            $this->cache->save($response, $key);
+            $this->cacheSave($response, $key);
         }
+    }
+
+    private function cacheSave($value, string $key)
+    {
+        if ($this->cache) {
+            $cacheItem = $this->cache->getItem($key);
+            $cacheItem->set($value);
+
+            return $this->cache->save($cacheItem);
+        }
+
+        return false;
+    }
+
+    private function cacheGet(string $key)
+    {
+        if ($this->cache) {
+            return $this->cache->getItem($key)->get();
+        }
+
+        return false;
     }
 
     /**
