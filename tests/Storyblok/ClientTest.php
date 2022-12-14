@@ -123,6 +123,21 @@ test('v2: get story by uuid', function () {
     $this->assertArrayHasKey('links', $story);
 });
 
+test('v2: get story by uuid with cache', function () {
+    $client = new Client('test', $endpoint = 'storyByUuid', $version = 'v2');
+    $client->setCache('filesystem', ['path' => 'cache']);
+    $client->mockable([
+        mockResponse($endpoint, [], $version),
+    ]);
+
+    $story = $client->getStoryByUuid('d637be7f-8187-4e8b-9434-93390541f42b')->getBody();
+
+    $this->assertEquals('d637be7f-8187-4e8b-9434-93390541f42b', $story['story']['uuid']);
+    $this->assertArrayHasKey('cv', $story);
+    $this->assertArrayHasKey('rels', $story);
+    $this->assertArrayHasKey('links', $story);
+});
+
 test('v1: get tags', function () {
     $client = new Client('test', $endpoint = 'tags', $version = 'v1');
     $client->mockable([
