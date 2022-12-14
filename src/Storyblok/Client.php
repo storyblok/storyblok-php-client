@@ -268,12 +268,12 @@ class Client extends BaseClient
     public function deleteCacheBySlug($slug)
     {
         $key = $this->_getCacheKey('stories/' . $slug);
-
+        $linksCacheKey = $this->_getCacheKey($this->linksPath);
         if ($this->cache) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
-            $this->cache->delete($this->linksPath);
+            $this->cache->delete($linksCacheKey);
             $this->setCacheVersion();
         }
 
@@ -389,7 +389,7 @@ class Client extends BaseClient
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
         $cachekey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($key);
+        $this->reCacheOnPublish($cachekey);
 
         if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
             $this->_assignState($cachedItem);
@@ -637,7 +637,7 @@ class Client extends BaseClient
         $key = 'stories/' . $slug;
         $cachekey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($key);
+        $this->reCacheOnPublish($cachekey);
         if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
             if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
@@ -703,7 +703,8 @@ class Client extends BaseClient
             $this->cache->delete($key);
 
             // Always refresh cache of links
-            $this->cache->delete($this->linksPath);
+            $linksCacheKey = $this->_getCacheKey($this->linksPath);
+            $this->cache->delete($linksCacheKey);
             $this->setCacheVersion();
         }
 
