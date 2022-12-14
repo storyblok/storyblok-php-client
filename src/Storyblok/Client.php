@@ -2,7 +2,6 @@
 
 namespace Storyblok;
 
-// use Apix\Cache as ApixCache;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\PdoAdapter;
 use Symfony\Component\Cache as SymfonyCache;
