@@ -339,6 +339,19 @@ $result = $client->getStories();
 print_r($result);
 ```
 
+You can set a TTL value for the cache via `default_lifetime` option.
+```php
+$client = new \Storyblok\Client('your-storyblok-private-token');
+$client->setCache('filesystem',
+    [
+        'path' => 'cache',
+        'default_lifetime' => 3600
+    ]);
+$result = $client->getStories();
+print_r($result);
+```
+
+
 The caching mechanism uses under the hood the Symfony Cache package.
 So, you can use the Adapter supported the Symfony Cache.
 For example, for using a MySql database as cache storage, you can setup the connection via the PHP PDO class:
