@@ -1,8 +1,10 @@
 /vendor/
 /tests/cache/*
+/cache/*
 .git
 .phpunit.result.cache
 .php-cs-fixer.cache
 .DS_Store
 /.idea/
+/composer.lock
 
