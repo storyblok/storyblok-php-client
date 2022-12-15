@@ -36,6 +36,8 @@ In this README file you will find information for using the Storyblok PHP client
 
 ## Installing the Storyblok PHP client
 You can install the Storyblok PHP Client via composer.
+Storyblok's PHP client requires PHP version 7.3 to 8.2.
+The suggestion is to use an actively supported version of PHP (8.1 and 8.2).
 
 If you want to install the _stable_ release of Storyblok PHP client you can launch:
 ```bash
@@ -333,6 +335,17 @@ For example, using the `setCache()` method you can define the provider (for exam
 ```php
 $client = new \Storyblok\Client('your-storyblok-private-token');
 $client->setCache('filesystem', [ 'path' => 'cache']);
+$result = $client->getStories();
+print_r($result);
+```
+
+The caching mechanism uses under the hood the Symfony Cache package.
+So, you can use the Adapter supported the Symfony Cache.
+For example, for using a MySql database as cache storage, you can setup the connection via the PHP PDO class:
+```php
+$client = new \Storyblok\Client('your-storyblok-private-token');
+$pdo = new PDO('mysql:host=127.0.0.1;dbname=db_php-client;charset=utf8mb4;', "root");
+$client->setCache('mysql', ['pdo' => $pdo]);
 $result = $client->getStories();
 print_r($result);
 ```
