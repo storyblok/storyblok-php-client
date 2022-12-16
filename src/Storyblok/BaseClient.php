@@ -256,35 +256,42 @@ class BaseClient
     /**
      * Uses the `get()` method, but with included pagination handling.
      *
-     * @throws ApiException
+     * @return array array of responses or array of items (for examples Stories),
+     *               according with the $returnResponsesArray param
      *
-     * @return array<stdClass> array of responses
+     * @throws ApiException
      */
-    public function getAll(string $endpointUrl, array $queryString = []): array
+    public function getAll(string $endpointUrl, array $queryString = [], bool $returnResponsesArray = false): array
     {
         $queryString['per_page'] = $queryString['per_page'] ?? self::DEFAULT_PER_PAGE;
         $queryString['page'] = 1;
 
         $firstResponse = $this->get($endpointUrl, $queryString);
 
-        $perPage = (isset($firstResponse->getHeaders()['Per-Page'][0])) ? $firstResponse->getHeaders()['Per-Page'][0] : null;
-        $totalRecords = (isset($firstResponse->getHeaders()['Total'][0])) ? $firstResponse->getHeaders()['Total'][0] : null;
+        $perPage = (isset($firstResponse->httpResponseHeaders['Per-Page'][0])) ? $firstResponse->httpResponseHeaders['Per-Page'][0] : null;
+        $totalRecords = (isset($firstResponse->httpResponseHeaders['Total'][0])) ? $firstResponse->httpResponseHeaders['Total'][0] : null;
 
         $allResponses[] = clone $firstResponse;
 
-        if (null === $perPage || null === $totalRecords || $totalRecords <= $perPage) {
+        if (!(null === $perPage || null === $totalRecords || $totalRecords <= $perPage)) {
+            $lastPage = (int) ceil($totalRecords / $perPage);
+            foreach (range(2, $lastPage) as $page) {
+                $queryString['page'] = $page;
+                $nextResponse = $this->get($endpointUrl, $queryString);
+                $allResponses[] = clone $nextResponse;
+            }
+        }
+
+        if ($returnResponsesArray) {
             return $allResponses;
         }
 
-        $lastPage = (int) ceil($totalRecords / $perPage);
-
-        foreach (range(2, $lastPage) as $page) {
-            $queryString['page'] = $page;
-            $nextResponse = $this->get($endpointUrl, $queryString);
-            $allResponses[] = clone $nextResponse;
+        $stories = [];
+        foreach ($allResponses as $response) {
+            array_push($stories, ...$response->httpResponseBody['stories']);
         }
 
-        return $allResponses;
+        return $stories;
     }
 
     /**
