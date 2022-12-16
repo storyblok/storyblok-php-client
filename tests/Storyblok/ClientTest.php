@@ -138,6 +138,34 @@ test('v2: get story by uuid with cache', function () {
     $this->assertArrayHasKey('links', $story);
 });
 
+test('v2: get stories with Relations', function () {
+    $client = new Client('test', null, $version = 'v2');
+    // $client->editMode(false);
+    $client->mockable([
+        mockResponse('stories-relations', ['x-test' => 1], $version),
+    ]);
+    $client->resolveRelations('popular-articles.articles');
+    $story = $client->getStoryBySlug('home')->getBody();
+    $this->assertArrayHasKey('story', $story);
+    $this->assertEquals('Home', $story['story']['name']);
+    $this->assertCount(
+        3,
+        $story['story']['content']['body'][1]['articles']
+    );
+    $this->assertEquals(
+        'Article 1',
+        $story['story']['content']['body'][1]['articles'][0]['name']
+    );
+    $this->assertEquals(
+        'Article 4',
+        $story['story']['content']['body'][1]['articles'][1]['name']
+    );
+    $this->assertEquals(
+        'Article 2',
+        $story['story']['content']['body'][1]['articles'][2]['name']
+    );
+});
+
 test('v1: get tags', function () {
     $client = new Client('test', $endpoint = 'tags', $version = 'v1');
     $client->mockable([
