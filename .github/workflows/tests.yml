@@ -65,5 +65,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Run Static Code Analysis
+        run: composer phpstan
+
       - name: Run test suite
-        run: ./vendor/bin/pest --ci
+        run: composer test-ci

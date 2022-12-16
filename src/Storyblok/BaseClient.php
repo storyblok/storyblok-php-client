@@ -21,12 +21,12 @@ class BaseClient
     const DEFAULT_PER_PAGE = 25;
 
     /**
-     * @var stdClass
+     * @var \stdClass
      */
     public $responseBody;
 
     /**
-     * @var stdClass
+     * @var \stdClass
      */
     public $responseHeaders;
 
@@ -63,18 +63,6 @@ class BaseClient
      * @var string
      */
     private $apiKey;
-    /**
-     * List of resolved relations.
-     *
-     * @var array
-     */
-    private $resolvedRelations;
-    /**
-     * List of resolved relations.
-     *
-     * @var array
-     */
-    private $resolvedLinks;
 
     /**
      * @param string     $apiKey
@@ -140,7 +128,7 @@ class BaseClient
     /**
      * delay 1s 2s 3s 4s 5s.
      *
-     * @return Closure
+     * @return \Closure
      */
     public function retryDelay()
     {
@@ -312,9 +300,11 @@ class BaseClient
         $result->httpResponseCode = $httpResponseCode;
         $result->httpResponseHeaders = $responseObj->getHeaders();
 
+        /*
         if (\is_array($result->httpResponseBody) && isset($result->httpResponseBody['story']) || isset($result->httpResponseBody['stories'])) {
             $result->httpResponseBody = $this->enrichStories($result->httpResponseBody, $queryString);
         }
+        */
 
         return $result;
     }
@@ -355,114 +345,6 @@ class BaseClient
     public function getCode()
     {
         return $this->responseCode;
-    }
-
-    /**
-     * Enrich the Stories with resolved links and stories.
-     *
-     * @param \stdClass
-     * @param mixed $data
-     *
-     * @return \stdClass
-     */
-    function enrichContent($data)
-    {
-        $enrichedContent = $data;
-
-        if (\is_array($data) && isset($data['component'])) {
-            if (!isset($story['_stopResolving'])) {
-                foreach ($data as $fieldName => $fieldValue) {
-                    $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
-                    $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
-                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName]);
-                }
-            }
-        } elseif (\is_array($data)) {
-            foreach ($data as $key => $value) {
-                $enrichedContent[$key] = $this->enrichContent($value);
-            }
-        }
-
-        return $enrichedContent;
-    }
-
-    /**
-     * Retrieve or resolve the relations.
-     *
-     * @param \stdClass $data
-     * @param array     $queryString
-     */
-    function getResolvedRelations($data, $queryString)
-    {
-        $this->resolvedRelations = [];
-        $relations = [];
-
-        if (isset($data['rels'])) {
-            $relations = $data['rels'];
-        } elseif (isset($data['rel_uuids'])) {
-            $relSize = \count($data['rel_uuids']);
-            $chunks = [];
-            $chunkSize = 50;
-
-            for ($i = 0; $i < $relSize; $i += $chunkSize) {
-                $end = min($relSize, $i + $chunkSize);
-                $chunks[] = \array_slice($data['rel_uuids'], $i, $end);
-            }
-
-            for ($chunkIndex = 0; $chunkIndex < \count($chunks); ++$chunkIndex) {
-                $relationsParams = [
-                    'per_page' => $chunkSize,
-                    'by_uuids' => implode(',', $chunks[$chunkIndex]),
-                ];
-                if (isset($queryString['language'])) {
-                    $relationsParams['language'] = $queryString['language'];
-                }
-                $relationsRes = $this->getStories($relationsParams);
-
-                $relations = array_merge($relations, $relationsRes->responseBody['stories']);
-            }
-        }
-
-        foreach ($relations as $rel) {
-            $this->resolvedRelations[$rel['uuid']] = $rel;
-        }
-    }
-
-    /**
-     * Retrieve or resolve the Links.
-     *
-     * @param \stdClass $data
-     */
-    function getResolvedLinks($data, array $queryString)
-    {
-        $this->resolvedLinks = [];
-        $links = [];
-
-        if (isset($data['links'])) {
-            $links = $data['links'];
-        } elseif (isset($data['link_uuids'])) {
-            $linksSize = \count($data['link_uuids']);
-            $chunks = [];
-            $chunkSize = 50;
-
-            for ($i = 0; $i < $linksSize; $i += $chunkSize) {
-                $end = min($linksSize, $i + $chunkSize);
-                $chunks[] = \array_slice($data['link_uuids'], $i, $end);
-            }
-
-            for ($chunkIndex = 0; $chunkIndex < \count($chunks); ++$chunkIndex) {
-                $linksRes = $this->getStories([
-                    'per_page' => $chunkSize,
-                    'language' => isset($queryString['language']) ? $queryString['language'] : 'default',
-                    'by_uuids' => implode(',', $chunks[$chunkIndex]),
-                ]);
-
-                $links = array_merge($links, $linksRes->responseBody['stories']);
-            }
-        }
-        foreach ($links as $link) {
-            $this->resolvedLinks[$link['uuid']] = $link;
-        }
     }
 
     /**
@@ -508,78 +390,5 @@ class BaseClient
         }
 
         return $protocol . $apiEndpoint . '/' . $apiVersion . $prefix . '/';
-    }
-
-    private function enrichStories($data, $queryString)
-    {
-        $enrichedData = $data;
-        $this->getResolvedRelations($data, $queryString);
-        $this->getResolvedLinks($data, $queryString);
-
-        if (isset($data['story'])) {
-            $enrichedData['story']['content'] = $this->enrichContent($data['story']['content']);
-        } elseif (isset($data['stories'])) {
-            $stories = [];
-            foreach ($data['stories'] as $index => $story) {
-                $story = $data['stories'][$index];
-                $story['content'] = $this->enrichContent($story['content']);
-                $stories[] = $story;
-            }
-            $enrichedData['stories'] = $stories;
-        }
-
-        return $enrichedData;
-    }
-
-    /**
-     * Insert the resolved relations in a story.
-     *
-     * @param string       $component
-     * @param string       $field
-     * @param array|string $value
-     */
-    private function insertRelations($component, $field, $value)
-    {
-        $filteredNode = $value;
-        if (isset($this->_relationsList[$component]) && $field === $this->_relationsList[$component]) {
-            if (\is_string($value)) {
-                if (isset($this->resolvedRelations[$value])) {
-                    $filteredNode = $this->resolvedRelations[$value];
-                    $filteredNode['_stopResolving'] = true;
-                }
-            } elseif (\is_array($value)) {
-                $filteredNode = [];
-                foreach ($value as $item) {
-                    if (\is_string($item) && isset($this->resolvedRelations[$item])) {
-                        $story = $this->resolvedRelations[$item];
-                        $story['_stopResolving'] = true;
-                        $filteredNode[] = $story;
-                    }
-                }
-            }
-        }
-
-        return $filteredNode;
-    }
-
-    /**
-     * Insert the resolved links in a story.
-     *
-     * @param \stdClass $node
-     *
-     * @return \stdClass
-     */
-    private function insertLinks($node)
-    {
-        $filteredNode = $node;
-        if (isset($node['fieldtype']) && 'multilink' === $node['fieldtype'] && 'story' === $node['linktype']) {
-            if (isset($node['id']) && \is_string($node['id']) && isset($this->resolvedLinks[$node['id']])) {
-                $filteredNode['story'] = $this->resolvedLinks[$node['id']];
-            } elseif (isset($node['uuid']) && \is_string($node['uuid']) && isset($this->resolvedLinks[$node['uuid']])) {
-                $filteredNode['story'] = $this->resolvedLinks[$node['uuid']];
-            }
-        }
-
-        return $filteredNode;
     }
 }
