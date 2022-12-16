@@ -86,7 +86,7 @@ test('v2: get stories', function () {
 });
 test('v2: get stories with Cache', function () {
     $client = new Client('test', null, $version = 'v2');
-    $client->setCache('filesystem', ['path' => './cache']);
+    $client->setCache('filesystem', ['path' => './cache', 'default_lifetime' => 3600]);
     $client->cacheClear();
     $client->editMode(false);
     $client->mockable([

@@ -195,41 +195,23 @@ class Client extends BaseClient
      *
      * @return \Storyblok\Client
      */
-    public function setCache($driver, $options = [])
+    public function setCache($driver, $options = []): self
     {
         $options['serializer'] = 'php';
         $options['prefix_key'] = 'storyblokcache';
         $options['prefix_tag'] = 'storyblokcachetag';
+        $defaultLifetime = \array_key_exists('default_lifetime', $options) ?
+            $options['default_lifetime'] : 0;
 
         switch ($driver) {
+            case 'sqlite':
+            case 'postgres':
             case 'mysql':
                 $dbh = $options['pdo'];
                 $this->cache = new PdoAdapter(
                     $dbh,
                     $options['prefix_key'],
-                    0,
-                    $options
-                );
-
-                break;
-
-            case 'sqlite':
-                $dbh = $options['pdo'];
-                $this->cache = new PdoAdapter(
-                    $dbh,
-                    $options['prefix_key'],
-                    0,
-                    $options
-                );
-
-                break;
-
-            case 'postgres':
-                $dbh = $options['pdo'];
-                $this->cache = new PdoAdapter(
-                    $dbh,
-                    $options['prefix_key'],
-                    0,
+                    $defaultLifetime,
                     $options
                 );
 
@@ -240,7 +222,7 @@ class Client extends BaseClient
 
                 $this->cache = new FilesystemAdapter(
                     $options['prefix_key'],
-                    0,
+                    $defaultLifetime,
                     $options['directory']
                 );
 
