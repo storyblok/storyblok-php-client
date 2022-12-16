@@ -33,6 +33,32 @@ test('Integration: get All responses stories', function () {
     $this->assertCount(3, $responses);
 })->setGroups(['integration']);
 
+// useful for testing and reproduce the issue: https://github.com/storyblok/php-client/issues/54
+/*
+test('Integration: get one story with cache', function () {
+    $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
+    $options = $client->getApiParameters();
+    $client->setCache('filesystem', ['path' => 'cache']);
+    $_GET['_storyblok_published'] = 129972584;
+    $responses = $client->getStoryBySlug('home');
+    $body = $responses->getBody();
+    $this->assertArrayHasKey('story', $body);
+    $this->assertArrayHasKey('name', $body['story']);
+    $this->assertEquals('home', $body['story']['name']);
+})->setGroups(['integration']);
+*/
+
+test('Integration: get one story with _storyblok_published', function () {
+    $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
+    $options = $client->getApiParameters();
+    $_GET['_storyblok_published'] = 129972584;
+    $responses = $client->getStoryBySlug('home');
+    $body = $responses->getBody();
+    $this->assertArrayHasKey('story', $body);
+    $this->assertArrayHasKey('name', $body['story']);
+    $this->assertEquals('home', $body['story']['name']);
+})->setGroups(['integration']);
+
 test('Integration: get All responses stories with default pagination', function () {
     $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
     $options = $client->getApiParameters();
