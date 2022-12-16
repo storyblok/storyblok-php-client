@@ -217,6 +217,18 @@ echo $data["cv"] . PHP_EOL;
 print_r($data["rels"]);
 print_r($data["links"]);
 ```
+
+GET calls with included pagination handling
+
+```php
+$spaceId = 'YOUR_SPACE_ID';
+$responses = $managementClient->getAll('spaces/' . $spaceId . '/stories');
+foreach ($allResponses as $response) {
+    $response->getBody();
+}
+```
+
+POST calls
 You can use the `getBody()` method for retrieving the content in a structured associative array. With the body of the response, you can access to:
 - `story`: the story
 - `cv`: the cache timestamp (useful for managing cached response)
