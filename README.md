@@ -218,22 +218,7 @@ print_r($data["rels"]);
 print_r($data["links"]);
 ```
 
-GET calls with included pagination handling
 
-```php
-$spaceId = 'YOUR_SPACE_ID';
-$responses = $managementClient->getAll('spaces/' . $spaceId . '/stories');
-foreach ($allResponses as $response) {
-    $response->getBody();
-}
-```
-
-POST calls
-You can use the `getBody()` method for retrieving the content in a structured associative array. With the body of the response, you can access to:
-- `story`: the story
-- `cv`: the cache timestamp (useful for managing cached response)
-- `rels`: the (optional) relations
-- `links`: the resolved links
 
 ### Load a Story by UUID
 
@@ -265,6 +250,33 @@ print_r($data["links"]);
 ```
 
 Under the hood, the `starts_with` option, filters entries by `full_slug`.
+
+### Load all entries
+
+Because the response from Storyblok API could be paginated, you should walk through all the pages to collect all the entries.
+The Storyblok PHP Client provides you a helper named `getAll()` for retrieving all the entries.
+Under the hood, the `getAll()` method performs all the API call according to the pagination data (total, per page etc).
+
+Example, retrieving all stories:
+
+```php
+$client = new Client('your-storyblok-private-token');
+$options = $client->getApiParameters();
+$options['per_page'] = 3;
+$stories = $client->getAll('stories/', $options);
+```
+
+If you want to retrieve the array of the responses for each call:
+```php
+$client = new Client('your-storyblok-private-token');
+$options = $client->getApiParameters();
+$options['per_page'] = 3;
+$response = $client->getAll('stories/', $options, true);
+```
+
+
+
+
 
 ### Load a list of datasource entries
 With the `Storyblok\Client` you have also the `getDatasourceEntries()` method for retrieving the list of key/values of the datasource:
