@@ -2,6 +2,14 @@
 
 ## 0.2.5 - WIP
 
+### Added
+
+- Add **getAll()** method function for retrieving all the entries (automatic pagination resolution) thanks to @web-dev-passion
+- Add **default_lifetime** option as TTL value for caching
+- Code quality: added **static code analysis** tool (PHPStan)
+- Refactoring for achieving **PHPStan level 2**
+- **Add test for Resolve Relations**, check sorting and check resolver (added specific dataset)
+
 
 ## 0.2.4 - 2022-12-15
 
