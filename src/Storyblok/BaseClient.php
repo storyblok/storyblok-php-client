@@ -3,6 +3,7 @@
 namespace Storyblok;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\CurlHandler;
@@ -18,15 +19,16 @@ use Psr\Http\Message\ResponseInterface;
 class BaseClient
 {
     const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
+
     const DEFAULT_PER_PAGE = 25;
 
     /**
-     * @var \stdClass
+     * @var array|string
      */
     public $responseBody;
 
     /**
-     * @var \stdClass
+     * @var array
      */
     public $responseHeaders;
 
@@ -83,6 +85,11 @@ class BaseClient
         ]);
     }
 
+    /**
+     * @param mixed $version
+     *
+     * @return $this
+     */
     public function mockable(array $mocks, $version = 'v2')
     {
         $handlerStack = HandlerStack::create(new MockHandler($mocks));
@@ -96,7 +103,7 @@ class BaseClient
         return $this;
     }
 
-    public function retryDecider()
+    public function retryDecider(): \Closure
     {
         return function (
             $retries,
@@ -137,11 +144,19 @@ class BaseClient
         };
     }
 
-    public function setApiKey($apiKey)
+    /**
+     * @return self
+     */
+    public function setApiKey(string $apiKey)
     {
         $this->apiKey = $apiKey;
+
+        return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getApiKey()
     {
         return $this->apiKey;
@@ -170,7 +185,7 @@ class BaseClient
     /**
      * @param array|string $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
      *
-     * @return Client
+     * @return self
      */
     public function setProxy($proxy)
     {
@@ -179,6 +194,9 @@ class BaseClient
         return $this;
     }
 
+    /**
+     * @return array|string
+     */
     public function getProxy()
     {
         return $this->proxy;
@@ -210,7 +228,7 @@ class BaseClient
      * @param string $endpointUrl
      * @param array  $queryString
      *
-     * @return \stdClass
+     * @return Response
      *
      * @throws ApiException
      */
@@ -236,7 +254,7 @@ class BaseClient
             $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj, $queryString);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
         }
     }
@@ -283,22 +301,20 @@ class BaseClient
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $responseObj
-     * @param array                               $queryString
-     *
-     * @return \stdClass
+     * @param ResponseInterface $responseObj
+     * @param array             $queryString
      */
-    public function responseHandler($responseObj, $queryString = [])
+    public function responseHandler($responseObj, $queryString = []): Response
     {
-        $httpResponseCode = $responseObj->getStatusCode();
+        $result = new Response();
+        $result->setCode($responseObj->getStatusCode());
+        $result->setHeaders($responseObj->getHeaders());
+        $result->setBodyFromStreamInterface($responseObj->getBody());
         $data = (string) $responseObj->getBody();
         $jsonResponseData = (array) json_decode($data, true);
-        $result = new \stdClass();
 
         // return response data as json if possible, raw if not
         $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
-        $result->httpResponseCode = $httpResponseCode;
-        $result->httpResponseHeaders = $responseObj->getHeaders();
 
         /*
         if (\is_array($result->httpResponseBody) && isset($result->httpResponseBody['story']) || isset($result->httpResponseBody['stories'])) {
@@ -312,7 +328,7 @@ class BaseClient
     /**
      * Gets the json response body.
      *
-     * @return array
+     * @return array|\stdClass
      */
     public function getBody()
     {
@@ -340,7 +356,7 @@ class BaseClient
     /**
      * Gets the response status.
      *
-     * @return array
+     * @return int
      */
     public function getCode()
     {

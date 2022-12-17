@@ -19,7 +19,7 @@
 </p>
 
 ## 🚀 Usage
-With the Storyblok PHP client you can integrate two kinds of Storyblok APIs:
+With the **Storyblok PHP client** you can integrate two kinds of Storyblok APIs:
 
 - Management API: typically used for managing data, like creating data, blocks, settings etc.
 - Content Delivery API: typically used for retrieving data, for example when you want to build your public Web application.

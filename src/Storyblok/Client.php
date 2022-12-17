@@ -307,12 +307,12 @@ class Client extends BaseClient
     /**
      * Gets cache version from cache or as timestamp.
      *
-     * @return int
+     * @return null|int
      */
     function getCacheVersion()
     {
         if (empty($this->cv)) {
-            return '';
+            return null;
         }
 
         return $this->cv;
@@ -722,7 +722,7 @@ class Client extends BaseClient
         return $enrichedContent;
     }
 
-    public function responseHandler($responseObj, $queryString = [])
+    public function responseHandler($responseObj, $queryString = []): Response
     {
         $result = parent::responseHandler($responseObj, $queryString);
 
@@ -750,7 +750,7 @@ class Client extends BaseClient
 
         $this->reCacheOnPublish($cachekey);
         if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
+            if ($this->cacheNotFound && 404 === $cachedItem->getCode()) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
 
@@ -926,9 +926,9 @@ class Client extends BaseClient
     /**
      * Save's the current response in the cache if version is published.
      *
-     * @param array|\stdClass $response
-     * @param string          $key
-     * @param string          $version
+     * @param Response $response
+     * @param string   $key
+     * @param string   $version
      */
     private function _save($response, $key, $version)
     {
@@ -964,10 +964,8 @@ class Client extends BaseClient
 
     /**
      * Assigns the httpResponseBody and httpResponseHeader to '$this';.
-     *
-     * @param mixed $response
      */
-    private function _assignState($response)
+    private function _assignState(Response $response)
     {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;

@@ -48,10 +48,10 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest",
-        "test-ci": "vendor/bin/pest --ci",
+        "test": "pest",
+        "test-ci": "pest --ci",
         "phpstan": "phpstan analyse",
-        "test-coverage": "vendor/bin/pest --coverage",
+        "test-coverage": "pest --coverage",
         "format": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --allow-risky=yes --using-cache=no",
         "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --using-cache=no",
         "all-check": [

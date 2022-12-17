@@ -23,28 +23,17 @@ class ManagementClient extends BaseClient
     /**
      * @param \Psr\Http\Message\ResponseInterface $responseObj
      * @param null|mixed                          $queryString
-     *
-     * @return \stdClass
      */
-    public function responseHandler($responseObj, $queryString = null)
+    public function responseHandler($responseObj, $queryString = null): Response
     {
-        $httpResponseCode = $responseObj->getStatusCode();
-        $data = (string) $responseObj->getBody();
-        $jsonResponseData = (array) json_decode($data, true);
-
-        // return response data as json if possible, raw if not
-        $this->responseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
-        $this->responseCode = $httpResponseCode;
-        $this->responseHeaders = $responseObj->getHeaders();
-
-        return $this;
+        return parent::responseHandler($responseObj, $queryString);
     }
 
     /**
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @return \stdClass
+     * @return Response
      *
      * @throws ApiException
      */
@@ -72,7 +61,7 @@ class ManagementClient extends BaseClient
      * @param string $endpointUrl
      * @param array  $payload
      *
-     * @return \stdClass
+     * @return Response
      *
      * @throws ApiException
      */
@@ -99,7 +88,7 @@ class ManagementClient extends BaseClient
     /**
      * @param string $endpointUrl
      *
-     * @return \stdClass
+     * @return Response
      *
      * @throws ApiException
      */
