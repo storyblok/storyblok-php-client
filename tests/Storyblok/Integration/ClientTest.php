@@ -8,7 +8,7 @@ test('Integration: get space', function () {
     $this->assertArrayHasKey('space', $space->httpResponseBody);
     $this->assertCount(5, $space->httpResponseBody['space']);
     $this->assertEquals('40101', $space->httpResponseBody['space']['id']);
-})->setGroups(['integration']);
+})->group('integration');
 
 test('Integration: get All stories', function () {
     $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
@@ -16,14 +16,14 @@ test('Integration: get All stories', function () {
     $options['per_page'] = 3;
     $stories = $client->getAll('stories/', $options);
     $this->assertCount(8, $stories);
-})->setGroups(['integration']);
+})->group('integration');
 
 test('Integration: get All stories with default pagination', function () {
     $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
     $options = $client->getApiParameters();
     $stories = $client->getAll('stories/', $options);
     $this->assertCount(8, $stories);
-})->setGroups(['integration']);
+})->group('integration');
 
 test('Integration: get All responses stories', function () {
     $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
@@ -31,7 +31,7 @@ test('Integration: get All responses stories', function () {
     $options['per_page'] = 3;
     $responses = $client->getAll('stories/', $options, true);
     $this->assertCount(3, $responses);
-})->setGroups(['integration']);
+})->group('integration');
 
 // useful for testing and reproduce the issue: https://github.com/storyblok/php-client/issues/54
 /*
@@ -45,7 +45,7 @@ test('Integration: get one story with cache', function () {
     $this->assertArrayHasKey('story', $body);
     $this->assertArrayHasKey('name', $body['story']);
     $this->assertEquals('home', $body['story']['name']);
-})->setGroups(['integration']);
+})->group('integration');
 */
 
 test('Integration: get one story with _storyblok_published', function () {
@@ -57,11 +57,11 @@ test('Integration: get one story with _storyblok_published', function () {
     $this->assertArrayHasKey('story', $body);
     $this->assertArrayHasKey('name', $body['story']);
     $this->assertEquals('home', $body['story']['name']);
-})->setGroups(['integration']);
+})->group('integration');
 
 test('Integration: get All responses stories with default pagination', function () {
     $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
     $options = $client->getApiParameters();
     $responses = $client->getAll('stories/', $options, true);
     $this->assertCount(1, $responses);
-})->setGroups(['integration']);
+})->group('integration');

@@ -452,6 +452,15 @@ $client->resolveRelations('component_name1.field_name1,component_name2.field_nam
 $client->getStoryBySlug('home');
 ```
 
+Another example:
+
+```php
+use Storyblok\Client;
+$client = new Client('your-storyblok-private-token');
+$client->resolveRelations('popular-articles.articles');
+$result = $client->getStoryBySlug("home")->getBody();
+```
+
 In order to resolve links, you can use the `resolveLinks` method passing the specific type of resolving you want to perform among `url`, `story` or `link`:
 
 ```php
