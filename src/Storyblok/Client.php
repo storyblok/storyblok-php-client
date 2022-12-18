@@ -22,7 +22,7 @@ class Client extends BaseClient
     public $cacheVersion;
 
     /**
-     * @var AbstractAdapter
+     * @var null|AbstractAdapter
      */
     protected $cache;
 
@@ -264,7 +264,7 @@ class Client extends BaseClient
     {
         $key = $this->_getCacheKey('stories/' . $slug);
         $linksCacheKey = $this->_getCacheKey($this->linksPath);
-        if ($this->cache instanceof AbstractAdapter) {
+        if ($this->isCache()) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
@@ -282,7 +282,7 @@ class Client extends BaseClient
      */
     public function flushCache()
     {
-        if ($this->cache instanceof AbstractAdapter) {
+        if ($this->isCache()) {
             $this->cache->clear();
             $this->setCacheVersion();
         }
@@ -297,7 +297,7 @@ class Client extends BaseClient
      */
     public function setCacheVersion()
     {
-        if ($this->cache instanceof AbstractAdapter) {
+        if ($this->isCache()) {
             $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
             $this->cv = $res->responseBody['cv'];
             $this->cacheSave($this->cv, self::CACHE_VERSION_KEY);
@@ -560,7 +560,7 @@ class Client extends BaseClient
      */
     public function getAsNameValueArray()
     {
-        if (!isset($this->responseBody)) {
+        if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
         }
 
@@ -582,7 +582,7 @@ class Client extends BaseClient
      */
     public function getTagsAsStringArray()
     {
-        if (!isset($this->responseBody)) {
+        if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
         }
 
@@ -602,7 +602,7 @@ class Client extends BaseClient
      */
     public function getAsTree()
     {
-        if (!isset($this->responseBody)) {
+        if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
         }
 
@@ -706,9 +706,9 @@ class Client extends BaseClient
     /**
      * Enrich the Stories with resolved links and stories.
      *
-     * @param \stdClass $data
+     * @param array $data
      *
-     * @return \stdClass
+     * @return array
      */
     public function enrichContent($data)
     {
@@ -752,7 +752,7 @@ class Client extends BaseClient
 
     public function getCachedItem(string $key)
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             try {
                 return $this->cache->getItem($key);
             } catch (InvalidArgumentException $e) {
@@ -914,7 +914,7 @@ class Client extends BaseClient
      */
     private function reCacheOnPublish($key)
     {
-        if (isset($_GET['_storyblok_published']) && $this->cache) {
+        if (isset($_GET['_storyblok_published']) && $this->isCache()) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
@@ -964,7 +964,7 @@ class Client extends BaseClient
     private function _save($response, $key, $version)
     {
         $this->_assignState($response);
-        if ($this->cache
+        if ($this->isCache()
             && 'published' === $version
             && $response->httpResponseHeaders
             && 200 === $response->httpResponseCode) {
@@ -972,9 +972,14 @@ class Client extends BaseClient
         }
     }
 
+    private function isCache(): bool
+    {
+        return (null !== $this->cache) && ($this->cache instanceof AbstractAdapter);
+    }
+
     private function cacheSave($value, string $key)
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             $cacheItem = $this->cache->getItem($key);
             $cacheItem->set($value);
 
@@ -986,7 +991,7 @@ class Client extends BaseClient
 
     private function cacheGet(string $key)
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             return $this->cache->getItem($key)->get();
         }
 
