@@ -2,9 +2,11 @@
 
 namespace Storyblok;
 
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\PdoAdapter;
+use Symfony\Component\Cache\CacheItem;
 
 /**
  * Storyblok Client.
@@ -262,7 +264,7 @@ class Client extends BaseClient
     {
         $key = $this->_getCacheKey('stories/' . $slug);
         $linksCacheKey = $this->_getCacheKey($this->linksPath);
-        if ($this->cache) {
+        if ($this->cache instanceof AbstractAdapter) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
@@ -280,7 +282,7 @@ class Client extends BaseClient
      */
     public function flushCache()
     {
-        if ($this->cache) {
+        if ($this->cache instanceof AbstractAdapter) {
             $this->cache->clear();
             $this->setCacheVersion();
         }
@@ -295,7 +297,7 @@ class Client extends BaseClient
      */
     public function setCacheVersion()
     {
-        if ($this->cache) {
+        if ($this->cache instanceof AbstractAdapter) {
             $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
             $this->cv = $res->responseBody['cv'];
             $this->cacheSave($this->cv, self::CACHE_VERSION_KEY);
@@ -380,12 +382,13 @@ class Client extends BaseClient
         $endpointUrl = 'stories/';
 
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($cachekey);
+        $this->reCacheOnPublish($cacheKey);
+        $cachedItem = $this->getCachedItem($cacheKey);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            $this->_assignState($cachedItem);
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
@@ -407,7 +410,7 @@ class Client extends BaseClient
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -464,18 +467,20 @@ class Client extends BaseClient
         $endpointUrl = 'tags/';
 
         $key = 'tags/' . serialize($options);
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            $this->_assignState($cachedItem);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -494,12 +499,14 @@ class Client extends BaseClient
         $endpointUrl = 'datasource_entries/';
 
         $key = 'datasource_entries/' . $slug . '/' . serialize($options);
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            $this->_assignState($cachedItem);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge(
                 $options,
@@ -509,7 +516,7 @@ class Client extends BaseClient
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -531,8 +538,10 @@ class Client extends BaseClient
         $key = $this->linksPath;
         $cacheKey = $this->_getCacheKey($key . serialize($this->_prepareOptionsForKey($options)));
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cacheKey)) {
-            $this->_assignState($cachedItem);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
@@ -734,6 +743,26 @@ class Client extends BaseClient
     }
 
     /**
+     * Return true if published content is requested.
+     */
+    public function isPublishedVersion(): bool
+    {
+        return 'published' === $this->getVersion();
+    }
+
+    public function getCachedItem(string $key)
+    {
+        if ($this->cache) {
+            try {
+                return $this->cache->getItem($key);
+            } catch (InvalidArgumentException $e) {
+            }
+        }
+
+        return new CacheItem();
+    }
+
+    /**
      * Gets a list of stories.
      *
      * @param string $slug   Slug
@@ -746,15 +775,17 @@ class Client extends BaseClient
     private function getStory($slug, $byUuid = false)
     {
         $key = 'stories/' . $slug;
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($cachekey);
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            if ($this->cacheNotFound && 404 === $cachedItem->getCode()) {
+        $this->reCacheOnPublish($cacheKey);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            if ($this->cacheNotFound && 404 === $cachedItem->get()->getCode()) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
 
-            $this->_assignState($cachedItem);
+            $this->_assignState($cachedItem->get());
         } else {
             $options = $this->getApiParameters();
 
@@ -784,14 +815,14 @@ class Client extends BaseClient
 
             try {
                 $response = $this->get($key, $options);
-                $this->_save($response, $cachekey, $this->getVersion());
+                $this->_save($response, $cacheKey, $this->getVersion());
             } catch (\Exception $e) {
                 if ($this->cacheNotFound && 404 === $e->getCode()) {
                     $result = new \stdClass();
                     $result->httpResponseBody = [];
                     $result->httpResponseCode = 404;
                     $result->httpResponseHeaders = [];
-                    $this->cacheSave($result, $cachekey);
+                    $this->cacheSave($result, $cacheKey);
                 }
 
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());

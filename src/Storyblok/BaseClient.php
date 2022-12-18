@@ -332,7 +332,8 @@ class BaseClient
      */
     public function getBody()
     {
-        if (isset($this->responseBody)) {
+        // if (isset($this->responseBody)) {
+        if ([] !== $this->responseBody && '' !== $this->responseBody) {
             return $this->responseBody;
         }
 
@@ -346,7 +347,7 @@ class BaseClient
      */
     public function getHeaders()
     {
-        if (isset($this->responseHeaders)) {
+        if ([] !== $this->responseHeaders) {
             return $this->responseHeaders;
         }
 
