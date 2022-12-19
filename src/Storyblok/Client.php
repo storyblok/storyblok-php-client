@@ -706,20 +706,21 @@ class Client extends BaseClient
     /**
      * Enrich the Stories with resolved links and stories.
      *
-     * @param array $data
+     * @param array|string $data
      *
-     * @return array
+     * @return array|string
      */
     public function enrichContent($data)
     {
         $enrichedContent = $data;
 
-        if (\is_array($data) && isset($data['component'])) {
+        // if (\is_array($data) && isset($data['component'])) {
+        if (isset($data['component'])) {
             if (!isset($data['_stopResolving'])) {
                 foreach ($data as $fieldName => $fieldValue) {
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
-                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName]);
+                    $enrichedContent[$fieldName] = $this->enrichContent((array) $enrichedContent[$fieldName]);
                 }
             }
         } elseif (\is_array($data)) {

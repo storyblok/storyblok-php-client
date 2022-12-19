@@ -12,20 +12,15 @@ class Response
 
     public $httpResponseHeaders;
 
-    /**
-     * @return mixed
-     */
-    public function getBody()
+    public function getBody(): array
     {
         return $this->httpResponseBody;
     }
 
     /**
      * @param mixed $httpResponseBody
-     *
-     * @return Response
      */
-    public function setBody($httpResponseBody)
+    public function setBody($httpResponseBody): self
     {
         $this->httpResponseBody = $httpResponseBody;
 
@@ -42,10 +37,7 @@ class Response
         return $this;
     }
 
-    /**
-     * @return null|int
-     */
-    public function getCode()
+    public function getCode(): ?int
     {
         return $this->httpResponseCode;
     }
