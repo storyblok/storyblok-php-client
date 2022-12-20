@@ -1,18 +1,21 @@
 # Changelog
 
-## 0.2.5 - WIP
-
+## 2.5.0/3.0.0 - WIP
+Release: 
 ### Added
 
 - Add **getAll()** method function for retrieving all the entries (automatic pagination resolution) thanks to @web-dev-passion
 - Add **default_lifetime** option as TTL value for caching
 - Code quality: added **static code analysis** tool (PHPStan)
-- Refactoring for achieving **PHPStan level 2**
+- Refactoring for achieving **PHPStan level 5**
 - **Add test for Resolve Relations**, check sorting and check resolver (added specific dataset)
 
+### Changed
+- Internal Refactoring (checking hit/miss cache)
 
-## 0.2.4 - 2022-12-15
 
+## 2.4.0 - 2022-12-15
+Release: [v2.4.0](https://github.com/storyblok/php-client/releases/tag/v2.4.0)
 ### Added
 - Added **PHP 8.2** compatibility, so now we are supporting from PHP 7.3 to PHP 8.2
 - Start adding **integration tests**
@@ -21,8 +24,9 @@
 - For a better compatibility with the libraries, Apix Cache is replaced by **Symfony Cache**
 - **Update documentation** in the README file
 
-## 0.2.3 - 2022-08-24
 
+## 2.3.0 - 2022-08-24
+Release: [v2.3.0](https://github.com/storyblok/php-client/releases/tag/v2.3.0)
 ### Added
 
 - **Added Test suite**
