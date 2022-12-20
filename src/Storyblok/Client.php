@@ -2,9 +2,11 @@
 
 namespace Storyblok;
 
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\PdoAdapter;
+use Symfony\Component\Cache\CacheItem;
 
 /**
  * Storyblok Client.
@@ -20,7 +22,7 @@ class Client extends BaseClient
     public $cacheVersion;
 
     /**
-     * @var AbstractAdapter
+     * @var null|AbstractAdapter
      */
     protected $cache;
 
@@ -262,7 +264,7 @@ class Client extends BaseClient
     {
         $key = $this->_getCacheKey('stories/' . $slug);
         $linksCacheKey = $this->_getCacheKey($this->linksPath);
-        if ($this->cache) {
+        if ($this->isCache()) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
@@ -280,7 +282,7 @@ class Client extends BaseClient
      */
     public function flushCache()
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             $this->cache->clear();
             $this->setCacheVersion();
         }
@@ -295,7 +297,7 @@ class Client extends BaseClient
      */
     public function setCacheVersion()
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
             $this->cv = $res->responseBody['cv'];
             $this->cacheSave($this->cv, self::CACHE_VERSION_KEY);
@@ -307,12 +309,12 @@ class Client extends BaseClient
     /**
      * Gets cache version from cache or as timestamp.
      *
-     * @return int
+     * @return null|int
      */
     function getCacheVersion()
     {
         if (empty($this->cv)) {
-            return '';
+            return null;
         }
 
         return $this->cv;
@@ -380,12 +382,13 @@ class Client extends BaseClient
         $endpointUrl = 'stories/';
 
         $key = 'stories/' . serialize($this->_prepareOptionsForKey($options));
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($cachekey);
+        $this->reCacheOnPublish($cacheKey);
+        $cachedItem = $this->getCachedItem($cacheKey);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            $this->_assignState($cachedItem);
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
@@ -407,7 +410,7 @@ class Client extends BaseClient
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -464,18 +467,20 @@ class Client extends BaseClient
         $endpointUrl = 'tags/';
 
         $key = 'tags/' . serialize($options);
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            $this->_assignState($cachedItem);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -494,12 +499,14 @@ class Client extends BaseClient
         $endpointUrl = 'datasource_entries/';
 
         $key = 'datasource_entries/' . $slug . '/' . serialize($options);
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
         $this->reCacheOnPublish($key);
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            $this->_assignState($cachedItem);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge(
                 $options,
@@ -509,7 +516,7 @@ class Client extends BaseClient
 
             $response = $this->get($endpointUrl, $options);
 
-            $this->_save($response, $cachekey, $this->getVersion());
+            $this->_save($response, $cacheKey, $this->getVersion());
         }
 
         return $this;
@@ -531,8 +538,10 @@ class Client extends BaseClient
         $key = $this->linksPath;
         $cacheKey = $this->_getCacheKey($key . serialize($this->_prepareOptionsForKey($options)));
 
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cacheKey)) {
-            $this->_assignState($cachedItem);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            $this->_assignState($cachedItem->get());
         } else {
             $options = array_merge($options, $this->getApiParameters());
 
@@ -551,7 +560,7 @@ class Client extends BaseClient
      */
     public function getAsNameValueArray()
     {
-        if (!isset($this->responseBody)) {
+        if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
         }
 
@@ -573,7 +582,7 @@ class Client extends BaseClient
      */
     public function getTagsAsStringArray()
     {
-        if (!isset($this->responseBody)) {
+        if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
         }
 
@@ -593,7 +602,7 @@ class Client extends BaseClient
      */
     public function getAsTree()
     {
-        if (!isset($this->responseBody)) {
+        if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
         }
 
@@ -697,20 +706,21 @@ class Client extends BaseClient
     /**
      * Enrich the Stories with resolved links and stories.
      *
-     * @param \stdClass $data
+     * @param array|string $data
      *
-     * @return \stdClass
+     * @return array|string
      */
     public function enrichContent($data)
     {
         $enrichedContent = $data;
 
-        if (\is_array($data) && isset($data['component'])) {
+        // if (\is_array($data) && isset($data['component'])) {
+        if (isset($data['component'])) {
             if (!isset($data['_stopResolving'])) {
                 foreach ($data as $fieldName => $fieldValue) {
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
-                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName]);
+                    $enrichedContent[$fieldName] = $this->enrichContent((array) $enrichedContent[$fieldName]);
                 }
             }
         } elseif (\is_array($data)) {
@@ -722,7 +732,7 @@ class Client extends BaseClient
         return $enrichedContent;
     }
 
-    public function responseHandler($responseObj, $queryString = [])
+    public function responseHandler($responseObj, $queryString = []): Response
     {
         $result = parent::responseHandler($responseObj, $queryString);
 
@@ -731,6 +741,26 @@ class Client extends BaseClient
         }
 
         return $result;
+    }
+
+    /**
+     * Return true if published content is requested.
+     */
+    public function isPublishedVersion(): bool
+    {
+        return 'published' === $this->getVersion();
+    }
+
+    public function getCachedItem(string $key)
+    {
+        if ($this->isCache()) {
+            try {
+                return $this->cache->getItem($key);
+            } catch (InvalidArgumentException $e) {
+            }
+        }
+
+        return new CacheItem();
     }
 
     /**
@@ -746,15 +776,17 @@ class Client extends BaseClient
     private function getStory($slug, $byUuid = false)
     {
         $key = 'stories/' . $slug;
-        $cachekey = $this->_getCacheKey($key);
+        $cacheKey = $this->_getCacheKey($key);
 
-        $this->reCacheOnPublish($cachekey);
-        if ('published' === $this->getVersion() && $this->cache && $cachedItem = $this->cacheGet($cachekey)) {
-            if ($this->cacheNotFound && 404 === $cachedItem->httpResponseCode) {
+        $this->reCacheOnPublish($cacheKey);
+        $cachedItem = $this->getCachedItem($cacheKey);
+
+        if ($this->isPublishedVersion() && $cachedItem->isHit()) {
+            if ($this->cacheNotFound && 404 === $cachedItem->get()->getCode()) {
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR, 404);
             }
 
-            $this->_assignState($cachedItem);
+            $this->_assignState($cachedItem->get());
         } else {
             $options = $this->getApiParameters();
 
@@ -784,14 +816,14 @@ class Client extends BaseClient
 
             try {
                 $response = $this->get($key, $options);
-                $this->_save($response, $cachekey, $this->getVersion());
+                $this->_save($response, $cacheKey, $this->getVersion());
             } catch (\Exception $e) {
                 if ($this->cacheNotFound && 404 === $e->getCode()) {
                     $result = new \stdClass();
                     $result->httpResponseBody = [];
                     $result->httpResponseCode = 404;
                     $result->httpResponseHeaders = [];
-                    $this->cacheSave($result, $cachekey);
+                    $this->cacheSave($result, $cacheKey);
                 }
 
                 throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
@@ -883,7 +915,7 @@ class Client extends BaseClient
      */
     private function reCacheOnPublish($key)
     {
-        if (isset($_GET['_storyblok_published']) && $this->cache) {
+        if (isset($_GET['_storyblok_published']) && $this->isCache()) {
             $this->cache->delete($key);
 
             // Always refresh cache of links
@@ -926,14 +958,14 @@ class Client extends BaseClient
     /**
      * Save's the current response in the cache if version is published.
      *
-     * @param array|\stdClass $response
-     * @param string          $key
-     * @param string          $version
+     * @param Response $response
+     * @param string   $key
+     * @param string   $version
      */
     private function _save($response, $key, $version)
     {
         $this->_assignState($response);
-        if ($this->cache
+        if ($this->isCache()
             && 'published' === $version
             && $response->httpResponseHeaders
             && 200 === $response->httpResponseCode) {
@@ -941,9 +973,14 @@ class Client extends BaseClient
         }
     }
 
+    private function isCache(): bool
+    {
+        return (null !== $this->cache) && ($this->cache instanceof AbstractAdapter);
+    }
+
     private function cacheSave($value, string $key)
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             $cacheItem = $this->cache->getItem($key);
             $cacheItem->set($value);
 
@@ -955,7 +992,7 @@ class Client extends BaseClient
 
     private function cacheGet(string $key)
     {
-        if ($this->cache) {
+        if ($this->isCache()) {
             return $this->cache->getItem($key)->get();
         }
 
@@ -964,10 +1001,8 @@ class Client extends BaseClient
 
     /**
      * Assigns the httpResponseBody and httpResponseHeader to '$this';.
-     *
-     * @param mixed $response
      */
-    private function _assignState($response)
+    private function _assignState(Response $response)
     {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;

@@ -56,9 +56,9 @@ test('response has proxy', function () {
     $put = $client->put('test', []);
     $delete = $client->delete('test', []);
 
-    $this->assertEquals('127.0.0.1', $post->getProxy());
-    $this->assertEquals('127.0.0.1', $put->getProxy());
-    $this->assertEquals('127.0.0.1', $delete->getProxy());
+    $this->assertEquals('127.0.0.1', $client->getProxy());
+    $this->assertEquals(201, $post->httpResponseCode);
+    $this->assertEquals(200, $put->httpResponseCode);
 });
 
 test('post request throws exception on error', function () {
