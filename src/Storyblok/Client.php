@@ -293,14 +293,29 @@ class Client extends BaseClient
     /**
      * Sets cache version to get a fresh version from cdn after clearing the cache.
      *
+     * @param mixed $reset
+     * @param mixed $injectValue
+     *
      * @return \Storyblok\Client
      */
-    public function setCacheVersion()
+    public function setCacheVersion($reset = false, $injectValue = '')
     {
         if ($this->isCache()) {
-            $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
-            $this->cv = $res->responseBody['cv'];
-            $this->cacheSave($this->cv, self::CACHE_VERSION_KEY);
+            if ($reset) {
+                $this->cv = '';
+                $this->cache->delete(self::CACHE_VERSION_KEY);
+            } else {
+                if ('' === $injectValue) {
+                    $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
+                    $this->cv = $res->responseBody['cv'];
+                } else {
+                    $this->cv = $injectValue;
+                }
+
+                $cacheItem = $this->cache->getItem(self::CACHE_VERSION_KEY);
+                $cacheItem->set($this->cv);
+                $this->cache->save($cacheItem);
+            }
         }
 
         return $this;
@@ -921,7 +936,7 @@ class Client extends BaseClient
             // Always refresh cache of links
             $linksCacheKey = $this->_getCacheKey($this->linksPath);
             $this->cache->delete($linksCacheKey);
-            $this->setCacheVersion();
+            $this->setCacheVersion(true);
         }
 
         return $this;
@@ -983,6 +998,12 @@ class Client extends BaseClient
         if ($this->isCache()) {
             $cacheItem = $this->cache->getItem($key);
             $cacheItem->set($value);
+            if ('object' === \gettype($value) && 'Storyblok\\Response' === \get_class($value) && \is_array($value->getBody()) && \array_key_exists('cv', $value->getBody())) {
+                // $cachedCv = $this->cache->getItem(self::CACHE_VERSION_KEY);
+                // $cachedCv->set($value->getBody()['cv']);
+                $this->setCacheVersion(false, $value->getBody()['cv']);
+                // $this->cache->save($cachedCv);
+            }
 
             return $this->cache->save($cacheItem);
         }
