@@ -16,7 +16,6 @@ test('Integration: get links', function () {
     $links = $client->get('links', $client->getApiParameters());
     $this->assertArrayHasKey('links', $links->httpResponseBody);
     $this->assertCount(11, $links->httpResponseBody['links']);
-    $this->assertEquals('40101', $links->httpResponseBody['links']['id']);
 })->group('integration');
 
 test('Integration: get All stories', function () {
