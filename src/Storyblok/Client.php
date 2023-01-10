@@ -706,7 +706,7 @@ class Client extends BaseClient
     /**
      * Enrich the Stories with resolved links and stories.
      *
-     * @param array|string|\stdClass $data
+     * @param array|\stdClass|string $data
      *
      * @return array|string
      */
@@ -720,7 +720,7 @@ class Client extends BaseClient
                 foreach ($data as $fieldName => $fieldValue) {
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
-                    $enrichedContent[$fieldName] = $this->enrichContent( $enrichedContent[$fieldName]);
+                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName]);
                 }
             }
         } elseif (\is_array($data)) {
