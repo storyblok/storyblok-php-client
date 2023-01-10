@@ -20,10 +20,6 @@ class ManagementClient extends BaseClient
         parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl);
     }
 
-    /**
-     * @param \Psr\Http\Message\ResponseInterface $responseObj
-     * @param null|mixed                          $queryString
-     */
     public function responseHandler($responseObj, $queryString = null): Response
     {
         return parent::responseHandler($responseObj, $queryString);
