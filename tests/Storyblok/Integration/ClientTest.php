@@ -128,5 +128,4 @@ test('Integration: get one story with option with cache', function () {
     $identifier3 = $responses3->getHeaders()['X-Request-Id'];
     $identifier1 = $responses->getHeaders()['X-Request-Id'];
     expect($identifier1[0])->not()->toEqual($identifier3[0]);
-
 })->group('integration');
