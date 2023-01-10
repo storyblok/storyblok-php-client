@@ -65,3 +65,28 @@ test('Integration: get All responses stories with default pagination', function 
     $responses = $client->getAll('stories/', $options, true);
     $this->assertCount(1, $responses);
 })->group('integration');
+
+test('Integration: check casting after enriching content', function () {
+    $client = new Client('Iw3XKcJb6MwkdZEwoQ9BCQtt');
+    $client->editMode();
+    $options = $client->getApiParameters();
+    $response = $client->getStoryBySlug("home");
+    $body = $response->getBody();
+    expect($body)->toBeArray()
+    ->toHaveKey("story")
+        ->toHaveCount(4);
+    $story = $body["story"];
+    expect($story)->toBeArray()
+        ->toHaveKey("content")
+        ->toHaveCount(22);
+    $content = $story["content"];
+    expect($content)->toBeArray()
+        ->toHaveKey("_uid")
+        ->toHaveKey("body")
+        ->toHaveKey("component")
+        ->toHaveCount(4);
+    expect($content["_uid"])->toBeString();
+    expect($content["component"])->toBeString();
+
+
+})->group('integration');
