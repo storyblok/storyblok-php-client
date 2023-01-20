@@ -432,11 +432,11 @@ class Client extends BaseClient
     }
 
     /**
-     *  Sets global reference.
+     *  Sets the list of the relations to be resolved.
      *
-     *  eg. global.global_referece
+     *  eg. 'article-page.author'
      *
-     * @param mixed $reference
+     * @param string $reference
      *
      * @return $this
      */
@@ -446,7 +446,10 @@ class Client extends BaseClient
         $this->_relationsList = [];
         foreach (explode(',', $this->resolveRelations) as $relation) {
             $relationVars = explode('.', $relation);
-            $this->_relationsList[$relationVars[0]] = $relationVars[1];
+            if (!\array_key_exists($relationVars[0], $this->_relationsList)) {
+                $this->_relationsList[$relationVars[0]] = [];
+            }
+            $this->_relationsList[$relationVars[0]][] = $relationVars[1];
         }
 
         return $this;
@@ -879,7 +882,7 @@ class Client extends BaseClient
     private function insertRelations($component, $field, $value)
     {
         $filteredNode = $value;
-        if (isset($this->_relationsList[$component]) && $field === $this->_relationsList[$component]) {
+        if (isset($this->_relationsList[$component]) && \in_array($field, $this->_relationsList[$component], true)) {
             if (\is_string($value)) {
                 if (isset($this->resolvedRelations[$value])) {
                     $filteredNode = $this->resolvedRelations[$value];
