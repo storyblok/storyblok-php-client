@@ -684,6 +684,15 @@ class Client extends BaseClient
         }
     }
 
+    public function getResolvedRelationByUuid($uuid)
+    {
+        if (\array_key_exists($uuid, $this->resolvedRelations)) {
+            return $this->resolvedRelations[$uuid];
+        }
+
+        return false;
+    }
+
     /**
      * Retrieve or resolve the Links.
      *
@@ -743,7 +752,10 @@ class Client extends BaseClient
             }
         } elseif (\is_array($data)) {
             foreach ($data as $key => $value) {
-                $enrichedContent[$key] = $this->enrichContent($value);
+                if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
+                    $enrichedContent[$key] = $this->resolvedRelations[$value];
+                }
+                // $enrichedContent[$key] = $this->enrichContent($value);
             }
         }
 
@@ -858,6 +870,9 @@ class Client extends BaseClient
         $this->getResolvedLinks($data, $queryString);
 
         if (isset($data['story'])) {
+            if (isset($enrichedData['rel_uuids'])) {
+                $enrichedData['rels'] = $this->resolvedRelations;
+            }
             $enrichedData['story']['content'] = $this->enrichContent($data['story']['content']);
         } elseif (isset($data['stories'])) {
             $stories = [];
@@ -882,6 +897,7 @@ class Client extends BaseClient
     private function insertRelations($component, $field, $value)
     {
         $filteredNode = $value;
+
         if (isset($this->_relationsList[$component]) && \in_array($field, $this->_relationsList[$component], true)) {
             if (\is_string($value)) {
                 if (isset($this->resolvedRelations[$value])) {
