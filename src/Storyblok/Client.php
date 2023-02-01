@@ -740,8 +740,6 @@ class Client extends BaseClient
     public function enrichContent($data)
     {
         $enrichedContent = $data;
-
-        // if (\is_array($data) && isset($data['component'])) {
         if (isset($data['component'])) {
             if (!isset($data['_stopResolving'])) {
                 foreach ($data as $fieldName => $fieldValue) {
@@ -751,11 +749,14 @@ class Client extends BaseClient
                 }
             }
         } elseif (\is_array($data)) {
-            foreach ($data as $key => $value) {
-                if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
-                    $enrichedContent[$key] = $this->resolvedRelations[$value];
+            if (!isset($data['_stopResolving'])) {
+                foreach ($data as $key => $value) {
+                    if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
+                        $enrichedContent[$key] = $this->resolvedRelations[$value];
+                    } else {
+                        $enrichedContent[$key] = $this->enrichContent($value);
+                    }
                 }
-                // $enrichedContent[$key] = $this->enrichContent($value);
             }
         }
 

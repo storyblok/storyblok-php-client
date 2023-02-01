@@ -178,6 +178,7 @@ test('v2: check sorting for relations', function () {
     $this->assertArrayHasKey('rels', $story);
     // With the dataset provided the right order should be
     // ["997cfee2-cec3-4cad-9e06-7ef3d72f5b7d", "ba307a05-2b91-4ce8-ab24-bf328da1adb4", "c3a321a5-1163-4281-8643-2c79c13e22a3"]
+
     $this->assertEquals(
         '997cfee2-cec3-4cad-9e06-7ef3d72f5b7d',
         $story['story']['content']['body'][1]['articles'][0]['uuid'],
