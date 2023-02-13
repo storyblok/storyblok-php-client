@@ -54,7 +54,7 @@ test('response has proxy', function () {
 
     $post = $client->post('test', []);
     $put = $client->put('test', []);
-    $delete = $client->delete('test', []);
+    $delete = $client->delete('test');
 
     $this->assertEquals('127.0.0.1', $client->getProxy());
     $this->assertEquals(201, $post->httpResponseCode);
@@ -91,5 +91,5 @@ test('delete request throws exception on error', function () {
 
     $this->expectException(ApiException::class);
 
-    $client->delete('test', []);
+    $client->delete('test');
 });

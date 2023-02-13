@@ -18,9 +18,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class BaseClient
 {
-    const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
+    public const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
-    const DEFAULT_PER_PAGE = 25;
+    public const DEFAULT_PER_PAGE = 25;
 
     /**
      * @var array|string
@@ -269,13 +269,14 @@ class BaseClient
      */
     public function getAll(string $endpointUrl, array $queryString = [], bool $returnResponsesArray = false): array
     {
+        $allResponses = [];
         $queryString['per_page'] = $queryString['per_page'] ?? self::DEFAULT_PER_PAGE;
         $queryString['page'] = 1;
 
         $firstResponse = $this->get($endpointUrl, $queryString);
 
-        $perPage = (isset($firstResponse->httpResponseHeaders['Per-Page'][0])) ? $firstResponse->httpResponseHeaders['Per-Page'][0] : null;
-        $totalRecords = (isset($firstResponse->httpResponseHeaders['Total'][0])) ? $firstResponse->httpResponseHeaders['Total'][0] : null;
+        $perPage = $firstResponse->httpResponseHeaders['Per-Page'][0] ?? null;
+        $totalRecords = $firstResponse->httpResponseHeaders['Total'][0] ?? null;
 
         $allResponses[] = clone $firstResponse;
 
@@ -311,7 +312,12 @@ class BaseClient
         $result->setHeaders($responseObj->getHeaders());
         $result->setBodyFromStreamInterface($responseObj->getBody());
         $data = (string) $responseObj->getBody();
-        $jsonResponseData = (array) json_decode($data, true);
+        $jsonResponseData = null;
+
+        try {
+            $jsonResponseData = (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+        }
 
         // return response data as json if possible, raw if not
         $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;

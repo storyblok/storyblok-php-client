@@ -30,7 +30,13 @@ class Response
     public function setBodyFromStreamInterface(StreamInterface $body): self
     {
         $data = (string) $body;
-        $jsonResponseData = (array) json_decode($data, true);
+        $jsonResponseData = null;
+
+        try {
+            $jsonResponseData = (array) json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+        }
+
         // return response data as json if possible, raw if not
         $this->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
 

@@ -13,8 +13,8 @@ use Symfony\Component\Cache\CacheItem;
  */
 class Client extends BaseClient
 {
-    const CACHE_VERSION_KEY = 'storyblok_cv';
-    const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
+    public const CACHE_VERSION_KEY = 'storyblok_cv';
+    public const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
     /**
      * @var string
@@ -206,8 +206,6 @@ class Client extends BaseClient
      *
      * @param string $driver  Driver
      * @param array  $options Path for file cache
-     *
-     * @return \Storyblok\Client
      */
     public function setCache($driver, $options = []): self
     {
@@ -653,7 +651,7 @@ class Client extends BaseClient
         if (isset($data['rels'])) {
             $relations = $data['rels'];
         } elseif (isset($data['rel_uuids'])) {
-            $relSize = \count($data['rel_uuids']);
+            $relSize = is_countable($data['rel_uuids']) ? \count($data['rel_uuids']) : 0;
             $chunks = [];
             $chunkSize = 50;
 
@@ -694,7 +692,7 @@ class Client extends BaseClient
         if (isset($data['links'])) {
             $links = $data['links'];
         } elseif (isset($data['link_uuids'])) {
-            $linksSize = \count($data['link_uuids']);
+            $linksSize = is_countable($data['link_uuids']) ? \count($data['link_uuids']) : 0;
             $chunks = [];
             $chunkSize = 50;
 
@@ -706,7 +704,7 @@ class Client extends BaseClient
             for ($chunkIndex = 0; $chunkIndex < \count($chunks); ++$chunkIndex) {
                 $linksRes = $this->getStories([
                     'per_page' => $chunkSize,
-                    'language' => isset($queryString['language']) ? $queryString['language'] : 'default',
+                    'language' => $queryString['language'] ?? 'default',
                     'by_uuids' => implode(',', $chunks[$chunkIndex]),
                 ]);
 
@@ -998,7 +996,7 @@ class Client extends BaseClient
         if ($this->isCache()) {
             $cacheItem = $this->cache->getItem($key);
             $cacheItem->set($value);
-            if ('object' === \gettype($value) && 'Storyblok\\Response' === \get_class($value) && \is_array($value->getBody()) && \array_key_exists('cv', $value->getBody())) {
+            if ('object' === \gettype($value) && \Storyblok\Response::class === \get_class($value) && \is_array($value->getBody()) && \array_key_exists('cv', $value->getBody())) {
                 // $cachedCv = $this->cache->getItem(self::CACHE_VERSION_KEY);
                 // $cachedCv->set($value->getBody()['cv']);
                 $this->setCacheVersion(false, $value->getBody()['cv']);
