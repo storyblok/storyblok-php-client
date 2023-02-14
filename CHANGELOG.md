@@ -1,7 +1,7 @@
 # Changelog
 
-## 2.5.0/3.0.0 - WIP
-Release: N/A
+## 2.5.0 - 2023-02-14
+Release: [v2.5.0](https://github.com/storyblok/php-client/releases/tag/v2.5.0)
 
 ### Added
 - Add **getAll()** method function for retrieving all the entries (automatic pagination resolution) thanks to @web-dev-passion
