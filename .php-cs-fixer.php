@@ -7,7 +7,8 @@ $finder = PhpCsFixer\Finder::create()
     ])
     ->name('*.php')
     ->ignoreDotFiles(true)
-    ->ignoreVCS(true);
+    ->ignoreVCS(true)
+;
 
 $config = new PhpCsFixer\Config();
 $config->setRiskyAllowed(true);
@@ -21,7 +22,7 @@ $config->setRules([
     'linebreak_after_opening_tag' => true,
     'native_constant_invocation' => false,
     'native_function_invocation' => [
-        "strict" => false,
+        'strict' => false,
     ],
     'blank_line_before_statement' => ['statements' => ['break', 'case', 'continue', 'declare', 'default', 'exit', 'goto', 'return', 'switch', 'throw', 'try']],
     'concat_space' => ['spacing' => 'one'],
