@@ -129,3 +129,69 @@ test('Integration: get one story with option with cache', function () {
     $identifier1 = $responses->getHeaders()['X-Request-Id'];
     expect($identifier1[0])->not()->toEqual($identifier3[0]);
 })->group('integration');
+
+test('Integration: get one story with Resolved relations 1', function () {
+    unset($_GET['_storyblok_published']);
+    $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
+    $slug = 'home';
+    $key = 'stories/' . $slug;
+    $client->editMode();
+    $options = $client->getApiParameters();
+    $client->resolveRelations(
+        'page.RelatedProducts,page.MainProduct,page.FeaturedCategoryProducts,ProductCategory.Products,Product.ProductVariants'
+    );
+    $responses = $client->getStoryBySlug($slug);
+    $body = $responses->getBody();
+    expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
+    expect($body['story']['content']['FeaturedCategoryProducts'])->toBeArray();
+    expect($body['story']['content']['FeaturedCategoryProducts']['0']['name'])->toEqual('Category 001');
+    expect($body['story']['content']['FeaturedCategoryProducts']['1']['name'])->toEqual('Category A');
+    expect($body['story']['content']['FeaturedCategoryProducts']['2']['name'])->toEqual('Category B');
+    expect($body['story']['content']['FeaturedCategoryProducts'])->toHaveLength(3);
+    expect($body['story']['content']['MainProduct'])->toBeArray();
+    expect($body['story']['content']['MainProduct']['name'])->toEqual('Bike 001');
+    expect($body['story']['content']['MainProduct']['content']['ProductVariants'])->toBeArray()->toHaveLength(2);
+    expect($body['rels'])->toHaveLength(51);
+})->group('integration');
+
+test('Integration: get one story with Resolved relations 2', function () {
+    unset($_GET['_storyblok_published']);
+    $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
+    $slug = 'home';
+    $key = 'stories/' . $slug;
+    $client->editMode();
+    $options = $client->getApiParameters();
+    $client->resolveRelations(
+        'page.MainProduct,ProductCategory.Products,Product.ProductVariants'
+    );
+    $responses = $client->getStoryBySlug($slug);
+    $body = $responses->getBody();
+    expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
+    expect($body['story']['content']['FeaturedCategoryProducts'])->toBeArray();
+    expect($body['story']['content']['FeaturedCategoryProducts'])->toHaveLength(3);
+    expect($body['story']['content']['FeaturedCategoryProducts']['0'])->toBeString();
+    expect($body['story']['content']['FeaturedCategoryProducts']['1'])->toBeString();
+    expect($body['story']['content']['FeaturedCategoryProducts']['2'])->toBeString();
+    expect($body['story']['content']['MainProduct'])->toBeArray();
+    expect($body['story']['content']['MainProduct']['name'])->toEqual('Bike 001');
+    expect($body['story']['content']['MainProduct']['content']['ProductVariants'])->toBeArray()->toHaveLength(2);
+})->group('integration');
+
+test('Integration: get one story with Resolved relations 3', function () {
+    unset($_GET['_storyblok_published']);
+    $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
+    $slug = 'categories/products/bike-001';
+    $key = 'stories/' . $slug;
+    $client->editMode();
+    $options = $client->getApiParameters();
+    $client->resolveRelations(
+        'Product.ProductVariants'
+    );
+    $responses = $client->getStoryBySlug($slug);
+    $body = $responses->getBody();
+    expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
+    expect($body['story']['content']['ProductVariants'])->toBeArray();
+    expect($body['story']['content']['ProductVariants'])->toHaveLength(2);
+    expect($body['story']['content']['ProductVariants']['0']['name'])->toBeString();
+    expect($body['story']['content']['ProductVariants']['1']['name'])->toBeString();
+})->group('integration');

@@ -432,11 +432,11 @@ class Client extends BaseClient
     }
 
     /**
-     *  Sets global reference.
+     *  Sets the list of the relations to be resolved.
      *
-     *  eg. global.global_referece
+     *  eg. 'article-page.author'
      *
-     * @param mixed $reference
+     * @param string $reference
      *
      * @return $this
      */
@@ -446,7 +446,10 @@ class Client extends BaseClient
         $this->_relationsList = [];
         foreach (explode(',', $this->resolveRelations) as $relation) {
             $relationVars = explode('.', $relation);
-            $this->_relationsList[$relationVars[0]] = $relationVars[1];
+            if (!\array_key_exists($relationVars[0], $this->_relationsList)) {
+                $this->_relationsList[$relationVars[0]] = [];
+            }
+            $this->_relationsList[$relationVars[0]][] = $relationVars[1];
         }
 
         return $this;
@@ -681,6 +684,15 @@ class Client extends BaseClient
         }
     }
 
+    public function getResolvedRelationByUuid($uuid)
+    {
+        if (\array_key_exists($uuid, $this->resolvedRelations)) {
+            return $this->resolvedRelations[$uuid];
+        }
+
+        return false;
+    }
+
     /**
      * Retrieve or resolve the Links.
      *
@@ -728,8 +740,6 @@ class Client extends BaseClient
     public function enrichContent($data)
     {
         $enrichedContent = $data;
-
-        // if (\is_array($data) && isset($data['component'])) {
         if (isset($data['component'])) {
             if (!isset($data['_stopResolving'])) {
                 foreach ($data as $fieldName => $fieldValue) {
@@ -739,8 +749,14 @@ class Client extends BaseClient
                 }
             }
         } elseif (\is_array($data)) {
-            foreach ($data as $key => $value) {
-                $enrichedContent[$key] = $this->enrichContent($value);
+            if (!isset($data['_stopResolving'])) {
+                foreach ($data as $key => $value) {
+                    if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
+                        $enrichedContent[$key] = $this->resolvedRelations[$value];
+                    } else {
+                        $enrichedContent[$key] = $this->enrichContent($value);
+                    }
+                }
             }
         }
 
@@ -855,6 +871,9 @@ class Client extends BaseClient
         $this->getResolvedLinks($data, $queryString);
 
         if (isset($data['story'])) {
+            if (isset($enrichedData['rel_uuids'])) {
+                $enrichedData['rels'] = $this->resolvedRelations;
+            }
             $enrichedData['story']['content'] = $this->enrichContent($data['story']['content']);
         } elseif (isset($data['stories'])) {
             $stories = [];
@@ -879,7 +898,8 @@ class Client extends BaseClient
     private function insertRelations($component, $field, $value)
     {
         $filteredNode = $value;
-        if (isset($this->_relationsList[$component]) && $field === $this->_relationsList[$component]) {
+
+        if (isset($this->_relationsList[$component]) && \in_array($field, $this->_relationsList[$component], true)) {
             if (\is_string($value)) {
                 if (isset($this->resolvedRelations[$value])) {
                     $filteredNode = $this->resolvedRelations[$value];
