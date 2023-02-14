@@ -2,7 +2,7 @@
     "name": "storyblok/php-client",
     "description": "Storyblok Client to easily call the publishing api",
     "type": "library",
-    "keywords": ["storyblok"],
+    "keywords": ["storyblok", "api", "integration", "cms"],
     "license": "MIT",
     "minimum-stability": "stable",
     "require": {
