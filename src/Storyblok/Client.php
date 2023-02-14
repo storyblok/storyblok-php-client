@@ -293,14 +293,29 @@ class Client extends BaseClient
     /**
      * Sets cache version to get a fresh version from cdn after clearing the cache.
      *
+     * @param mixed $reset
+     * @param mixed $injectValue
+     *
      * @return \Storyblok\Client
      */
-    public function setCacheVersion()
+    public function setCacheVersion($reset = false, $injectValue = '')
     {
         if ($this->isCache()) {
-            $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
-            $this->cv = $res->responseBody['cv'];
-            $this->cacheSave($this->cv, self::CACHE_VERSION_KEY);
+            if ($reset) {
+                $this->cv = '';
+                $this->cache->delete(self::CACHE_VERSION_KEY);
+            } else {
+                if ('' === $injectValue) {
+                    $res = $this->getStories(['per_page' => 1, 'version' => 'published']);
+                    $this->cv = $res->responseBody['cv'];
+                } else {
+                    $this->cv = $injectValue;
+                }
+
+                $cacheItem = $this->cache->getItem(self::CACHE_VERSION_KEY);
+                $cacheItem->set($this->cv);
+                $this->cache->save($cacheItem);
+            }
         }
 
         return $this;
@@ -417,11 +432,11 @@ class Client extends BaseClient
     }
 
     /**
-     *  Sets global reference.
+     *  Sets the list of the relations to be resolved.
      *
-     *  eg. global.global_referece
+     *  eg. 'article-page.author'
      *
-     * @param mixed $reference
+     * @param string $reference
      *
      * @return $this
      */
@@ -431,7 +446,10 @@ class Client extends BaseClient
         $this->_relationsList = [];
         foreach (explode(',', $this->resolveRelations) as $relation) {
             $relationVars = explode('.', $relation);
-            $this->_relationsList[$relationVars[0]] = $relationVars[1];
+            if (!\array_key_exists($relationVars[0], $this->_relationsList)) {
+                $this->_relationsList[$relationVars[0]] = [];
+            }
+            $this->_relationsList[$relationVars[0]][] = $relationVars[1];
         }
 
         return $this;
@@ -666,6 +684,15 @@ class Client extends BaseClient
         }
     }
 
+    public function getResolvedRelationByUuid($uuid)
+    {
+        if (\array_key_exists($uuid, $this->resolvedRelations)) {
+            return $this->resolvedRelations[$uuid];
+        }
+
+        return false;
+    }
+
     /**
      * Retrieve or resolve the Links.
      *
@@ -706,26 +733,30 @@ class Client extends BaseClient
     /**
      * Enrich the Stories with resolved links and stories.
      *
-     * @param array|string $data
+     * @param array|\stdClass|string $data
      *
      * @return array|string
      */
     public function enrichContent($data)
     {
         $enrichedContent = $data;
-
-        // if (\is_array($data) && isset($data['component'])) {
         if (isset($data['component'])) {
             if (!isset($data['_stopResolving'])) {
                 foreach ($data as $fieldName => $fieldValue) {
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
-                    $enrichedContent[$fieldName] = $this->enrichContent((array) $enrichedContent[$fieldName]);
+                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName]);
                 }
             }
         } elseif (\is_array($data)) {
-            foreach ($data as $key => $value) {
-                $enrichedContent[$key] = $this->enrichContent($value);
+            if (!isset($data['_stopResolving'])) {
+                foreach ($data as $key => $value) {
+                    if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
+                        $enrichedContent[$key] = $this->resolvedRelations[$value];
+                    } else {
+                        $enrichedContent[$key] = $this->enrichContent($value);
+                    }
+                }
             }
         }
 
@@ -840,6 +871,9 @@ class Client extends BaseClient
         $this->getResolvedLinks($data, $queryString);
 
         if (isset($data['story'])) {
+            if (isset($enrichedData['rel_uuids'])) {
+                $enrichedData['rels'] = $this->resolvedRelations;
+            }
             $enrichedData['story']['content'] = $this->enrichContent($data['story']['content']);
         } elseif (isset($data['stories'])) {
             $stories = [];
@@ -864,7 +898,8 @@ class Client extends BaseClient
     private function insertRelations($component, $field, $value)
     {
         $filteredNode = $value;
-        if (isset($this->_relationsList[$component]) && $field === $this->_relationsList[$component]) {
+
+        if (isset($this->_relationsList[$component]) && \in_array($field, $this->_relationsList[$component], true)) {
             if (\is_string($value)) {
                 if (isset($this->resolvedRelations[$value])) {
                     $filteredNode = $this->resolvedRelations[$value];
@@ -921,7 +956,7 @@ class Client extends BaseClient
             // Always refresh cache of links
             $linksCacheKey = $this->_getCacheKey($this->linksPath);
             $this->cache->delete($linksCacheKey);
-            $this->setCacheVersion();
+            $this->setCacheVersion(true);
         }
 
         return $this;
@@ -983,6 +1018,12 @@ class Client extends BaseClient
         if ($this->isCache()) {
             $cacheItem = $this->cache->getItem($key);
             $cacheItem->set($value);
+            if ('object' === \gettype($value) && 'Storyblok\\Response' === \get_class($value) && \is_array($value->getBody()) && \array_key_exists('cv', $value->getBody())) {
+                // $cachedCv = $this->cache->getItem(self::CACHE_VERSION_KEY);
+                // $cachedCv->set($value->getBody()['cv']);
+                $this->setCacheVersion(false, $value->getBody()['cv']);
+                // $this->cache->save($cachedCv);
+            }
 
             return $this->cache->save($cacheItem);
         }

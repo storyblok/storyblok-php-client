@@ -3,7 +3,7 @@
 		<img  src="https://a.storyblok.com/f/88751/1776x360/dc6e51a5fd/sb-php.png"  alt="Storyblok Logo">
 	</a>
 	<h1  style="text-align:center">Storyblok PHP Client</h1>
-	<p  style="text-align:center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easily access the Content Deliver API and Management API.</p>
+	<p  style="text-align:center">This is the official <a href="https://www.storyblok.com?utm_source=github.com&utm_medium=referral&utm_campaign=php-client">Storyblok</a> PHP client to easily access the Content Delivery API and Management API.</p>
 </div>
 
 <p style="text-align:center">
