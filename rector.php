@@ -9,8 +9,8 @@ use Rector\Set\ValueObject\SetList;
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
-        __DIR__.'/src',
-        __DIR__.'/tests',
+        __DIR__ . '/src',
+        __DIR__ . '/tests',
     ]);
 
     // register a single rule
@@ -19,6 +19,6 @@ return static function (RectorConfig $rectorConfig): void {
     // define sets of rules
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_73,
-        SetList::DEAD_CODE
+        SetList::DEAD_CODE,
     ]);
 };
