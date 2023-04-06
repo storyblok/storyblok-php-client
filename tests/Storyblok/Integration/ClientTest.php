@@ -154,6 +154,27 @@ test('Integration: get one story with Resolved relations 1', function () {
     expect($body['rels'])->toHaveLength(51);
 })->group('integration');
 
+test('Integration: get one story from Product', function () {
+    unset($_GET['_storyblok_published']);
+    $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
+    $slug = 'categories/products/bike-001';
+    $key = 'stories/' . $slug;
+    $client->editMode();
+    $options = $client->getApiParameters();
+    $client->resolveRelations(
+        'Product.ProductVariants'
+    );
+    $responses = $client->getStoryBySlug($slug);
+    $body = $responses->getBody();
+    expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
+    // print_r($body);
+    expect($body['story']['content']['productname'])->toEqual('Bike 001');
+    expect($body['story']['content']['ProductVariants'])->toBeArray();
+    expect($body['story']['content']['ProductVariants'])->toHaveLength(2);
+    expect($body['story']['content']['ProductVariants']['0']['name'])->toBeString();
+    expect($body['story']['content']['ProductVariants']['0']['name'])->toEqual('Bike 001 L');
+})->group('integration');
+
 test('Integration: get one story with Resolved relations 2', function () {
     unset($_GET['_storyblok_published']);
     $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
