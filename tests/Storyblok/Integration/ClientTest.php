@@ -68,20 +68,17 @@ test('Integration: check casting after enriching content', function () {
     $body = $response->getBody();
     expect($body)->toBeArray()
         ->toHaveKey('story')
-        ->toHaveCount(4)
-    ;
+        ->toHaveCount(4);
     $story = $body['story'];
     expect($story)->toBeArray()
         ->toHaveKey('content')
-        ->toHaveCount(22)
-    ;
+        ->toHaveCount(22);
     $content = $story['content'];
     expect($content)->toBeArray()
         ->toHaveKey('_uid')
         ->toHaveKey('body')
         ->toHaveKey('component')
-        ->toHaveCount(4)
-    ;
+        ->toHaveCount(4);
     expect($content['_uid'])->toBeString();
     expect($content['component'])->toBeString();
 })->group('integration');
