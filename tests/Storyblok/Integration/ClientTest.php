@@ -247,6 +247,33 @@ test('Integration: get list of stories story with Resolved relations 2', functio
     expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Shoe 001 Blue');
 })->group('integration');
 
+test('Integration: get list of stories -translations- story with Resolved relations 2', function () {
+    unset($_GET['_storyblok_published']);
+    $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
+
+    $key = 'stories/';
+    $params = [
+        'starts_with' => 'categories/category-shoe',
+        'content_type' => 'ProductCategory',
+    ];
+    $client->editMode();
+    $client->language('it');
+    $options = $client->getApiParameters();
+    $client->resolveRelations(
+        'ProductCategory.Products,Product.ProductVariants'
+    );
+    $responses = $client->getStories($params);
+    $body = $responses->getBody();
+    expect($body)->toHaveKeys(['rels', 'stories', 'cv', 'links']);
+    expect($body['stories'][0]['name'])->toEqual('Category Shoe 001');
+
+    expect($body['stories'][0]['content']['Products'])->toBeArray();
+    expect($body['stories'][0]['content']['Products'])->toHaveLength(1);
+    expect($body['stories'][0]['content']['Products'][0]['name'])->toEqual('Shoe 001');
+    expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
+    expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Scarpa 001 Blu');
+})->group('integration');
+
 test('Integration: get one story with Resolved relations 3', function () {
     unset($_GET['_storyblok_published']);
     $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
