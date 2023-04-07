@@ -169,9 +169,9 @@ test('Integration: get one story with few resolved relations', function () {
     expect($body['story']['content']['Products']['0']['content']['productname'])->toEqual('Shoe 001');
     expect($body['story']['content']['Products']['0']['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
     expect($body['story']['content']['Products']['0']['content']['ProductVariants']['0'])->toBeArray();
-    expect($body['story']['content']['Products']['0']['content']['ProductVariants']['0']['name'])->toEqual("Shoe 001 Blue");
+    expect($body['story']['content']['Products']['0']['content']['ProductVariants']['0']['name'])->toEqual('Shoe 001 Blue');
     expect($body['story']['content']['Products']['0']['content']['ProductVariants']['0']['content'])->toBeArray();
-    expect($body['story']['content']['Products']['0']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual("Shoe 001 Blue");;
+    expect($body['story']['content']['Products']['0']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Shoe 001 Blue');
     expect($body['rels'])->toHaveLength(4);
 })->group('integration');
 
