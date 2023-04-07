@@ -905,9 +905,7 @@ class Client extends BaseClient
             if (\is_string($value)) {
                 if (isset($this->resolvedRelations[$value])) {
                     $filteredNode = $this->resolvedRelations[$value];
-                    $filteredNode['_stopResolving'] = $this->getLevelResolving($filteredNode) + 1;
-                    // $this->settingStopResolving($filteredNode);
-                    // $filteredNode['_stopResolving'] = true;
+                    $this->settingStopResolving($filteredNode);
                 }
             } elseif (\is_array($value)) {
                 $filteredNodeTemp = [];
@@ -916,10 +914,7 @@ class Client extends BaseClient
                     if (\is_string($item) && isset($this->resolvedRelations[$item])) {
                         $resolved = true;
                         $story = $this->resolvedRelations[$item];
-
-                        // $story['_stopResolving'] = true;
-                        // $this->settingStopResolving($story);
-                        $story['_stopResolving'] = $this->getLevelResolving($story) + 1;
+                        $this->settingStopResolving($story);
                         $filteredNodeTemp[] = $story;
                     }
                 }
@@ -1085,12 +1080,11 @@ class Client extends BaseClient
         return hash('sha256', $key);
     }
 
-/*
     private function settingStopResolving(&$data)
     {
         $data['_stopResolving'] = $this->getLevelResolving($data) + 1;
     }
-*/
+
     private function isStopResolving($data)
     {
         return $this->getLevelResolving($data) > 2;
