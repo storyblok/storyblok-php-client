@@ -194,6 +194,7 @@ test('Integration: get one story from Product', function () {
     expect($body['story']['content']['ProductVariants'])->toHaveLength(2);
     expect($body['story']['content']['ProductVariants']['0']['name'])->toBeString();
     expect($body['story']['content']['ProductVariants']['0']['name'])->toEqual('Bike 001 L');
+    expect($body['story']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Bike 001 L');
 })->group('integration');
 
 test('Integration: get one story with Resolved relations 2', function () {
@@ -217,6 +218,7 @@ test('Integration: get one story with Resolved relations 2', function () {
     expect($body['story']['content']['MainProduct'])->toBeArray();
     expect($body['story']['content']['MainProduct']['name'])->toEqual('Bike 001');
     expect($body['story']['content']['MainProduct']['content']['ProductVariants'])->toBeArray()->toHaveLength(2);
+    expect($body['story']['content']['MainProduct']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Bike 001 L');
 })->group('integration');
 
 test('Integration: get one story with Resolved relations 3', function () {
