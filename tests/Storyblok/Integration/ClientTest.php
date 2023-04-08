@@ -292,3 +292,23 @@ test('Integration: get one story with Resolved relations 3', function () {
     expect($body['story']['content']['ProductVariants']['0']['name'])->toBeString();
     expect($body['story']['content']['ProductVariants']['1']['name'])->toBeString();
 })->group('integration');
+
+test('Integration: test stop resolving loop', function () {
+    unset($_GET['_storyblok_published']);
+    $client = new Client('HMqBPn2a92FjXYI3tQGDVQtt');
+    $slug = 'testlevel';
+    $key = 'stories/' . $slug;
+    $client->editMode();
+    $options = $client->getApiParameters();
+    $client->resolveRelations(
+        'level-1.related,level-2.related'
+    );
+    $responses = $client->getStoryBySlug($slug);
+    $body = $responses->getBody();
+    expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
+    expect($body['story']['content']['related'])->toBeArray();
+    expect($body['story']['content']['related']['name'])->toEqual('TestLevel2'); // FIRST LEVEL
+    expect($body['story']['content']['related']['_stopResolving'])->toEqual(1);
+    expect($body['story']['content']['related']['content']['related']['name'])->toEqual('TestLevel'); // SECOND LEVEL
+    expect($body['story']['content']['related']['content']['related']['content']['related'])->toBeString(); // NO RESOLVING THIRD LEVEL
+})->group('integration');

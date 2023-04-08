@@ -734,29 +734,30 @@ class Client extends BaseClient
      * Enrich the Stories with resolved links and stories.
      *
      * @param array|\stdClass|string $data
+     * @param mixed                  $level
      *
      * @return array|string
      */
-    public function enrichContent($data)
+    public function enrichContent($data, $level = 0)
     {
         $enrichedContent = $data;
         if (isset($data['component'])) {
-            if (!$this->isStopResolving($data)) {
+            if (!$this->isStopResolving($level)) {
                 foreach ($data as $fieldName => $fieldValue) {
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
-                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName]);
+                    $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName], $level + 1);
                 }
             }
         } elseif (\is_array($data)) {
-            if (!$this->isStopResolving($data)) {
+            if (!$this->isStopResolving($level)) {
                 foreach ($data as $key => $value) {
                     if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
                         if ('uuid' !== $key) {
                             $enrichedContent[$key] = $this->resolvedRelations[$value];
                         }
                     } else {
-                        $enrichedContent[$key] = $this->enrichContent($value);
+                        $enrichedContent[$key] = $this->enrichContent($value, $level + 1);
                     }
                 }
             }
@@ -1082,23 +1083,11 @@ class Client extends BaseClient
 
     private function settingStopResolving(&$data)
     {
-        $data['_stopResolving'] = $this->getLevelResolving($data) + 1;
+        $data['_stopResolving'] = true;
     }
 
-    private function isStopResolving($data)
+    private function isStopResolving($level)
     {
-        return $this->getLevelResolving($data) > 2;
-    }
-
-    private function getLevelResolving($data)
-    {
-        $level = 0;
-        if (!isset($data['_stopResolving'])) {
-            $level = 0;
-        } else {
-            $level = $data['_stopResolving'];
-        }
-
-        return $level;
+        return $level > 3;
     }
 }
