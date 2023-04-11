@@ -305,10 +305,12 @@ test('Integration: test stop resolving loop', function () {
     );
     $responses = $client->getStoryBySlug($slug);
     $body = $responses->getBody();
+
     expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
     expect($body['story']['content']['related'])->toBeArray();
-    expect($body['story']['content']['related']['name'])->toEqual('TestLevel2'); // FIRST LEVEL
+    expect($body['story']['content']['related']['name'])->toEqual('TestLevel2');
     expect($body['story']['content']['related']['_stopResolving'])->toEqual(1);
-    expect($body['story']['content']['related']['content']['related']['name'])->toEqual('TestLevel'); // SECOND LEVEL
-    expect($body['story']['content']['related']['content']['related']['content']['related'])->toBeString(); // NO RESOLVING THIRD LEVEL
+    expect($body['story']['content']['related']['content']['related']['name'])->toEqual('TestLevel');
+    expect($body['story']['content']['related']['content']['related']['content']['related'])->toBeArray();
+    expect($body['story']['content']['related']['content']['related']['content']['related']['content']['related'])->toBeString();
 })->group('integration');
