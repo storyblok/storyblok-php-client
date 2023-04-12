@@ -887,13 +887,13 @@ class Client extends BaseClient
             }
             $enrichedData['stories'] = $stories;
         }
-        
+
         if (!empty($data['rels'])) {
             foreach ($data['rels'] as $index => $rel) {
                 $enrichedData['rels'][$index] = $this->enrichContent($rel, -1);
             }
         }
-        
+
         if (!empty($data['links'])) {
             foreach ($data['links'] as $index => $rel) {
                 $enrichedData['links'][$index] = $this->enrichContent($rel, -1);
