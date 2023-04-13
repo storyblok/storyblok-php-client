@@ -746,6 +746,10 @@ class Client extends BaseClient
         if (isset($data['component'])) {
             if (!$this->isStopResolving($level)) {
                 foreach ($data as $fieldName => $fieldValue) {
+                    if (isset($fieldValue['_stopResolving']) && $fieldValue['_stopResolving']) {
+                        continue;
+                    }
+                    
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
                     $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName], $level + 1);
@@ -754,8 +758,10 @@ class Client extends BaseClient
         } elseif (\is_array($data)) {
             if (!$this->isStopResolving($level)) {
                 foreach ($data as $key => $value) {
-                    if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations) && 'uuid' !== $key) {
-                        $enrichedContent[$key] = $this->resolvedRelations[$value];
+                    if (\is_string($value) && \array_key_exists($value, $this->resolvedRelations)) {
+                        if ('uuid' !== $key) {
+                            $enrichedContent[$key] = $this->resolvedRelations[$value];
+                        }
                     } else {
                         $enrichedContent[$key] = $this->enrichContent($value, $level + 1);
                     }
@@ -933,11 +939,7 @@ class Client extends BaseClient
                 }
 
                 if ($resolved) {
-                    if (1 === \count($filteredNodeTemp)) {
-                        $filteredNode = $filteredNodeTemp[0];
-                    } else {
-                        $filteredNode = $filteredNodeTemp;
-                    }
+                    $filteredNode = $filteredNodeTemp;
                 }
             }
         }
