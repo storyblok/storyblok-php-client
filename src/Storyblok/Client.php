@@ -749,7 +749,7 @@ class Client extends BaseClient
                     if (isset($fieldValue['_stopResolving']) && $fieldValue['_stopResolving']) {
                         continue;
                     }
-                    
+
                     $enrichedContent[$fieldName] = $this->insertRelations($data['component'], $fieldName, $fieldValue);
                     $enrichedContent[$fieldName] = $this->insertLinks($enrichedContent[$fieldName]);
                     $enrichedContent[$fieldName] = $this->enrichContent($enrichedContent[$fieldName], $level + 1);

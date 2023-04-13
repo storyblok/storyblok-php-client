@@ -168,12 +168,13 @@ test('Integration: get one story with few resolved relations', function () {
     $body = $responses->getBody();
     expect($body)->toHaveKeys(['rels', 'story', 'cv', 'links']);
     expect($body['story']['content']['Products'])->toBeArray();
-    expect($body['story']['content']['Products']['content']['productname'])->toEqual('Shoe 001');
-    expect($body['story']['content']['Products']['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
-    expect($body['story']['content']['Products']['content']['ProductVariants']['0'])->toBeArray();
-    expect($body['story']['content']['Products']['content']['ProductVariants']['0']['name'])->toEqual('Shoe 001 Blue');
-    expect($body['story']['content']['Products']['content']['ProductVariants']['0']['content'])->toBeArray();
-    expect($body['story']['content']['Products']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Shoe 001 Blue');
+    expect($body['story']['content']['Products'])->toHaveLength(1);
+    expect($body['story']['content']['Products'][0]['content']['productname'])->toEqual('Shoe 001');
+    expect($body['story']['content']['Products'][0]['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
+    expect($body['story']['content']['Products'][0]['content']['ProductVariants']['0'])->toBeArray();
+    expect($body['story']['content']['Products'][0]['content']['ProductVariants']['0']['name'])->toEqual('Shoe 001 Blue');
+    expect($body['story']['content']['Products'][0]['content']['ProductVariants']['0']['content'])->toBeArray();
+    expect($body['story']['content']['Products'][0]['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Shoe 001 Blue');
     expect($body['rels'])->toHaveLength(4);
 })->group('integration');
 
@@ -243,9 +244,10 @@ test('Integration: get list of stories story with Resolved relations 2', functio
     expect($body['stories'][0]['name'])->toEqual('Category Shoe 001');
 
     expect($body['stories'][0]['content']['Products'])->toBeArray();
-    expect($body['stories'][0]['content']['Products']['name'])->toEqual('Shoe 001');
-    expect($body['stories'][0]['content']['Products']['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
-    expect($body['stories'][0]['content']['Products']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Shoe 001 Blue');
+    expect($body['stories'][0]['content']['Products'])->toHaveLength(1);
+    expect($body['stories'][0]['content']['Products'][0]['name'])->toEqual('Shoe 001');
+    expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
+    expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Shoe 001 Blue');
 })->group('integration');
 
 test('Integration: get list of stories -translations- story with Resolved relations 2', function () {
@@ -269,9 +271,10 @@ test('Integration: get list of stories -translations- story with Resolved relati
     expect($body['stories'][0]['name'])->toEqual('Category Shoe 001');
 
     expect($body['stories'][0]['content']['Products'])->toBeArray();
-    expect($body['stories'][0]['content']['Products']['name'])->toEqual('Shoe 001');
-    expect($body['stories'][0]['content']['Products']['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
-    expect($body['stories'][0]['content']['Products']['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Scarpa 001 Blu');
+    expect($body['stories'][0]['content']['Products'])->toHaveLength(1);
+    expect($body['stories'][0]['content']['Products'][0]['name'])->toEqual('Shoe 001');
+    expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants'])->toBeArray()->toHaveLength(3);
+    expect($body['stories'][0]['content']['Products'][0]['content']['ProductVariants']['0']['content']['VariantName'])->toEqual('Scarpa 001 Blu');
 })->group('integration');
 
 test('Integration: get one story with Resolved relations 3', function () {
