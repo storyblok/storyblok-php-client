@@ -148,6 +148,23 @@ $result = $managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyI
 print_r($result);
 ```
 
+### Using spaces created in the US region for Management API
+
+When creating a Space, you can select the EU or US region.
+If you want to access a Space created in US region, you need to define the `apiEndpoint` parameter with 'api-us.storyblok.com' value, and forcing the `ssl` option for using HTTPS protocol:
+
+```php
+use Storyblok\ManagementClient;
+
+$client = new ManagementClient(
+    apiKey: 'your-storyblok-oauth-token',
+    apiEndpoint: "api-us.storyblok.com",
+    ssl : true
+);
+```
+
+
+Now you have the `Storyblok\ManagementClient` instance, you can start managing data.
 
 ## Content Delivery API
 
