@@ -82,6 +82,10 @@ class BaseClient
         $this->client = new Guzzle([
             'base_uri' => $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl, $apiRegion),
             'handler' => $handlerStack,
+            'headers' => [
+                'SB-Agent' => "SB-PHP",
+                'SB-Agent-Version' => static::SDK_VERSION ?? '2.0.0',
+            ]
         ]);
     }
 

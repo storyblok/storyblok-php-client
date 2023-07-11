@@ -13,6 +13,7 @@ use Symfony\Component\Cache\CacheItem;
  */
 class Client extends BaseClient
 {
+    const SDK_VERSION = '2.6.1';
     const CACHE_VERSION_KEY = 'storyblok_cv';
     const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
