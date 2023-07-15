@@ -18,6 +18,8 @@ use Psr\Http\Message\ResponseInterface;
  */
 class BaseClient
 {
+    const SDK_VERSION = '2.6.1';
+
     const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
     const DEFAULT_PER_PAGE = 25;
@@ -82,6 +84,10 @@ class BaseClient
         $this->client = new Guzzle([
             'base_uri' => $this->generateEndpoint($apiEndpoint, $apiVersion, $ssl, $apiRegion),
             'handler' => $handlerStack,
+            'headers' => [
+                'SB-Agent' => 'SB-PHP',
+                'SB-Agent-Version' => static::SDK_VERSION,
+            ],
         ]);
     }
 
