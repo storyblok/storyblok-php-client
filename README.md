@@ -181,7 +181,7 @@ require 'vendor/autoload.php';
 // Use the Storyblok\Client class
 use Storyblok\Client;
 // Use the Client class
-$client = new Client('your-storyblok-draft-token');
+$client = new Client('your-storyblok-readonly-accesstoken');
 ```
 
 If you want to use an alias to refer to the `Storyblok\Client` class, you can use the `use ... as ...` statement:
@@ -190,7 +190,7 @@ If you want to use an alias to refer to the `Storyblok\Client` class, you can us
 require 'vendor/autoload.php';
 use Storyblok\Client as StoryblokClient;
 // Use the Storyblok\Client class via alias
-$client = new StoryblokClient('your-storyblok-draft-token');
+$client = new StoryblokClient('your-storyblok-readonly-accesstoken');
 ```
 
 ### Using spaces created in the US region
@@ -202,7 +202,7 @@ If you want to access a Space created in US region, you need to define the `apiR
 use Storyblok\Client;
 
 $client = new Client(
-    apiKey: 'your-storyblok-draft-token',
+    apiKey: 'your-storyblok-readonly-accesstoken',
     apiRegion: 'us'
 );
 ```
@@ -211,7 +211,7 @@ If you are still using PHP 7.x, you have to use the old notation (without named 
 ```php
 use Storyblok\Client;
 $client = new Client(
-    'your-storyblok-draft-token',
+    'your-storyblok-readonly-accesstoken',
     null,
     'v2',
     false,
@@ -226,7 +226,7 @@ Now you have the `Storyblok\Client` instance you can start consuming data.
 ```php
 require 'vendor/autoload.php';
 use Storyblok\Client as StoryblokClient; // you can use also an alias
-$client = new StoryblokClient('your-storyblok-private-token');
+$client = new StoryblokClient('your-storyblok-readonly-accesstoken');
 $data = $client->getStoryBySlug('home')->getBody();
 // access to the body response...
 print_r($data["story"]);
@@ -235,6 +235,46 @@ print_r($data["rels"]);
 print_r($data["links"]);
 ```
 
+### Load a Story by slug for a specific language
+
+If are using the [field-level translation](https://www.storyblok.com/tp/setup-field-and-folder-level-translation), you can retrieve a story for a specific language via the `language()` method. The language method requires a string as a parameter with the code of the language.
+
+```php
+require 'vendor/autoload.php';
+use Storyblok\Client;
+$client = new Client('your-storyblok-readonly-accesstoken');
+$client->language('it');
+$data = $client->getStoryBySlug('home')->getBody();
+// access to the body response...
+print_r($data["story"]);
+```
+
+### Load Space information
+
+If you need to access some space information like space identifier, space name, the latest version timestamp, or the list of configured languages you can use the `spaces` endpoint.
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use Storyblok\Client as StoryblokClient; // you can use also an alias
+
+$client = new StoryblokClient('your-storyblok-readonly-accesstoken');
+$space = $client->get('spaces/me/' , $client->getApiParameters());
+$data = $space->getBody();
+print_r($data);
+// Array of the language codes:
+print_r($data["space"]["language_codes"]);
+// The latest version timestamp:
+echo "Last timestamp : " . $data["space"]["version"] . PHP_EOL;
+// The space name:
+echo "Space name : " . $data["space"]["name"] . PHP_EOL;
+// The space id:
+echo "Space id : " . $data["space"]["id"] . PHP_EOL;
+```
+
+Because the PHP Client, with the current version, doesn't provide an helper for retrieving data from the space endpoint you can use the `get()` method for accessing the `spaces/me` path of the Content Delivery API. The only thing you need to remember is to set the second parameter for the `get()` method injecting the API parameters. Even if you didn't set any parameters, you have to send `getApiParameters()` as the second parameter for the `get()` method because the PHP client manages for you some core parameters like the token. This is because you are using the low-level method `get()`.
 
 
 ### Load a Story by UUID
@@ -242,7 +282,7 @@ print_r($data["links"]);
 ```php
 require 'vendor/autoload.php';
 use Storyblok\Client as StoryblokClient; // you can use also an alias
-$client = new StoryblokClient('your-storyblok-private-token');
+$client = new StoryblokClient('your-storyblok-readonly-accesstoken');
 $client->getStoryByUuid('0c092d14-5cd4-477e-922c-c7f8e330aaea');
 $data = $client->getBody();
 ```
@@ -256,7 +296,7 @@ If you need to retrieve a list of stories you can use the `getStories()` method.
 You can use the parameter to filter the stories.
 For example, if you want to retrieve all entries from a specific folder you can use `starts_with` option in this way:
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 // Get all Stories from the article folder
 $client->getStories(['starts_with' => 'article']);
 $data = $client->getBody();
@@ -277,7 +317,7 @@ Under the hood, the `getAll()` method performs all the API call according to the
 Example, retrieving all stories:
 
 ```php
-$client = new Client('your-storyblok-private-token');
+$client = new Client('your-storyblok-readonly-accesstoken');
 $options = $client->getApiParameters();
 $options['per_page'] = 3;
 $stories = $client->getAll('stories/', $options);
@@ -285,7 +325,7 @@ $stories = $client->getAll('stories/', $options);
 
 If you want to retrieve the array of the responses for each call:
 ```php
-$client = new Client('your-storyblok-private-token');
+$client = new Client('your-storyblok-readonly-accesstoken');
 $options = $client->getApiParameters();
 $options['per_page'] = 3;
 $response = $client->getAll('stories/', $options, true);
@@ -298,7 +338,7 @@ $response = $client->getAll('stories/', $options, true);
 ### Load a list of datasource entries
 With the `Storyblok\Client` you have also the `getDatasourceEntries()` method for retrieving the list of key/values of the datasource:
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 // Get category entries from datasource
 $client->getDatasourceEntries('categories');
 // will return as ['name']['value'] Array for easy access
@@ -311,7 +351,7 @@ If you want to receive also the dimension values besides the default values in o
 You could use dimensions for example when you are using datasource for storing a list of values and you want a translation for the values. In this case, you should create one dimension for each language.
 
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 // Get product entries with dimension 'de-at'
 $client->getDatasourceEntries('products', ['dimension'=> 'de-at']);
 // show the dimension values:
@@ -324,7 +364,7 @@ foreach ($client->getBody()['datasource_entries'] as $key => $value) {
 ### Load a list of tags
 
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 // Get all Tags
 $client->getTags();
 // will return the whole response
@@ -338,7 +378,7 @@ $stringArray = $client->getAsStringArray();
 When you perform a request to Content Delivery API, you can access the headers of the HTTP response.
 For example, after you call the `getStories()` method (for retrieving a list of stories) you can access to the HTTP response headers via `getHeaders()` method:
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 $result = $client->getStories();
 $headersData = $client->getHeaders();
 print_r($headersData);
@@ -355,7 +395,7 @@ If you want to retrieve the published content (for example a published story) yo
 ```php
 require 'vendor/autoload.php';
 use Storyblok\Client as StoryblokClient; // you can use also an alias
-$client = new StoryblokClient('your-storyblok-private-token');
+$client = new StoryblokClient('your-storyblok-readonly-accesstoken');
 $client->editMode(); // forcing draft mode
 $data = $client->getStoryBySlug('home')->getBody();
 // access to the body response...
@@ -374,7 +414,7 @@ When you initialize the `Storyblok\Client` you can set the cache provider.
 For example, using the `setCache()` method you can define the provider (for example filesystem) and an array of options. In case you are using the filesystem as storage of cache items, you can set the path with `path` option:
 
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 $client->setCache('filesystem', [ 'path' => 'cache']);
 $result = $client->getStories();
 print_r($result);
@@ -382,7 +422,7 @@ print_r($result);
 
 You can set a TTL value for the cache via `default_lifetime` option.
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 $client->setCache('filesystem',
     [
         'path' => 'cache',
@@ -397,7 +437,7 @@ The caching mechanism uses under the hood the Symfony Cache package.
 So, you can use the Adapter supported the Symfony Cache.
 For example, for using a MySql database as cache storage, you can setup the connection via the PHP PDO class:
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 $pdo = new PDO('mysql:host=127.0.0.1;dbname=db_php-client;charset=utf8mb4;', "root");
 $client->setCache('mysql', ['pdo' => $pdo]);
 $result = $client->getStories();
@@ -423,7 +463,7 @@ In order to flush the cache when the user clicks publish, you need to listen to 
 
 In clear.php:
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 $client->setCache('filesystem', array('path' => 'cache'));
 // Flush the whole cache when a story has been published
 $client->flushCache();
@@ -463,7 +503,7 @@ Use the following script if you have Nginx SSI enabled and experience issues wit
 In order to resolve relations you can use the `resolveRelations` method of the client passing a comma separated list of fields:
 
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 
 $client->resolveRelations('component_name1.field_name1,component_name2.field_name2')
 $client->getStoryBySlug('home');
@@ -473,7 +513,7 @@ Another example:
 
 ```php
 use Storyblok\Client;
-$client = new Client('your-storyblok-private-token');
+$client = new Client('your-storyblok-readonly-accesstoken');
 $client->resolveRelations('popular-articles.articles');
 $result = $client->getStoryBySlug("home")->getBody();
 ```
@@ -481,7 +521,7 @@ $result = $client->getStoryBySlug("home")->getBody();
 In order to resolve links, you can use the `resolveLinks` method passing the specific type of resolving you want to perform among `url`, `story` or `link`:
 
 ```php
-$client = new \Storyblok\Client('your-storyblok-private-token');
+$client = new \Storyblok\Client('your-storyblok-readonly-accesstoken');
 
 $client->resolveLinks('url')
 $client->getStoryBySlug('home');
