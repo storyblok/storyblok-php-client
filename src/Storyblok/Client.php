@@ -423,6 +423,10 @@ class Client extends BaseClient
                 $options['resolve_links'] = $this->resolveLinks;
             }
 
+            if ($this->release) {
+                $options['from_release'] = $this->release;
+            }
+
             $response = $this->get($endpointUrl, $options);
 
             $this->_save($response, $cacheKey, $this->getVersion());
