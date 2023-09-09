@@ -536,15 +536,29 @@ In case you are using the API V2, to keep a consistent behaviour with the API V1
 The package includes tools for tests and code formatting:
 - [PestPHP](https://pestphp.com/)
 - [PHP CS Fixer](https://cs.symfony.com/)
+- [PHPStan](https://phpstan.org)
 To execute the code quality suite you can use:
+
 ```shell
 composer run all-check
 ```
+
 that executes:
 - vendor/bin/php-cs-fixer fix
 - vendor/bin/pest
+- vendor/bin/phpstan
 
+### Running PHPStan
+You can run either
 
+```shell
+composer phpstan
+```
+or if you install [entr](https://github.com/clibs/entr) you can run:
+```shell
+composer watch-phpstan
+```
+This listens for changes in all php files and runs the analysis automatically.
 
 ## 🔗 Related Links
 
