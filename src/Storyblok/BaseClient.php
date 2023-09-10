@@ -99,7 +99,7 @@ class BaseClient
     public function mockable(array $mocks, $version = 'v2')
     {
         $handlerStack = HandlerStack::create(new MockHandler($mocks));
-        $handlerStack->push(Middleware::retry($this->retryDecider(), function () { return 0; }));
+        $handlerStack->push(Middleware::retry($this->retryDecider(), static function () { return 0; }));
 
         $this->client = new Guzzle([
             'base_uri' => "http://api.storyblok.com/{$version}/cdn/",
@@ -145,7 +145,7 @@ class BaseClient
      */
     public function retryDelay()
     {
-        return function ($numberOfRetries) {
+        return static function ($numberOfRetries) {
             return 1000 * $numberOfRetries;
         };
     }

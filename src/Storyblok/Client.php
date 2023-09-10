@@ -206,8 +206,6 @@ class Client extends BaseClient
      *
      * @param string $driver  Driver
      * @param array  $options Path for file cache
-     *
-     * @return \Storyblok\Client
      */
     public function setCache($driver, $options = []): self
     {
