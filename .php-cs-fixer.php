@@ -27,6 +27,7 @@ $config->setRules([
     'concat_space' => ['spacing' => 'one'],
     'visibility_required' => false,
     'no_null_property_initialization' => false,
+    'static_lambda' => false,
 ]);
 
 $config->setFinder($finder);
