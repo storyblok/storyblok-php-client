@@ -148,10 +148,18 @@ $result = $managementClient->delete('spaces/' . $spaceId . '/stories/' . $storyI
 print_r($result);
 ```
 
-### Using spaces created in the US region for Management API
+### Using spaces created in other regions for Management API
 
-When creating a Space, you can select the EU or US region.
-If you want to access a Space created in US region, you need to define the `apiEndpoint` parameter with 'api-us.storyblok.com' value, and forcing the `ssl` option for using HTTPS protocol:
+When creating a Space, you can select the EU, US, CA, AP region. The default region is EU.  
+```
+EU: api.storyblok.com
+US: api-us.storyblok.com
+CA: api-ca.storyblok.com
+AP: api-ap.storyblok.com
+```
+
+For example:
+If you want to access a Space created in US region, you need to define the `apiEndpoint` parameter with `api-us.storyblok.com` value, and forcing the `ssl` option for using HTTPS protocol:
 
 ```php
 use Storyblok\ManagementClient;
@@ -193,10 +201,12 @@ use Storyblok\Client as StoryblokClient;
 $client = new StoryblokClient('your-storyblok-readonly-accesstoken');
 ```
 
-### Using spaces created in the US region
+### Using spaces created in the other regions
 
-When you create a Space, you can select the region: EU or US.
-If you want to access a Space created in US region, you need to define the `apiRegion` parameter with 'us' value (or 'US'):
+When you create a Space, you can select the region: EU, US, CA or AP.  
+
+For example:
+If you want to access a Space created in US region, you need to define the `apiRegion` parameter with the `us` value (or `US`):
 
 ```php
 use Storyblok\Client;
@@ -219,7 +229,7 @@ $client = new Client(
 );
 ```
 
-Now you have the `Storyblok\Client` instance you can start consuming data.
+Now you have the `Storyblok\Client` instance you can start consuming data. 
 
 ### Load a Story by slug
 
