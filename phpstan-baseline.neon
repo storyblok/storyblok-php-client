@@ -1,0 +1,451 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot access property \\$message on mixed\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:get\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:getAll\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:getAll\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:getBody\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:getBody\\(\\) should return array\\|stdClass but returns array\\|string\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:getHeaders\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:getProxy\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:mockable\\(\\) has parameter \\$mocks with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:responseHandler\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Method Storyblok\\\\BaseClient\\:\\:setProxy\\(\\) has parameter \\$proxy with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Parameter \\#1 \\$apiEndpoint of method Storyblok\\\\BaseClient\\:\\:generateEndpoint\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Parameter \\#1 \\$apiKey of method Storyblok\\\\BaseClient\\:\\:setApiKey\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Part \\$apiRegion \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Part \\$version \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Property Storyblok\\\\BaseClient\\:\\:\\$_relationsList type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Property Storyblok\\\\BaseClient\\:\\:\\$maxRetries \\(int\\) does not accept mixed\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Property Storyblok\\\\BaseClient\\:\\:\\$proxy type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Property Storyblok\\\\BaseClient\\:\\:\\$responseBody type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Property Storyblok\\\\BaseClient\\:\\:\\$responseHeaders type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/BaseClient.php
+
+		-
+			message: "#^Argument of an invalid type array\\|\\(ArrayAccess&stdClass\\) supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:getBody\\(\\)\\.$#"
+			count: 3
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot access offset 'story' on stdClass\\.$#"
+			count: 2
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot access offset \\(int\\|string\\) on array\\|stdClass\\|string\\.$#"
+			count: 2
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot access offset mixed on array\\|stdClass\\|string\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot call method clear\\(\\) on Symfony\\\\Component\\\\Cache\\\\Adapter\\\\AbstractAdapter\\|null\\.$#"
+			count: 2
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot call method delete\\(\\) on Symfony\\\\Component\\\\Cache\\\\Adapter\\\\AbstractAdapter\\|null\\.$#"
+			count: 5
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot call method getItem\\(\\) on Symfony\\\\Component\\\\Cache\\\\Adapter\\\\AbstractAdapter\\|null\\.$#"
+			count: 4
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Cannot call method save\\(\\) on Symfony\\\\Component\\\\Cache\\\\Adapter\\\\AbstractAdapter\\|null\\.$#"
+			count: 2
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_assignState\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_generateTree\\(\\) has parameter \\$items with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_generateTree\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_getCacheKey\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_getCacheKey\\(\\) has parameter \\$key with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_prepareOptionsForKey\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:_save\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:cacheClear\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:cacheGet\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:cacheSave\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:cacheSave\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:enrichContent\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:enrichContent\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:enrichContent\\(\\) should return array\\|string but returns array\\|stdClass\\|string\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:enrichStories\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:enrichStories\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:enrichStories\\(\\) has parameter \\$queryString with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getApiParameters\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getAsNameValueArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getAsTree\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getCacheVersion\\(\\) should return int\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getCachedItem\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getDatasourceEntries\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getLinks\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getResolvedLinks\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getResolvedLinks\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getResolvedRelationByUuid\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getResolvedRelationByUuid\\(\\) has parameter \\$uuid with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getResolvedRelations\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getResolvedRelations\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getStories\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getTags\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:getTagsAsStringArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:insertRelations\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:insertRelations\\(\\) has parameter \\$value with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:isStopResolving\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:isStopResolving\\(\\) has parameter \\$level with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:responseHandler\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:setCache\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:settingStopResolving\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\Client\\:\\:settingStopResolving\\(\\) has parameter \\$data with no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Offset 'cv' does not exist on array\\|string\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Offset 'datasource_entries' does not exist on non\\-empty\\-array\\|non\\-empty\\-string\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Offset 'links' does not exist on non\\-empty\\-array\\|non\\-empty\\-string\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Offset 'stories' does not exist on array\\|string\\.$#"
+			count: 2
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Offset 'tags' does not exist on non\\-empty\\-array\\|non\\-empty\\-string\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function substr expects string, mixed given\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Property Storyblok\\\\Client\\:\\:\\$resolveLinks \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Property Storyblok\\\\Client\\:\\:\\$resolvedLinks type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Property Storyblok\\\\Client\\:\\:\\$resolvedRelations type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Client.php
+
+		-
+			message: "#^Method Storyblok\\\\ManagementClient\\:\\:post\\(\\) has parameter \\$payload with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/ManagementClient.php
+
+		-
+			message: "#^Method Storyblok\\\\ManagementClient\\:\\:put\\(\\) has parameter \\$payload with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/ManagementClient.php
+
+		-
+			message: "#^Method Storyblok\\\\ManagementClient\\:\\:responseHandler\\(\\) has parameter \\$queryString with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/ManagementClient.php
+
+		-
+			message: "#^Parameter \\#2 \\$queryString of method Storyblok\\\\BaseClient\\:\\:responseHandler\\(\\) expects array, array\\|null given\\.$#"
+			count: 1
+			path: src/Storyblok/ManagementClient.php
+
+		-
+			message: "#^Parameter \\#4 \\$ssl of method Storyblok\\\\BaseClient\\:\\:__construct\\(\\) expects bool, mixed given\\.$#"
+			count: 1
+			path: src/Storyblok/ManagementClient.php
+
+		-
+			message: "#^Method Storyblok\\\\Response\\:\\:getBody\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Storyblok/Response.php
+
+		-
+			message: "#^Property Storyblok\\\\Response\\:\\:\\$httpResponseBody has no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Response.php
+
+		-
+			message: "#^Property Storyblok\\\\Response\\:\\:\\$httpResponseCode has no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Response.php
+
+		-
+			message: "#^Property Storyblok\\\\Response\\:\\:\\$httpResponseHeaders has no type specified\\.$#"
+			count: 1
+			path: src/Storyblok/Response.php
