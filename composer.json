@@ -8,13 +8,13 @@
     "require": {
         "php": ">=7.3.0",
         "guzzlehttp/guzzle": "^7.4",
-        "symfony/cache": "^4.0|^5.0|^6.0",
+        "symfony/cache": "^4.0|^5.0|^6.0|^7.0",
         "ext-json": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.4.0",
         "pestphp/pest": "1.21.2",
-        "phpstan/phpstan": "1.9.x-dev"
+        "phpstan/phpstan": "^1.10.59"
     },
     "provide": {
         "psr/simple-cache-implementation": "1.0|2.0|3.0"
@@ -52,8 +52,8 @@
         "test-ci": "pest --ci",
         "phpstan": "phpstan analyse",
         "test-coverage": "pest --coverage",
-        "format": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --allow-risky=yes --using-cache=no",
-        "cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --using-cache=no",
+        "format": "php-cs-fixer fix --allow-risky=yes --using-cache=no",
+        "cs": "php-cs-fixer fix --dry-run --using-cache=no",
         "all-check": [
             "@format",
             "@phpstan",
