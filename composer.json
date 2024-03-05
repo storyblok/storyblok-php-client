@@ -63,7 +63,7 @@
             "@cs",
             "@phpstan",
             "@test-ci"
-        ]
-
+        ],
+        "watch-phpstan": "find src/ tests/ -name '*.php' | entr phpstan analyse"
     }
 }
