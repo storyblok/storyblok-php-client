@@ -256,7 +256,7 @@ class Client extends BaseClient
      *
      * @param string $slug Slug
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function deleteCacheBySlug($slug)
     {
@@ -276,7 +276,7 @@ class Client extends BaseClient
     /**
      * Flush all cache.
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function flushCache()
     {
@@ -294,7 +294,7 @@ class Client extends BaseClient
      * @param mixed $reset
      * @param mixed $injectValue
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function setCacheVersion($reset = false, $injectValue = '')
     {
@@ -388,7 +388,7 @@ class Client extends BaseClient
      *
      * @param array $options Options
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getStories($options = [])
     {
@@ -480,7 +480,7 @@ class Client extends BaseClient
      *
      * @param array $options Options
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getTags($options = [])
     {
@@ -512,7 +512,7 @@ class Client extends BaseClient
      * @param string $slug    Slug
      * @param array  $options Options
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getDatasourceEntries($slug, $options = [])
     {
@@ -551,7 +551,7 @@ class Client extends BaseClient
      *
      * @param array $options Options
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     public function getLinks($options = [])
     {
@@ -975,7 +975,7 @@ class Client extends BaseClient
      *
      * @param string $key Cache key
      *
-     * @return \Storyblok\Client
+     * @return Client
      */
     private function reCacheOnPublish($key)
     {
