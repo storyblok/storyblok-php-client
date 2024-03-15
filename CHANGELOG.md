@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.6.3 - 2024-03-15
+Release: [v2.6.3](https://github.com/storyblok/storyblok-php-client/releases/tag/v2.6.3)
+- Update Symfony Cache 7 library for Symfony 7 compatibility
+
+## 2.6.2 - 2023-12-08
+Release: [v2.6.2](https://github.com/storyblok/storyblok-php-client/releases/tag/v2.6.2)
+- fix: set from_release parameter in getStories if release is set for client
+- Update readme with new regions
+
+## 2.6.1 - 2023-07-15
+Release: [v2.6.1](https://github.com/storyblok/storyblok-php-client/releases/tag/v2.6.1)
+Added agent headers to every request
+
+## 2.6.0 - 2023-04-13
+Release: [v2.6.0](https://github.com/storyblok/storyblok-php-client/releases/tag/v2.6.0)
+Fixed level resolving stories
+
 ## 2.5.0 - 2023-02-14
 Release: [v2.5.0](https://github.com/storyblok/php-client/releases/tag/v2.5.0)
 
