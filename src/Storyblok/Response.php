@@ -6,11 +6,11 @@ use Psr\Http\Message\StreamInterface;
 
 class Response
 {
-    public array $httpResponseBody;
+    public $httpResponseBody;
 
-    public ?int $httpResponseCode;
+    public $httpResponseCode;
 
-    public mixed $httpResponseHeaders;
+    public $httpResponseHeaders;
 
     public function getBody(): array
     {
