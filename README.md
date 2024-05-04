@@ -36,8 +36,8 @@ In this README file you will find information for using the Storyblok PHP client
 
 ## Installing the Storyblok PHP client
 You can install the Storyblok PHP Client via composer.
-Storyblok's PHP client requires PHP version 7.3 to 8.2.
-The suggestion is to use an actively supported version of PHP (8.1 and 8.2).
+Storyblok's PHP client requires PHP version 7.3 to 8.3.
+The suggestion is to use an actively supported version of PHP (8.2 and 8.3).
 
 If you want to install the _stable_ release of Storyblok PHP client you can launch:
 ```bash
@@ -150,7 +150,7 @@ print_r($result);
 
 ### Using spaces created in other regions for Management API
 
-When creating a Space, you can select the EU, US, CA, AP region. The default region is EU.  
+When creating a Space, you can select the EU, US, CA, AP region. The default region is EU.
 ```
 EU: api.storyblok.com
 US: api-us.storyblok.com
@@ -203,7 +203,7 @@ $client = new StoryblokClient('your-storyblok-readonly-accesstoken');
 
 ### Using spaces created in the other regions
 
-When you create a Space, you can select the region: EU, US, CA or AP.  
+When you create a Space, you can select the region: EU, US, CA or AP.
 
 For example:
 If you want to access a Space created in US region, you need to define the `apiRegion` parameter with the `us` value (or `US`):
@@ -229,7 +229,7 @@ $client = new Client(
 );
 ```
 
-Now you have the `Storyblok\Client` instance you can start consuming data. 
+Now you have the `Storyblok\Client` instance you can start consuming data.
 
 ### Load a Story by slug
 
