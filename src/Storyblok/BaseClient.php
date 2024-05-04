@@ -115,7 +115,7 @@ class BaseClient
             $retries,
             $request,
             $response = null,
-            TransferException $exception = null
+            ?TransferException $exception = null
         ) {
             // Limit the number of retries
             if ($retries >= $this->maxRetries) {
