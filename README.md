@@ -89,7 +89,7 @@ $result = $managementClient->get('spaces/' . $spaceId . '/stories')->getBody();
 print_r($result['stories']);
 ```
 
-With `getBody()` method you can access the body response, and then access the `'`stories'` key, to access the story list.
+With `getBody()` method you can access the body response, and then access the `stories` key, to access the story list.
 
 ### Create data, post() method
 If you need to create data, you have to perform an HTTP request with the `POST` method.
