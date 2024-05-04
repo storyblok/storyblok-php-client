@@ -13,8 +13,9 @@ use Symfony\Component\Cache\CacheItem;
  */
 class Client extends BaseClient
 {
-    const CACHE_VERSION_KEY = 'storyblok_cv';
-    const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
+    public const CACHE_VERSION_KEY = 'storyblok_cv';
+
+    public const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
     /**
      * @var string
@@ -67,29 +68,29 @@ class Client extends BaseClient
      * @var array
      */
     private $resolvedRelations;
+
     /**
      * List of resolved relations.
      *
      * @var array
      */
     private $resolvedLinks;
+
     /**
      * @var bool
      */
     private $cacheNotFound;
+
     /**
      * @var null|mixed
      */
     private $cv;
 
     /**
-     * @param string     $apiKey
-     * @param string     $apiEndpoint
-     * @param string     $apiVersion
-     * @param bool       $ssl
-     * @param null|mixed $apiRegion
+     * @param string $apiEndpoint
+     * @param bool   $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = null, $apiVersion = 'v2', $ssl = false, $apiRegion = null)
+    public function __construct(?string $apiKey = null, $apiEndpoint = null, string $apiVersion = 'v2', $ssl = false, ?string $apiRegion = null)
     {
         parent::__construct($apiKey, $apiEndpoint, $apiVersion, $ssl, $apiRegion);
 
@@ -105,10 +106,8 @@ class Client extends BaseClient
      * Enables editmode to receive draft versions.
      *
      * @param bool $enabled
-     *
-     * @return Client
      */
-    public function editMode($enabled = true)
+    public function editMode($enabled = true): self
     {
         $this->editModeEnabled = $enabled;
 
@@ -119,10 +118,8 @@ class Client extends BaseClient
      * Set the language the story should be retrieved in.
      *
      * @param string $language
-     *
-     * @return Client
      */
-    public function language($language = 'default')
+    public function language($language = 'default'): self
     {
         $this->language = $language;
 
@@ -143,10 +140,8 @@ class Client extends BaseClient
      * Set the fallback language the story should be retrieved in.
      *
      * @param string $fallbackLanguage
-     *
-     * @return Client
      */
-    public function fallbackLanguage($fallbackLanguage = 'default')
+    public function fallbackLanguage($fallbackLanguage = 'default'): self
     {
         $this->fallbackLanguage = $fallbackLanguage;
 
@@ -167,10 +162,8 @@ class Client extends BaseClient
      * Enables caching for 404 responses.
      *
      * @param bool $enabled
-     *
-     * @return Client
      */
-    public function cacheNotFound($enabled = true)
+    public function cacheNotFound($enabled = true): self
     {
         $this->cacheNotFound = $enabled;
 
@@ -179,20 +172,16 @@ class Client extends BaseClient
 
     /**
      * Returns the requested version of the content.
-     *
-     * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->editModeEnabled ? 'draft' : 'published';
     }
 
     /**
      * Returns the commond API parameters.
-     *
-     * @return array
      */
-    public function getApiParameters()
+    public function getApiParameters(): array
     {
         return [
             'token' => $this->getApiKey(),
@@ -207,7 +196,7 @@ class Client extends BaseClient
      * @param string $driver  Driver
      * @param array  $options Path for file cache
      */
-    public function setCache($driver, $options = []): self
+    public function setCache($driver, array $options = []): self
     {
         $options['serializer'] = 'php';
         $options['prefix_key'] = 'storyblokcache';
@@ -255,10 +244,8 @@ class Client extends BaseClient
      * Manually delete the cache of one item.
      *
      * @param string $slug Slug
-     *
-     * @return Client
      */
-    public function deleteCacheBySlug($slug)
+    public function deleteCacheBySlug(string $slug): self
     {
         $key = $this->_getCacheKey('stories/' . $slug);
         $linksCacheKey = $this->_getCacheKey($this->linksPath);
@@ -275,10 +262,8 @@ class Client extends BaseClient
 
     /**
      * Flush all cache.
-     *
-     * @return Client
      */
-    public function flushCache()
+    public function flushCache(): self
     {
         if ($this->isCache()) {
             $this->cache->clear();
@@ -293,10 +278,8 @@ class Client extends BaseClient
      *
      * @param mixed $reset
      * @param mixed $injectValue
-     *
-     * @return Client
      */
-    public function setCacheVersion($reset = false, $injectValue = '')
+    public function setCacheVersion($reset = false, $injectValue = ''): self
     {
         if ($this->isCache()) {
             if ($reset) {
@@ -324,7 +307,7 @@ class Client extends BaseClient
      *
      * @return null|int
      */
-    function getCacheVersion()
+    public function getCacheVersion()
     {
         if (empty($this->cv)) {
             return null;
@@ -337,10 +320,8 @@ class Client extends BaseClient
      * Pull story from a release for preview.
      *
      * @param string $release
-     *
-     * @return Client
      */
-    public function setRelease($release)
+    public function setRelease($release): self
     {
         $this->release = $release;
 
@@ -352,11 +333,9 @@ class Client extends BaseClient
      *
      * @param string $slug Slug
      *
-     * @return Client
-     *
      * @throws ApiException
      */
-    public function getStoryBySlug($slug)
+    public function getStoryBySlug(string $slug): self
     {
         return $this->getStory($slug);
     }
@@ -366,11 +345,9 @@ class Client extends BaseClient
      *
      * @param string $uuid UUID
      *
-     * @return Client
-     *
      * @throws ApiException
      */
-    public function getStoryByUuid($uuid)
+    public function getStoryByUuid(string $uuid): self
     {
         return $this->getStory($uuid, true);
     }
@@ -387,10 +364,8 @@ class Client extends BaseClient
      * )
      *
      * @param array $options Options
-     *
-     * @return Client
      */
-    public function getStories($options = [])
+    public function getStories($options = []): self
     {
         $endpointUrl = 'stories/';
 
@@ -442,7 +417,7 @@ class Client extends BaseClient
      *
      * @return $this
      */
-    public function resolveRelations($reference)
+    public function resolveRelations($reference): self
     {
         $this->resolveRelations = $reference;
         $this->_relationsList = [];
@@ -451,6 +426,7 @@ class Client extends BaseClient
             if (!\array_key_exists($relationVars[0], $this->_relationsList)) {
                 $this->_relationsList[$relationVars[0]] = [];
             }
+
             $this->_relationsList[$relationVars[0]][] = $relationVars[1];
         }
 
@@ -464,7 +440,7 @@ class Client extends BaseClient
      *
      * @return $this
      */
-    public function resolveLinks($reference)
+    public function resolveLinks($reference): self
     {
         $this->resolveLinks = $reference;
 
@@ -479,10 +455,8 @@ class Client extends BaseClient
      * )
      *
      * @param array $options Options
-     *
-     * @return Client
      */
-    public function getTags($options = [])
+    public function getTags($options = []): self
     {
         $endpointUrl = 'tags/';
 
@@ -511,10 +485,8 @@ class Client extends BaseClient
      *
      * @param string $slug    Slug
      * @param array  $options Options
-     *
-     * @return Client
      */
-    public function getDatasourceEntries($slug, $options = [])
+    public function getDatasourceEntries(string $slug, $options = []): self
     {
         $endpointUrl = 'datasource_entries/';
 
@@ -550,10 +522,8 @@ class Client extends BaseClient
      * )
      *
      * @param array $options Options
-     *
-     * @return Client
      */
-    public function getLinks($options = [])
+    public function getLinks($options = []): self
     {
         $key = $this->linksPath;
         $cacheKey = $this->_getCacheKey($key . serialize($this->_prepareOptionsForKey($options)));
@@ -575,10 +545,8 @@ class Client extends BaseClient
 
     /**
      * Transforms datasources into a ['name']['value'] array.
-     *
-     * @return array
      */
-    public function getAsNameValueArray()
+    public function getAsNameValueArray(): array
     {
         if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
@@ -597,10 +565,8 @@ class Client extends BaseClient
 
     /**
      * Transforms tags into a string array.
-     *
-     * @return array
      */
-    public function getTagsAsStringArray()
+    public function getTagsAsStringArray(): array
     {
         if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
@@ -617,10 +583,8 @@ class Client extends BaseClient
 
     /**
      * Transforms links into a tree.
-     *
-     * @return array
      */
-    public function getAsTree()
+    public function getAsTree(): array
     {
         if ('' === $this->responseBody || [] === $this->responseBody) {
             return [];
@@ -639,18 +603,15 @@ class Client extends BaseClient
         return $this->_generateTree($tree, 0);
     }
 
-    public function cacheClear()
+    public function cacheClear(): void
     {
         $this->cache->clear();
     }
 
     /**
      * Retrieve or resolve the relations.
-     *
-     * @param \stdClass $data
-     * @param array     $queryString
      */
-    function getResolvedRelations($data, $queryString)
+    public function getResolvedRelations(array $data, array $queryString): void
     {
         $this->resolvedRelations = [];
         $relations = [];
@@ -668,7 +629,9 @@ class Client extends BaseClient
                 $chunks[] = \array_slice($data['rel_uuids'], $i, $end);
             }
 
-            for ($chunkIndex = 0; $chunkIndex < \count($chunks); ++$chunkIndex) {
+            $counter = \count($chunks);
+
+            for ($chunkIndex = 0; $chunkIndex < $counter; ++$chunkIndex) {
                 $relationsParams = [
                     'per_page' => $chunkSize,
                     'by_uuids' => implode(',', $chunks[$chunkIndex]),
@@ -676,6 +639,7 @@ class Client extends BaseClient
                 if (isset($queryString['language'])) {
                     $relationsParams['language'] = $queryString['language'];
                 }
+
                 $relationsRes = $this->getStories($relationsParams);
 
                 $relations = array_merge($relations, $relationsRes->responseBody['stories']);
@@ -698,10 +662,8 @@ class Client extends BaseClient
 
     /**
      * Retrieve or resolve the Links.
-     *
-     * @param \stdClass $data
      */
-    function getResolvedLinks($data, array $queryString)
+    public function getResolvedLinks(array $data, array $queryString): void
     {
         $this->resolvedLinks = [];
         $links = [];
@@ -718,16 +680,19 @@ class Client extends BaseClient
                 $chunks[] = \array_slice($data['link_uuids'], $i, $end);
             }
 
-            for ($chunkIndex = 0; $chunkIndex < \count($chunks); ++$chunkIndex) {
+            $counter = \count($chunks);
+
+            for ($chunkIndex = 0; $chunkIndex < $counter; ++$chunkIndex) {
                 $linksRes = $this->getStories([
                     'per_page' => $chunkSize,
-                    'language' => isset($queryString['language']) ? $queryString['language'] : 'default',
+                    'language' => $queryString['language'] ?? 'default',
                     'by_uuids' => implode(',', $chunks[$chunkIndex]),
                 ]);
 
                 $links = array_merge($links, $linksRes->responseBody['stories']);
             }
         }
+
         foreach ($links as $link) {
             $this->resolvedLinks[$link['uuid']] = $link;
         }
@@ -808,14 +773,11 @@ class Client extends BaseClient
     /**
      * Gets a list of stories.
      *
-     * @param string $slug   Slug
-     * @param bool   $byUuid
-     *
-     * @return Client
+     * @param string $slug Slug
      *
      * @throws ApiException
      */
-    private function getStory($slug, $byUuid = false)
+    private function getStory(string $slug, bool $byUuid = false): self
     {
         $key = 'stories/' . $slug;
         $cacheKey = $this->_getCacheKey($key);
@@ -875,7 +837,10 @@ class Client extends BaseClient
         return $this;
     }
 
-    private function enrichStories($data, $queryString)
+    /**
+     * @return mixed[]
+     */
+    private function enrichStories(array $data, array $queryString): array
     {
         $enrichedData = $data;
         $this->getResolvedRelations($data, $queryString);
@@ -893,6 +858,7 @@ class Client extends BaseClient
                 $story['content'] = $this->enrichContent($story['content']);
                 $stories[] = $story;
             }
+
             $enrichedData['stories'] = $stories;
         }
 
@@ -974,10 +940,8 @@ class Client extends BaseClient
      * Automatically delete the cache of one item if client sends published parameter.
      *
      * @param string $key Cache key
-     *
-     * @return Client
      */
-    private function reCacheOnPublish($key)
+    private function reCacheOnPublish(string $key): self
     {
         if (isset($_GET['_storyblok_published']) && $this->isCache()) {
             $this->cache->delete($key);
@@ -994,12 +958,9 @@ class Client extends BaseClient
     /**
      * Recursive function to generate tree.
      *
-     * @param array $items
-     * @param int   $parent
-     *
-     * @return array
+     * @param int $parent
      */
-    private function _generateTree($items, $parent = 0)
+    private function _generateTree(array $items, $parent = 0): array
     {
         $tree = [];
 
@@ -1021,20 +982,27 @@ class Client extends BaseClient
 
     /**
      * Save's the current response in the cache if version is published.
-     *
-     * @param Response $response
-     * @param string   $key
-     * @param string   $version
      */
-    private function _save($response, $key, $version)
+    private function _save(Response $response, string $key, string $version): void
     {
         $this->_assignState($response);
-        if ($this->isCache()
-            && 'published' === $version
-            && $response->httpResponseHeaders
-            && 200 === $response->httpResponseCode) {
-            $this->cacheSave($response, $key);
+        if (!$this->isCache()) {
+            return;
         }
+
+        if ('published' !== $version) {
+            return;
+        }
+
+        if (!$response->httpResponseHeaders) {
+            return;
+        }
+
+        if (200 !== $response->httpResponseCode) {
+            return;
+        }
+
+        $this->cacheSave($response, $key);
     }
 
     private function isCache(): bool
@@ -1047,7 +1015,7 @@ class Client extends BaseClient
         if ($this->isCache()) {
             $cacheItem = $this->cache->getItem($key);
             $cacheItem->set($value);
-            if ('object' === \gettype($value) && 'Storyblok\\Response' === \get_class($value) && \is_array($value->getBody()) && \array_key_exists('cv', $value->getBody())) {
+            if ('object' === \gettype($value) && $value instanceof Response && \is_array($value->getBody()) && \array_key_exists('cv', $value->getBody())) {
                 // $cachedCv = $this->cache->getItem(self::CACHE_VERSION_KEY);
                 // $cachedCv->set($value->getBody()['cv']);
                 $this->setCacheVersion(false, $value->getBody()['cv']);
@@ -1072,7 +1040,7 @@ class Client extends BaseClient
     /**
      * Assigns the httpResponseBody and httpResponseHeader to '$this';.
      */
-    private function _assignState(Response $response)
+    private function _assignState(Response $response): void
     {
         $this->responseBody = $response->httpResponseBody;
         $this->responseHeaders = $response->httpResponseHeaders;
@@ -1084,7 +1052,7 @@ class Client extends BaseClient
      *
      * @param mixed $options
      */
-    private function _prepareOptionsForKey($options)
+    private function _prepareOptionsForKey($options): array
     {
         $prepared = [];
         $keyOrder = [];
@@ -1092,22 +1060,23 @@ class Client extends BaseClient
             $prepared[] = $value;
             $keyOrder[] = substr($key, 0, 1);
         }
+
         $prepared[] = implode('', $keyOrder);
 
         return $prepared;
     }
 
-    private function _getCacheKey($key = '')
+    private function _getCacheKey($key = ''): string
     {
         return hash('sha256', $key);
     }
 
-    private function settingStopResolving(&$data)
+    private function settingStopResolving(array &$data): void
     {
         $data['_stopResolving'] = true;
     }
 
-    private function isStopResolving($level)
+    private function isStopResolving($level): bool
     {
         return $level > 4;
     }

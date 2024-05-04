@@ -6,11 +6,11 @@ use Psr\Http\Message\StreamInterface;
 
 class Response
 {
-    public $httpResponseBody;
+    public array $httpResponseBody;
 
-    public $httpResponseCode;
+    public ?int $httpResponseCode;
 
-    public $httpResponseHeaders;
+    public mixed $httpResponseHeaders;
 
     public function getBody(): array
     {
@@ -32,7 +32,7 @@ class Response
         $data = (string) $body;
         $jsonResponseData = (array) json_decode($data, true);
         // return response data as json if possible, raw if not
-        $this->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
+        $this->httpResponseBody = $data && [] === $jsonResponseData ? $data : $jsonResponseData;
 
         return $this;
     }
@@ -44,10 +44,8 @@ class Response
 
     /**
      * @param mixed $httpResponseCode
-     *
-     * @return Response
      */
-    public function setCode($httpResponseCode)
+    public function setCode($httpResponseCode): self
     {
         $this->httpResponseCode = $httpResponseCode;
 
@@ -64,10 +62,8 @@ class Response
 
     /**
      * @param mixed $httpResponseHeaders
-     *
-     * @return Response
      */
-    public function setHeaders($httpResponseHeaders)
+    public function setHeaders($httpResponseHeaders): self
     {
         $this->httpResponseHeaders = $httpResponseHeaders;
 
