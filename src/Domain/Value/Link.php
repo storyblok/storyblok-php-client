@@ -31,7 +31,7 @@ final readonly class Link
     public bool $isPublished;
 
     /**
-     * @var LinkAlternate
+     * @var list<LinkAlternate>
      */
     public array $alternates;
 
