@@ -29,9 +29,13 @@ final class StoryblokClient
     private string $token;
     private int $timeout;
 
-    public function __construct(string $baseUri, string $token, int $timeout = 4)
-    {
-        $this->client = HttpClient::createForBaseUri($baseUri);
+    public function __construct(
+        string $baseUri,
+        #[\SensitiveParameter] string $token,
+        int $timeout = 4,
+        ?HttpClientInterface $storyblokClient = null
+    ) {
+        $this->client = $storyblokClient ?? HttpClient::createForBaseUri($baseUri);
         $this->token = TrimmedNonEmptyString::fromString($token, '$token must not be an empty string')->toString();
         $this->timeout = $timeout;
     }
