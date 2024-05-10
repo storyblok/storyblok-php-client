@@ -1,0 +1,49 @@
+{
+    "name": "sensiolabs-de/storyblok-api",
+    "type": "library",
+    "description": "API for Storyblok",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Silas Joisten",
+            "email": "silasjoisten@proton.me"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "oskarstark/trimmed-non-empty-string": "^1.1",
+        "psr/log": "^3.0",
+        "symfony/http-client": "^6.0 || ^7.0",
+        "thecodingmachine/safe": "^2.0",
+        "webmozart/assert": "^1.11"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.2",
+        "ergebnis/data-provider": "^3.2",
+        "ergebnis/php-cs-fixer-config": "^6.28",
+        "ergebnis/test-util": "^1.5",
+        "phpstan/extension-installer": "^1.0",
+        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan-webmozart-assert": "^1.0",
+        "phpunit/phpunit": "^9.0",
+        "thecodingmachine/phpstan-safe-rule": "^1.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "SensioLabs\\Storyblok\\Api\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SensioLabs\\Storyblok\\Api\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+}

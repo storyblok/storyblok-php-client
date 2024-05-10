@@ -1,0 +1,109 @@
+name: "PHP"
+
+on:
+    schedule:
+        -   cron:  '0 5 * * *'
+    pull_request:
+    push:
+        branches:
+            - "develop"
+            - "master"
+
+env:
+    REQUIRED_PHP_EXTENSIONS: "ctype, filter, hash, iconv, json"
+
+jobs:
+    coding-standards:
+        name: "Coding Standards"
+
+        runs-on: "ubuntu-latest"
+
+        strategy:
+            matrix:
+                php-version:
+                    - "8.1"
+        env:
+            PHP_CS_FIXER_IGNORE_ENV: "1" # Remove if PHP-CS-Fixer supports PHP 8.2
+
+        steps:
+            - name: "Checkout"
+              uses: "actions/checkout@v4"
+
+            - name: "Install PHP with extensions"
+              uses: "shivammathur/setup-php@2.24.0"
+              with:
+                  coverage: "none"
+                  extensions: "${{ env.REQUIRED_PHP_EXTENSIONS }}"
+                  php-version: "${{ matrix.php-version }}"
+                  tools: "composer:v2"
+
+            - name: "Validate composer.json"
+              run: "composer validate"
+
+            - name: "Install dependencies with composer"
+              uses: "ramsey/composer-install@2.2.0"
+              with:
+                  composer-options: "--no-scripts"
+
+            - name: "Run ergebnis/composer-normalize"
+              run: "composer normalize"
+
+            - name: "Run friendsofphp/php-cs-fixer"
+              run: "vendor/bin/php-cs-fixer fix --diff --verbose"
+
+    static-code-analysis:
+        name: "Static Code Analysis"
+
+        runs-on: "ubuntu-latest"
+
+        strategy:
+            matrix:
+                php-version:
+                    - "8.1"
+
+        steps:
+            - name: "Checkout"
+              uses: "actions/checkout@v4"
+
+            - name: "Install PHP with extensions"
+              uses: "shivammathur/setup-php@v2"
+              with:
+                  coverage: "none"
+                  extensions: "${{ env.REQUIRED_PHP_EXTENSIONS }}"
+                  php-version: "${{ matrix.php-version }}"
+
+            - name: "Install dependencies with composer"
+              uses: "ramsey/composer-install@2.2.0"
+
+            - name: "Static code analysis"
+              run: "vendor/bin/phpstan analyse --configuration phpstan.neon.dist --no-progress"
+
+    tests:
+        name: "Tests"
+
+        runs-on: "ubuntu-latest"
+
+        strategy:
+            matrix:
+                php-version:
+                    - "8.1"
+
+        steps:
+            - name: "Checkout"
+              uses: "actions/checkout@v4"
+
+            - name: "Install PHP with extensions"
+              uses: "shivammathur/setup-php@v2"
+              with:
+                coverage: "pcov"
+                extensions: "${{ env.REQUIRED_PHP_EXTENSIONS }}"
+                php-version: "${{ matrix.php-version }}"
+
+            - name: "Install dependencies with composer"
+              uses: "ramsey/composer-install@2.2.0"
+
+            - name: "Run unit tests"
+              run: "vendor/bin/phpunit --configuration=phpunit.xml.dist --coverage-clover=.build/logs/clover.xml"
+
+            - name: "Send code coverage report to Codecov.io"
+              run: "bash <(curl -s https://codecov.io/bash)"
