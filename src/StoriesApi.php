@@ -24,7 +24,7 @@ use Webmozart\Assert\Assert;
 final class StoriesApi implements StoriesApiInterface
 {
     public function __construct(
-        private StoryblokClient $client,
+        private StoryblokClientInterface $client,
         private LoggerInterface $logger = new NullLogger(),
     ) {
     }

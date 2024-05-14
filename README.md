@@ -13,6 +13,7 @@ composer require sensiolabs-de/storyblok-api
 ```
 
 ### Setup
+
 ```php
 use SensioLabs\Storyblok\Api\StoryblokClient;
 

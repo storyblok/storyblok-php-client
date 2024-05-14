@@ -21,7 +21,7 @@ use SensioLabs\Storyblok\Api\Response\LinksResponse;
 final class LinksApi implements LinksApiInterface
 {
     public function __construct(
-        private StoryblokClient $client,
+        private StoryblokClientInterface $client,
         private LoggerInterface $logger = new NullLogger(),
     ) {
     }
