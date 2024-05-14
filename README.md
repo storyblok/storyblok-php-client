@@ -42,6 +42,18 @@ $storiesApi = new StoriesApi($client);
 $response = $storiesApi->all(locale: 'de');
 ```
 
+### Get all available stories by Content Type (`string`)
+
+```php
+use SensioLabs\Storyblok\Api\StoriesApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+
+$client = new StoryblokClient(/* ... */);
+
+$storiesApi = new StoriesApi($client);
+$response = $storiesApi->allByContentType('custom_content_type', locale: 'de');
+```
+
 ### Get by uuid (`SensioLabs\Storyblok\Api\Domain\Value\Uuid`)
 
 ```php
@@ -84,6 +96,7 @@ $client = new StoryblokClient(/* ... */);
 $storiesApi = new StoriesApi($client);
 $response = $storiesApi->byId($id, locale: 'de');
 ```
+
 
 ## Links
 

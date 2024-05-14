@@ -82,6 +82,34 @@ final class StoriesApi implements StoriesApiInterface
         }
     }
 
+    public function allByContentType(string $contentType, string $locale = 'default'): StoriesResponse
+    {
+        Assert::stringNotEmpty($contentType);
+        Assert::stringNotEmpty($locale);
+
+        try {
+            $response = $this->client->request(
+                'GET',
+                '/v2/cdn/stories',
+                [
+                    'query' => [
+                        'language' => $locale,
+                        'fallback_lang' => 'default',
+                        'content_type' => $contentType,
+                    ],
+                ],
+            );
+
+            $this->logger->debug('Response', $response->toArray(false));
+
+            return new StoriesResponse($response->toArray());
+        } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage());
+
+            throw $e;
+        }
+    }
+
     public function byUuid(Uuid $uuid, string $locale = 'default'): StoryResponse
     {
         Assert::stringNotEmpty($locale);

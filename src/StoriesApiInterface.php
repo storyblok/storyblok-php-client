@@ -25,6 +25,8 @@ interface StoriesApiInterface
 {
     public function all(string $locale = 'default'): StoriesResponse;
 
+    public function allByContentType(string $contentType, string $locale = 'default'): StoriesResponse;
+
     public function bySlug(string $slug, string $locale = 'default'): StoryResponse;
 
     public function byUuid(Uuid $uuid, string $locale = 'default'): StoryResponse;
