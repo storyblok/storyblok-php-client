@@ -122,6 +122,7 @@ final class StoriesApi implements StoriesApiInterface
                     'query' => [
                         'language' => $locale,
                         'fallback_lang' => 'default',
+                        'find_by' => 'uuid',
                     ],
                 ],
             );
