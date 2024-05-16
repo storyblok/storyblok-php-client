@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
+use OskarStark\Value\TrimmedNonEmptyString;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Response\DatasourceResponse;
@@ -28,15 +29,13 @@ final class DatasourceApi implements DatasourceApiInterface
 
     public function byName(string $name): DatasourceResponse
     {
-        Assert::stringNotEmpty($name);
-
         try {
             $response = $this->client->request(
                 'GET',
                 '/v2/cdn/datasource_entries',
                 [
                     'query' => [
-                        'datasource' => $name,
+                        'datasource' => TrimmedNonEmptyString::fromString($name)->toString(),
                     ],
                 ],
             );
