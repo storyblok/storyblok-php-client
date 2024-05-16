@@ -156,7 +156,7 @@ use SensioLabs\Storyblok\Api\StoryblokClient;
 $client = new StoryblokClient(/* ... */);
 
 $api = new DatasourceApi($client);
-$response = $api->byName('tags', locale: 'de');
+$response = $api->byName('tags');
 ```
 
 [actions]: https://github.com/sensiolabs-de/storyblok-api/actions
