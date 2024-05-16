@@ -40,7 +40,7 @@ final class StoriesApi implements StoriesApiInterface
             $pagination = new Pagination();
         }
 
-        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
 
         $parameter = [];
 
@@ -83,7 +83,7 @@ final class StoriesApi implements StoriesApiInterface
             $pagination = new Pagination();
         }
 
-        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
 
         $parameter = [];
 

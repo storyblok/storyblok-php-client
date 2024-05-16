@@ -35,7 +35,7 @@ final class LinksApi implements LinksApiInterface
             $pagination = new Pagination();
         }
 
-        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
 
         try {
             $response = $this->client->request(
@@ -67,7 +67,7 @@ final class LinksApi implements LinksApiInterface
             $pagination = new Pagination();
         }
 
-        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
 
         try {
             $response = $this->client->request(
@@ -100,7 +100,7 @@ final class LinksApi implements LinksApiInterface
             $pagination = new Pagination();
         }
 
-        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
 
         try {
             $response = $this->client->request(
