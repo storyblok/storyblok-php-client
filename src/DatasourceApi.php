@@ -34,14 +34,14 @@ final class DatasourceApi implements DatasourceApiInterface
                 '/v2/cdn/datasource_entries',
                 [
                     'query' => [
-                        'datasource' => TrimmedNonEmptyString::fromString($name)->toString(),
+                        'datasource' => $name = TrimmedNonEmptyString::fromString($name)->toString(),
                     ],
                 ],
             );
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new Datasource($response->toArray());
+            return new Datasource($name, $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 

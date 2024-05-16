@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Domain\Value\Datasource;
 
+use OskarStark\Value\TrimmedNonEmptyString;
 use Webmozart\Assert\Assert;
 
 final readonly class Datasource
@@ -25,8 +26,12 @@ final readonly class Datasource
     /**
      * @param array<string, mixed> $values
      */
-    public function __construct(array $values)
-    {
+    public function __construct(
+        public string $name,
+        array $values,
+    ) {
+        TrimmedNonEmptyString::fromString($name);
+
         Assert::keyExists($values, 'datasource_entries');
         Assert::isArray($values['datasource_entries']);
 
