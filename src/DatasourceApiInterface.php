@@ -14,11 +14,12 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api;
 
 use SensioLabs\Storyblok\Api\Domain\Value\Datasource;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Dimension;
 
 /**
  * @author Oskar Stark <oskarstark@googlemail.com>
  */
 interface DatasourceApiInterface
 {
-    public function byName(string $name): Datasource;
+    public function byName(string $name, ?Dimension $dimension = null): Datasource;
 }

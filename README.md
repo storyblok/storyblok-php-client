@@ -159,5 +159,18 @@ $api = new DatasourceApi($client);
 $response = $api->byName('tags'); // returns SensioLabs\Storyblok\Api\Domain\Value\Datasource
 ```
 
+If it has more than one dimension, you can get the entries by
+
+```php
+use SensioLabs\Storyblok\Api\DatasourceApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Dimension;
+
+$client = new StoryblokClient(/* ... */);
+
+$api = new DatasourceApi($client);
+$response = $api->byName('tags', new Dimension('de')); // returns SensioLabs\Storyblok\Api\Domain\Value\Datasource
+```
+
 [actions]: https://github.com/sensiolabs-de/storyblok-api/actions
 [codecov]: https://codecov.io/gh/sensiolabs-de/storyblok-api

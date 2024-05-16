@@ -22,7 +22,7 @@ final readonly class Entry
     public Id $id;
     public string $name;
     public string $value;
-    public string $dimensionValue;
+    public Dimension $dimension;
 
     /**
      * @param array<string, mixed> $values
@@ -40,6 +40,7 @@ final readonly class Entry
         $this->value = TrimmedNonEmptyString::fromString($values['value'])->toString();
 
         Assert::keyExists($values, 'dimension_value');
-        $this->dimensionValue = TrimmedNonEmptyString::fromString($values['dimension_value'])->toString();
+        Assert::nullOrString($values['dimension_value']);
+        $this->dimension = new Dimension($values['dimension_value'] ?? 'default');
     }
 }

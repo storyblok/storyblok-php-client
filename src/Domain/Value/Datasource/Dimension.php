@@ -11,15 +11,21 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace SensioLabs\Storyblok\Api\Domain\Value;
+namespace SensioLabs\Storyblok\Api\Domain\Value\Datasource;
 
-use Webmozart\Assert\Assert;
+use OskarStark\Value\TrimmedNonEmptyString;
 
-final readonly class Id
+final readonly class Dimension
 {
-    public function __construct(public int $value)
+    public string $value;
+
+    public function __construct(?string $value)
     {
-        Assert::true(0 < $value, 'Id must be greater than 0');
+        if (null === $value) {
+            $this->value = 'default';
+        } else {
+            $this->value = TrimmedNonEmptyString::fromString($value)->toString();
+        }
     }
 
     public function equals(self $other): bool

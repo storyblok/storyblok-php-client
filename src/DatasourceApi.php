@@ -17,6 +17,7 @@ use OskarStark\Value\TrimmedNonEmptyString;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Domain\Value\Datasource;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Dimension;
 
 final class DatasourceApi implements DatasourceApiInterface
 {
@@ -26,8 +27,14 @@ final class DatasourceApi implements DatasourceApiInterface
     ) {
     }
 
-    public function byName(string $name): Datasource
+    public function byName(string $name, ?Dimension $dimension = null): Datasource
     {
+        if ($dimension instanceof Dimension) {
+            $dimensionValue = $dimension->value;
+        } else {
+            $dimensionValue = 'default';
+        }
+
         try {
             $response = $this->client->request(
                 'GET',
@@ -35,6 +42,7 @@ final class DatasourceApi implements DatasourceApiInterface
                 [
                     'query' => [
                         'datasource' => $name = TrimmedNonEmptyString::fromString($name)->toString(),
+                        'dimension' => $dimensionValue,
                     ],
                 ],
             );
