@@ -20,7 +20,7 @@ use Webmozart\Assert\Assert;
 final readonly class Datasource
 {
     /**
-     * @var Entry
+     * @var Entry[]
      */
     public array $entries;
 
