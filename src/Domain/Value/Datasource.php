@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Domain\Value;
 
 use OskarStark\Value\TrimmedNonEmptyString;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Dimension;
 use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Entry;
 use Webmozart\Assert\Assert;
 
@@ -29,6 +30,7 @@ final readonly class Datasource
      */
     public function __construct(
         public string $name,
+        public Dimension $dimension,
         array $values,
     ) {
         TrimmedNonEmptyString::fromString($name);

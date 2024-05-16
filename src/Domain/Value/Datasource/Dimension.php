@@ -19,7 +19,7 @@ final readonly class Dimension
 {
     public string $value;
 
-    public function __construct(?string $value)
+    public function __construct(?string $value = null)
     {
         if (null === $value) {
             $this->value = 'default';

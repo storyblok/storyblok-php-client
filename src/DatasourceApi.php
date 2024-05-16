@@ -29,10 +29,8 @@ final class DatasourceApi implements DatasourceApiInterface
 
     public function byName(string $name, ?Dimension $dimension = null): Datasource
     {
-        if ($dimension instanceof Dimension) {
-            $dimensionValue = $dimension->value;
-        } else {
-            $dimensionValue = 'default';
+        if (null === $dimension) {
+            $dimension = new Dimension(null);
         }
 
         try {
@@ -42,14 +40,18 @@ final class DatasourceApi implements DatasourceApiInterface
                 [
                     'query' => [
                         'datasource' => $name = TrimmedNonEmptyString::fromString($name)->toString(),
-                        'dimension' => $dimensionValue,
+                        'dimension' => $dimension->value,
                     ],
                 ],
             );
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new Datasource($name, $response->toArray());
+            return new Datasource(
+                $name,
+                $dimension,
+                $response->toArray(),
+            );
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
