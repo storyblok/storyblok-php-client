@@ -66,7 +66,7 @@ final class StoriesApi implements StoriesApiInterface
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new StoriesResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
+            return new StoriesResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
@@ -110,7 +110,7 @@ final class StoriesApi implements StoriesApiInterface
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new StoriesResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
+            return new StoriesResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 

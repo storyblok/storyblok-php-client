@@ -53,7 +53,7 @@ final class LinksApi implements LinksApiInterface
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
+            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
@@ -86,7 +86,7 @@ final class LinksApi implements LinksApiInterface
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
+            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
@@ -119,7 +119,7 @@ final class LinksApi implements LinksApiInterface
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
+            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 

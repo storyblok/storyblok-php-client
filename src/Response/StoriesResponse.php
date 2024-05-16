@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Response;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use Webmozart\Assert\Assert;
 
@@ -39,6 +40,7 @@ final readonly class StoriesResponse
      */
     public function __construct(
         public Total $total,
+        public Pagination $pagination,
         array $values,
     ) {
         Assert::keyExists($values, 'stories');

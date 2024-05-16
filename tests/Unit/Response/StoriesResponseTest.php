@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Tests\Unit\Response;
 
 use PHPUnit\Framework\TestCase;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Response\StoriesResponse;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
@@ -29,7 +30,10 @@ final class StoriesResponseTest extends TestCase
     {
         $values = self::faker()->storiesResponse();
 
-        self::assertCount(\count($values['stories']), (new StoriesResponse(new Total(1), $values))->stories);
+        self::assertCount(
+            \count($values['stories']),
+            (new StoriesResponse(new Total(1), new Pagination(), $values))->stories,
+        );
     }
 
     /**
@@ -42,7 +46,7 @@ final class StoriesResponseTest extends TestCase
 
         self::expectException(\InvalidArgumentException::class);
 
-        new StoriesResponse(new Total(1), $values);
+        new StoriesResponse(new Total(1), new Pagination(), $values);
     }
 
     /**
@@ -52,7 +56,10 @@ final class StoriesResponseTest extends TestCase
     {
         $values = self::faker()->storiesResponse();
 
-        self::assertSame($values['cv'], (new StoriesResponse(new Total(1), $values))->cv);
+        self::assertSame(
+            $values['cv'],
+            (new StoriesResponse(new Total(1), new Pagination(), $values))->cv,
+        );
     }
 
     /**
@@ -65,7 +72,7 @@ final class StoriesResponseTest extends TestCase
 
         self::expectException(\InvalidArgumentException::class);
 
-        new StoriesResponse(new Total(1), $values);
+        new StoriesResponse(new Total(1), new Pagination(), $values);
     }
 
     /**
@@ -80,7 +87,7 @@ final class StoriesResponseTest extends TestCase
         ]);
 
         self::expectException(\InvalidArgumentException::class);
-        new StoriesResponse(new Total(1), $values);
+        new StoriesResponse(new Total(1), new Pagination(), $values);
     }
 
     /**
@@ -90,7 +97,10 @@ final class StoriesResponseTest extends TestCase
     {
         $values = self::faker()->storiesResponse();
 
-        self::assertCount(\count($values['rels']), (new StoriesResponse(new Total(1), $values))->rels);
+        self::assertCount(
+            \count($values['rels']),
+            (new StoriesResponse(new Total(1), new Pagination(), $values))->rels,
+        );
     }
 
     /**
@@ -103,7 +113,7 @@ final class StoriesResponseTest extends TestCase
 
         self::expectException(\InvalidArgumentException::class);
 
-        new StoriesResponse(new Total(1), $values);
+        new StoriesResponse(new Total(1), new Pagination(), $values);
     }
 
     /**
@@ -113,7 +123,10 @@ final class StoriesResponseTest extends TestCase
     {
         $values = self::faker()->storiesResponse();
 
-        self::assertCount(\count($values['links']), (new StoriesResponse(new Total(1), $values))->links);
+        self::assertCount(
+            \count($values['links']),
+            (new StoriesResponse(new Total(1), new Pagination(), $values))->links,
+        );
     }
 
     /**
@@ -126,6 +139,6 @@ final class StoriesResponseTest extends TestCase
 
         self::expectException(\InvalidArgumentException::class);
 
-        new StoriesResponse(new Total(1), $values);
+        new StoriesResponse(new Total(1), new Pagination(), $values);
     }
 }
