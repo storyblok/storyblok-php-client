@@ -142,5 +142,22 @@ $linksApi = new LinksApi($client);
 $response = $linksApi->roots($id);
 ```
 
+
+## Datasource
+
+In your code you should type-hint to `SensioLabs\Storyblok\Api\DatasourceApiInterface`
+
+### Get by name (`string`)
+
+```php
+use SensioLabs\Storyblok\Api\DatasourceApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+
+$client = new StoryblokClient(/* ... */);
+
+$api = new DatasourceApi($client);
+$response = $api->byName('tags', locale: 'de');
+```
+
 [actions]: https://github.com/sensiolabs-de/storyblok-api/actions
 [codecov]: https://codecov.io/gh/sensiolabs-de/storyblok-api
