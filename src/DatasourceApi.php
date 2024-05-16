@@ -16,7 +16,7 @@ namespace SensioLabs\Storyblok\Api;
 use OskarStark\Value\TrimmedNonEmptyString;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Datasource;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource;
 
 final class DatasourceApi implements DatasourceApiInterface
 {

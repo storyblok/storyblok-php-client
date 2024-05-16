@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Datasource;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource;
 
 /**
  * @author Oskar Stark <oskarstark@googlemail.com>
