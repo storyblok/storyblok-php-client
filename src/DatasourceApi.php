@@ -16,8 +16,7 @@ namespace SensioLabs\Storyblok\Api;
 use OskarStark\Value\TrimmedNonEmptyString;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use SensioLabs\Storyblok\Api\Response\DatasourceResponse;
-use Webmozart\Assert\Assert;
+use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Datasource;
 
 final class DatasourceApi implements DatasourceApiInterface
 {
@@ -27,7 +26,7 @@ final class DatasourceApi implements DatasourceApiInterface
     ) {
     }
 
-    public function byName(string $name): DatasourceResponse
+    public function byName(string $name): Datasource
     {
         try {
             $response = $this->client->request(
@@ -42,7 +41,7 @@ final class DatasourceApi implements DatasourceApiInterface
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new DatasourceResponse($response->toArray());
+            return new Datasource($response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 

@@ -11,15 +11,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace SensioLabs\Storyblok\Api\Response;
+namespace SensioLabs\Storyblok\Api\Domain\Value\Datasource;
 
-use SensioLabs\Storyblok\Api\Domain\Value\Datasource\Entry;
 use Webmozart\Assert\Assert;
 
-final readonly class DatasourceResponse
+final readonly class Datasource
 {
     /**
-     * @var list<Entry>
+     * @var Entry
      */
     public array $entries;
 
