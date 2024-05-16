@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
 use SensioLabs\Storyblok\Api\Response\StoriesResponse;
@@ -23,9 +25,11 @@ use SensioLabs\Storyblok\Api\Response\StoryResponse;
  */
 interface StoriesApiInterface
 {
-    public function all(string $locale = 'default'): StoriesResponse;
+    public const int MAX_PER_PAGE = 100;
 
-    public function allByContentType(string $contentType, string $locale = 'default'): StoriesResponse;
+    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null): StoriesResponse;
+
+    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null): StoriesResponse;
 
     public function bySlug(string $slug, string $locale = 'default'): StoryResponse;
 

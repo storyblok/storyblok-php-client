@@ -15,8 +15,11 @@ namespace SensioLabs\Storyblok\Api;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
+use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
+use Webmozart\Assert\Assert;
 
 final class LinksApi implements LinksApiInterface
 {
@@ -26,24 +29,31 @@ final class LinksApi implements LinksApiInterface
     ) {
     }
 
-    public function all(array $parameter = []): LinksResponse
+    public function all(?Pagination $pagination = null): LinksResponse
     {
+        if (null === $pagination) {
+            $pagination = new Pagination();
+        }
+
+        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+
         try {
             $response = $this->client->request(
                 'GET',
                 '/v2/cdn/links',
                 [
-                    'query' => array_replace_recursive([
-                        'per_page' => 1000,
+                    'query' => [
                         'paginated' => true,
                         'include_dates' => true,
-                    ], $parameter),
+                        'page' => $pagination->page,
+                        'per_page' => $pagination->perPage,
+                    ],
                 ],
             );
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new LinksResponse($response->toArray());
+            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
@@ -51,25 +61,32 @@ final class LinksApi implements LinksApiInterface
         }
     }
 
-    public function byParent(Id $parentId): LinksResponse
+    public function byParent(Id $parentId, ?Pagination $pagination = null): LinksResponse
     {
+        if (null === $pagination) {
+            $pagination = new Pagination();
+        }
+
+        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+
         try {
             $response = $this->client->request(
                 'GET',
                 '/v2/cdn/links',
                 [
                     'query' => [
-                        'per_page' => 1000,
                         'paginated' => true,
                         'include_dates' => true,
                         'with_parent' => $parentId->value,
+                        'page' => $pagination->page,
+                        'per_page' => $pagination->perPage,
                     ],
                 ],
             );
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new LinksResponse($response->toArray());
+            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
@@ -77,25 +94,32 @@ final class LinksApi implements LinksApiInterface
         }
     }
 
-    public function roots(): LinksResponse
+    public function roots(?Pagination $pagination = null): LinksResponse
     {
+        if (null === $pagination) {
+            $pagination = new Pagination();
+        }
+
+        Assert::lessThanEq($pagination, self::MAX_PER_PAGE);
+
         try {
             $response = $this->client->request(
                 'GET',
                 '/v2/cdn/links',
                 [
                     'query' => [
-                        'per_page' => 1000,
                         'paginated' => true,
                         'include_dates' => true,
                         'with_parent' => 0,
+                        'page' => $pagination->page,
+                        'per_page' => $pagination->perPage,
                     ],
                 ],
             );
 
             $this->logger->debug('Response', $response->toArray(false));
 
-            return new LinksResponse($response->toArray());
+            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $response->toArray());
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 

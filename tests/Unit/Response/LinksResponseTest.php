@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Tests\Unit\Response;
 
 use PHPUnit\Framework\TestCase;
+use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
@@ -28,7 +29,7 @@ final class LinksResponseTest extends TestCase
     {
         $values = self::faker()->linksResponse();
 
-        self::assertCount(\count($values['links']), (new LinksResponse($values))->links);
+        self::assertCount(\count($values['links']), (new LinksResponse(new Total(1), $values))->links);
     }
 
     /**
@@ -38,6 +39,6 @@ final class LinksResponseTest extends TestCase
     {
         self::expectException(\InvalidArgumentException::class);
 
-        new LinksResponse([]);
+        new LinksResponse(new Total(1), []);
     }
 }

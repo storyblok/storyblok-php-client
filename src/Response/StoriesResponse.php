@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Response;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use Webmozart\Assert\Assert;
 
 final readonly class StoriesResponse
@@ -36,8 +37,10 @@ final readonly class StoriesResponse
     /**
      * @param array<string, mixed> $values
      */
-    public function __construct(array $values)
-    {
+    public function __construct(
+        public Total $total,
+        array $values,
+    ) {
         Assert::keyExists($values, 'stories');
         $this->stories = $values['stories'];
 

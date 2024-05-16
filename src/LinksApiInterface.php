@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
 
@@ -21,20 +22,11 @@ use SensioLabs\Storyblok\Api\Response\LinksResponse;
  */
 interface LinksApiInterface
 {
-    /**
-     * @param array{
-     *     'starts_with'?: string,
-     *     'version'?: string,
-     *     'cv'?: non-negative-int,
-     *     'with_parent'?: boolean,
-     *     'include_dates'?: boolean,
-     *     'page'?: non-negative-int,
-     *     'per_page'?: non-negative-int
-     * } $parameter
-     */
-    public function all(array $parameter = []): LinksResponse;
+    public const int MAX_PER_PAGE = 1000;
 
-    public function byParent(Id $parentId): LinksResponse;
+    public function all(?Pagination $pagination = null): LinksResponse;
 
-    public function roots(): LinksResponse;
+    public function byParent(Id $parentId, ?Pagination $pagination = null): LinksResponse;
+
+    public function roots(?Pagination $pagination = null): LinksResponse;
 }
