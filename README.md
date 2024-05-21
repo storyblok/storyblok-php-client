@@ -109,7 +109,7 @@ $story = [
 ];
 $result = $managementClient->post(
     'spaces/' . $spaceId . '/stories/',
-    [ 'space' => $story ]
+    [ 'story' => $story ]
     )->getBody();
 print_r($result);
 ```
@@ -128,7 +128,7 @@ $story = [
 ];
 $result = $managementClient->put(
     'spaces/' . $spaceId . '/stories/' . $storyId,
-    [ 'space' => $story ]
+    [ 'story' => $story ]
     )->getBody();
 print_r($result);
 ```
