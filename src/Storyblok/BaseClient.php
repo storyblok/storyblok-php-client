@@ -18,11 +18,11 @@ use Psr\Http\Message\ResponseInterface;
  */
 class BaseClient
 {
-    const SDK_VERSION = '2.6.1';
+    public const SDK_VERSION = '2.6.1';
 
-    const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
+    public const EXCEPTION_GENERIC_HTTP_ERROR = 'An HTTP Error has occurred!';
 
-    const DEFAULT_PER_PAGE = 25;
+    public const DEFAULT_PER_PAGE = 25;
 
     /**
      * @var array|string
@@ -58,6 +58,7 @@ class BaseClient
      * @var float
      */
     protected $timeout;
+
     /**
      * @var array
      */
@@ -69,13 +70,10 @@ class BaseClient
     private $apiKey;
 
     /**
-     * @param string     $apiKey
-     * @param string     $apiEndpoint
-     * @param string     $apiVersion
-     * @param bool       $ssl
-     * @param null|mixed $apiRegion
+     * @param null|string $apiEndpoint
+     * @param bool        $ssl
      */
-    function __construct($apiKey = null, $apiEndpoint = null, $apiVersion = 'v2', $ssl = false, $apiRegion = null)
+    public function __construct(?string $apiKey = null, $apiEndpoint = null, string $apiVersion = 'v2', $ssl = false, ?string $apiRegion = null)
     {
         $handlerStack = HandlerStack::create(new CurlHandler());
         $handlerStack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));
@@ -96,13 +94,15 @@ class BaseClient
      *
      * @return $this
      */
-    public function mockable(array $mocks, $version = 'v2')
+    public function mockable(array $mocks, $version = 'v2'): self
     {
         $handlerStack = HandlerStack::create(new MockHandler($mocks));
-        $handlerStack->push(Middleware::retry($this->retryDecider(), function () { return 0; }));
+        $handlerStack->push(Middleware::retry($this->retryDecider(), static function (): int {
+            return 0;
+        }));
 
         $this->client = new Guzzle([
-            'base_uri' => "http://api.storyblok.com/{$version}/cdn/",
+            'base_uri' => sprintf('http://api.storyblok.com/%s/cdn/', $version),
             'handler' => $handlerStack,
         ]);
 
@@ -116,7 +116,7 @@ class BaseClient
             $request,
             $response = null,
             ?TransferException $exception = null
-        ) {
+        ): bool {
             // Limit the number of retries
             if ($retries >= $this->maxRetries) {
                 return false;
@@ -127,14 +127,8 @@ class BaseClient
                 return true;
             }
 
-            if ($response) {
-                // Retry on server errors
-                if ($response->getStatusCode() >= 500 || 429 === $response->getStatusCode()) {
-                    return true;
-                }
-            }
-
-            return false;
+            // Retry on server errors
+            return $response && ($response->getStatusCode() >= 500 || 429 === $response->getStatusCode());
         };
     }
 
@@ -145,15 +139,12 @@ class BaseClient
      */
     public function retryDelay()
     {
-        return function ($numberOfRetries) {
+        return static function ($numberOfRetries) {
             return 1000 * $numberOfRetries;
         };
     }
 
-    /**
-     * @return self
-     */
-    public function setApiKey(string $apiKey)
+    public function setApiKey(string $apiKey): self
     {
         $this->apiKey = $apiKey;
 
@@ -170,10 +161,8 @@ class BaseClient
 
     /**
      * @param mixed $maxRetries
-     *
-     * @return BaseClient
      */
-    public function setMaxRetries($maxRetries)
+    public function setMaxRetries($maxRetries): self
     {
         $this->maxRetries = $maxRetries;
 
@@ -190,10 +179,8 @@ class BaseClient
 
     /**
      * @param array|string $proxy see http://docs.guzzlephp.org/en/stable/request-options.html#proxy for possible values
-     *
-     * @return self
      */
-    public function setProxy($proxy)
+    public function setProxy($proxy): self
     {
         $this->proxy = $proxy;
 
@@ -212,10 +199,8 @@ class BaseClient
      * set timeout in seconds.
      *
      * @param float $timeout
-     *
-     * @return BaseClient
      */
-    public function setTimeout($timeout)
+    public function setTimeout($timeout): self
     {
         $this->timeout = $timeout;
 
@@ -234,15 +219,13 @@ class BaseClient
      * @param string $endpointUrl
      * @param array  $queryString
      *
-     * @return Response
-     *
      * @throws ApiException
      */
-    public function get($endpointUrl, $queryString = [])
+    public function get($endpointUrl, $queryString = []): Response
     {
         try {
             $query = http_build_query($queryString, '', '&');
-            $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
+            $string = preg_replace('/%5B(?:\d|[1-9]\d+)%5D=/', '=', $query);
             $string = preg_replace('/%5B__or%5D%5B\d+%5D%/', '%5B__or%5D%5B%5D%', $string);
             $requestOptions = [RequestOptions::QUERY => $string];
 
@@ -257,11 +240,12 @@ class BaseClient
             if ($this instanceof ManagementClient) {
                 $requestOptions[RequestOptions::HEADERS] = ['Authorization' => $this->apiKey];
             }
+
             $responseObj = $this->client->request('GET', $endpointUrl, $requestOptions);
 
             return $this->responseHandler($responseObj, $queryString);
-        } catch (ClientException $e) {
-            throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $e->getMessage(), $e->getCode());
+        } catch (ClientException $clientException) {
+            throw new ApiException(self::EXCEPTION_GENERIC_HTTP_ERROR . ' - ' . $clientException->getMessage(), $clientException->getCode());
         }
     }
 
@@ -280,8 +264,8 @@ class BaseClient
 
         $firstResponse = $this->get($endpointUrl, $queryString);
 
-        $perPage = (isset($firstResponse->httpResponseHeaders['Per-Page'][0])) ? $firstResponse->httpResponseHeaders['Per-Page'][0] : null;
-        $totalRecords = (isset($firstResponse->httpResponseHeaders['Total'][0])) ? $firstResponse->httpResponseHeaders['Total'][0] : null;
+        $perPage = $firstResponse->httpResponseHeaders['Per-Page'][0] ?? null;
+        $totalRecords = $firstResponse->httpResponseHeaders['Total'][0] ?? null;
 
         $allResponses[] = clone $firstResponse;
 
@@ -316,11 +300,12 @@ class BaseClient
         $result->setCode($responseObj->getStatusCode());
         $result->setHeaders($responseObj->getHeaders());
         $result->setBodyFromStreamInterface($responseObj->getBody());
+
         $data = (string) $responseObj->getBody();
         $jsonResponseData = (array) json_decode($data, true);
 
         // return response data as json if possible, raw if not
-        $result->httpResponseBody = $data && empty($jsonResponseData) ? $data : $jsonResponseData;
+        $result->httpResponseBody = $data && [] === $jsonResponseData ? $data : $jsonResponseData;
 
         /*
         if (\is_array($result->httpResponseBody) && isset($result->httpResponseBody['story']) || isset($result->httpResponseBody['stories'])) {
@@ -377,39 +362,30 @@ class BaseClient
     {
         $body = (string) $responseObj->getBody();
         $response = json_decode($body);
-
-        if (JSON_ERROR_NONE === json_last_error() && isset($response->message)) {
-            return $response->message;
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            return '';
         }
 
-        return '';
+        if (!isset($response->message)) {
+            return '';
+        }
+
+        return $response->message;
     }
 
     /**
      * @param string $apiEndpoint
-     * @param string $apiVersion
      * @param bool   $ssl
-     * @param mixed  $apiRegion
-     *
-     * @return string
      */
-    private function generateEndpoint($apiEndpoint, $apiVersion, $ssl, $apiRegion)
+    private function generateEndpoint($apiEndpoint, string $apiVersion, $ssl, ?string $apiRegion): string
     {
-        if ($this instanceof ManagementClient) {
-            $prefix = '';
-        } else {
-            $prefix = '/cdn';
-        }
+        $prefix = $this instanceof ManagementClient ? '' : '/cdn';
 
-        if (!$ssl) {
-            $protocol = 'http://';
-        } else {
-            $protocol = 'https://';
-        }
+        $protocol = $ssl ? 'https://' : 'http://';
 
         if (!$apiEndpoint) {
-            $region = $apiRegion ? "-{$apiRegion}" : '';
-            $apiEndpoint = "api{$region}.storyblok.com";
+            $region = $apiRegion ? '-' . $apiRegion : '';
+            $apiEndpoint = sprintf('api%s.storyblok.com', $region);
         }
 
         return $protocol . $apiEndpoint . '/' . $apiVersion . $prefix . '/';
