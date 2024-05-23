@@ -17,6 +17,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
@@ -32,7 +33,7 @@ final class StoriesApi implements StoriesApiInterface
     ) {
     }
 
-    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null): StoriesResponse
+    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, array $filters = []): StoriesResponse
     {
         Assert::stringNotEmpty($locale);
 
@@ -48,6 +49,10 @@ final class StoriesApi implements StoriesApiInterface
             $parameter = [
                 'sort_by' => sprintf('%s:%s', $sortBy->field, $sortBy->direction->value),
             ];
+        }
+
+        if (null !== $filters) {
+            $parameter = array_merge($parameter, ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters));
         }
 
         try {
@@ -74,7 +79,7 @@ final class StoriesApi implements StoriesApiInterface
         }
     }
 
-    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null): StoriesResponse
+    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, array $filters = []): StoriesResponse
     {
         Assert::stringNotEmpty($contentType);
         Assert::stringNotEmpty($locale);
@@ -91,6 +96,10 @@ final class StoriesApi implements StoriesApiInterface
             $parameter = [
                 'sort_by' => sprintf('%s:%s', $sortBy->field, $sortBy->direction->value),
             ];
+        }
+
+        if (null !== $filters) {
+            $parameter = array_merge($parameter, ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters));
         }
 
         try {

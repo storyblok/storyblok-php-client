@@ -20,7 +20,7 @@ final readonly class Total
     public function __construct(
         public int $value,
     ) {
-        Assert::positiveInteger($value);
+        Assert::greaterThanEq($value, 0);
     }
 
     /**
