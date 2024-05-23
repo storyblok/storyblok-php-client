@@ -16,9 +16,9 @@ namespace SensioLabs\Storyblok\Api\Domain\Value;
 use OskarStark\Value\TrimmedNonEmptyString;
 use Webmozart\Assert\Assert;
 
-final readonly class Uuid implements \Stringable
+readonly class Uuid implements \Stringable
 {
-    public function __construct(
+    final public function __construct(
         public string $value,
     ) {
         TrimmedNonEmptyString::fromString($value);
@@ -29,7 +29,7 @@ final readonly class Uuid implements \Stringable
     /**
      * Returns the value of the Uuid as a lowercase UUID string.
      */
-    public function __toString(): string
+    final public function __toString(): string
     {
         return $this->value;
     }
