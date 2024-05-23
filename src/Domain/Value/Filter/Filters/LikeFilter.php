@@ -15,19 +15,14 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters;
 
 use OskarStark\Value\TrimmedNonEmptyString;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
-use Webmozart\Assert\Assert;
 
 final readonly class LikeFilter extends Filter
 {
-    /**
-     * @param string $value
-     */
     public function __construct(
         private string $field,
-        private mixed $value,
+        private string $value,
     ) {
         TrimmedNonEmptyString::fromString($field);
-        Assert::string($value);
     }
 
     public function field(): string

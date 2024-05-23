@@ -63,26 +63,4 @@ final class GreaterThanDateFilterTest extends FilterTestCase
 
         self::assertSame($value->format('Y-m-d H:i'), $filter->value());
     }
-
-    /**
-     * @test
-     *
-     * @dataProvider invalidValues
-     */
-    public function valueInvalid(mixed $value): void
-    {
-        self::expectException(\InvalidArgumentException::class);
-
-        new GreaterThanDateFilter(self::faker()->word(), $value);
-    }
-
-    /**
-     * @return iterable<string, array<mixed>>
-     */
-    public static function invalidValues(): iterable
-    {
-        $faker = self::faker();
-
-        yield 'is not datetime' => [$faker->word()];
-    }
 }

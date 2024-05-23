@@ -63,26 +63,4 @@ final class LikeFilterTest extends FilterTestCase
 
         self::assertSame($value, $filter->value());
     }
-
-    /**
-     * @test
-     *
-     * @dataProvider invalidValues
-     */
-    public function valueInvalid(mixed $value): void
-    {
-        self::expectException(\InvalidArgumentException::class);
-
-        new LikeFilter(self::faker()->word(), $value);
-    }
-
-    /**
-     * @return iterable<string, array<mixed>>
-     */
-    public static function invalidValues(): iterable
-    {
-        $faker = self::faker();
-
-        yield 'is not string' => [12];
-    }
 }

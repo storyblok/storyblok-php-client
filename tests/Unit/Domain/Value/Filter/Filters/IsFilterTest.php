@@ -101,7 +101,6 @@ final class IsFilterTest extends FilterTestCase
     {
         $faker = self::faker();
 
-        yield 'is not string' => [12];
         yield 'is not one of the accepted values' => [$faker->word()];
     }
 }

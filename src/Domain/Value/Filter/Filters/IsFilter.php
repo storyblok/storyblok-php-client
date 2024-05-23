@@ -33,10 +33,9 @@ final readonly class IsFilter extends Filter
      */
     public function __construct(
         private string $field,
-        private mixed $value,
+        private string $value,
     ) {
         TrimmedNonEmptyString::fromString($field);
-        Assert::string($value);
         Assert::oneOf($value, [
             self::EMPTY_ARRAY,
             self::NOT_EMPTY_ARRAY,

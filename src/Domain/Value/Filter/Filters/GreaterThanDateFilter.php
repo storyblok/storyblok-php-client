@@ -15,23 +15,14 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters;
 
 use OskarStark\Value\TrimmedNonEmptyString;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
-use Webmozart\Assert\Assert;
 
 final readonly class GreaterThanDateFilter extends Filter
 {
-    private string $value;
-
-    /**
-     * @param \DateTimeInterface $value
-     */
     public function __construct(
         private string $field,
-        mixed $value,
+        private \DateTimeInterface $value,
     ) {
         TrimmedNonEmptyString::fromString($field);
-        Assert::isInstanceOf($value, \DateTimeInterface::class);
-
-        $this->value = $value->format('Y-m-d H:i');
     }
 
     public function field(): string
@@ -41,7 +32,7 @@ final readonly class GreaterThanDateFilter extends Filter
 
     public function value(): string
     {
-        return $this->value;
+        return $this->value->format('Y-m-d H:i');
     }
 
     public static function operation(): Operation

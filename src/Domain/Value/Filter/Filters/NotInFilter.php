@@ -26,7 +26,7 @@ final readonly class NotInFilter extends Filter
      */
     public function __construct(
         private string $field,
-        mixed $value,
+        array|string $value,
     ) {
         TrimmedNonEmptyString::fromString($field);
 

@@ -19,23 +19,18 @@ use Webmozart\Assert\Assert;
 
 final readonly class AnyInArrayFilter extends Filter
 {
-    private string $value;
-
     /**
      * @param string[] $value
      */
     public function __construct(
         private string $field,
-        mixed $value,
+        private array $value,
     ) {
         TrimmedNonEmptyString::fromString($field);
-        Assert::isArray($value);
         Assert::minCount($value, 1);
         Assert::allString($value);
         Assert::allStringNotEmpty($value);
         Assert::allNotWhitespaceOnly($value);
-
-        $this->value = implode(',', $value);
     }
 
     public function field(): string
@@ -45,7 +40,7 @@ final readonly class AnyInArrayFilter extends Filter
 
     public function value(): string
     {
-        return $this->value;
+        return implode(',', $this->value);
     }
 
     public static function operation(): Operation

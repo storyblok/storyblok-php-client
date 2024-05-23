@@ -17,8 +17,6 @@ use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 
 abstract readonly class Filter
 {
-    abstract public function __construct(string $field, mixed $value);
-
     abstract public function field(): string;
 
     abstract public function value(): string;

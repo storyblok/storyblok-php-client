@@ -83,7 +83,6 @@ final class AllInArrayFilterTest extends FilterTestCase
     {
         $faker = self::faker();
 
-        yield 'is not array' => [$faker->word()];
         yield 'array is empty' => [[]];
         yield 'array not only contains string' => [[$faker->word(), $faker->randomNumber()]];
         yield 'array contains empty string' => [[$faker->word(), '']];

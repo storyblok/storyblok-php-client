@@ -63,26 +63,4 @@ final class GreaterThanFloatFilterTest extends FilterTestCase
 
         self::assertSame((string) $value, $filter->value());
     }
-
-    /**
-     * @test
-     *
-     * @dataProvider invalidValues
-     */
-    public function valueInvalid(mixed $value): void
-    {
-        self::expectException(\InvalidArgumentException::class);
-
-        new GreaterThanFloatFilter(self::faker()->word(), $value);
-    }
-
-    /**
-     * @return iterable<string, array<mixed>>
-     */
-    public static function invalidValues(): iterable
-    {
-        $faker = self::faker();
-
-        yield 'is not float' => [$faker->word()];
-    }
 }
