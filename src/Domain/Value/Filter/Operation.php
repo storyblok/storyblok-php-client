@@ -18,6 +18,7 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Filter;
  */
 enum Operation: string
 {
+    case Or = '__or';
     case Is = 'is';
     case In = 'in';
     case NotIn = 'not_in';

@@ -17,25 +17,15 @@ use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 
 abstract readonly class Filter
 {
-    abstract public function field(): string;
-
-    abstract public function value(): string;
-
     abstract public static function operation(): Operation;
 
     final public function equals(self $filter): bool
     {
-        return $filter->field() === $this->field()
-            && $filter->value() === $this->value();
+        return $filter->toArray() === $filter->toArray();
     }
 
     /**
-     * @return array<string, bool|float|int|string>
+     * @return array<string, mixed>
      */
-    final public function toArray(): array
-    {
-        return [
-            sprintf('filter_query[%s][%s]', $this->field(), static::operation()->value) => $this->value(),
-        ];
-    }
+    abstract public function toArray(): array;
 }

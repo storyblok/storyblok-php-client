@@ -29,15 +29,16 @@ final class AnyInArrayFilterTest extends FilterTestCase
         return AnyInArrayFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new AnyInArrayFilter($field = $faker->word(), [$faker->word()]);
+        $filter = new AnyInArrayFilter($field = $faker->word(), [$value = $faker->word()]);
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::AnyInArray->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,17 +52,6 @@ final class AnyInArrayFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new AnyInArrayFilter($field, [self::faker()->word()]);
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new AnyInArrayFilter($faker->word(), [$value = $faker->word()]);
-
-        self::assertSame($value, $filter->value());
     }
 
     /**

@@ -19,7 +19,10 @@ use Webmozart\Assert\Assert;
 
 final readonly class InFilter extends Filter
 {
-    private string $value;
+    /**
+     * @var string[]
+     */
+    private array $value;
 
     /**
      * @param string|string[] $value
@@ -41,17 +44,16 @@ final readonly class InFilter extends Filter
         Assert::allString($formattedValue);
         Assert::allStringNotEmpty($formattedValue);
         Assert::allNotWhitespaceOnly($formattedValue);
-        $this->value = implode(',', $formattedValue);
+        $this->value = $formattedValue;
     }
 
-    public function field(): string
+    public function toArray(): array
     {
-        return $this->field;
-    }
-
-    public function value(): string
-    {
-        return $this->value;
+        return [
+            $this->field => [
+                self::operation()->value => implode(',', $this->value),
+            ],
+        ];
     }
 
     public static function operation(): Operation

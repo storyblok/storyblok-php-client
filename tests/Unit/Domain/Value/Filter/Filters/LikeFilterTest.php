@@ -29,15 +29,16 @@ final class LikeFilterTest extends FilterTestCase
         return LikeFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new LikeFilter($field = $faker->word(), $faker->word());
+        $filter = new LikeFilter($field = $faker->word(), $value = $faker->word());
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::Like->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,16 +52,5 @@ final class LikeFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new LikeFilter($field, self::faker()->word());
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new LikeFilter($faker->word(), $value = $faker->word());
-
-        self::assertSame($value, $filter->value());
     }
 }

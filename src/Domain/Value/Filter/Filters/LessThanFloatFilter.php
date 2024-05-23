@@ -25,14 +25,13 @@ final readonly class LessThanFloatFilter extends Filter
         TrimmedNonEmptyString::fromString($field);
     }
 
-    public function field(): string
+    public function toArray(): array
     {
-        return $this->field;
-    }
-
-    public function value(): string
-    {
-        return (string) $this->value;
+        return [
+            $this->field => [
+                self::operation()->value => (string) $this->value,
+            ],
+        ];
     }
 
     public static function operation(): Operation

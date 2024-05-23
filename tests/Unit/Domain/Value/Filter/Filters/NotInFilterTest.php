@@ -29,15 +29,16 @@ final class NotInFilterTest extends FilterTestCase
         return NotInFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new NotInFilter($field = $faker->word(), [$faker->word()]);
+        $filter = new NotInFilter($field = $faker->word(), $value = [$faker->word()]);
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::NotIn->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,17 +52,6 @@ final class NotInFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new NotInFilter($field, [self::faker()->word()]);
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new NotInFilter($faker->word(), [$value = $faker->word()]);
-
-        self::assertSame($value, $filter->value());
     }
 
     /**

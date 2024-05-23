@@ -30,3 +30,13 @@ parameters:
 			count: 1
 			path: src/Bridge/HttpClient/CacheableResponse.php
 
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Domain\\\\Value\\\\Filter\\\\FilterCollection\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Domain/Value/Filter/FilterCollection.php
+
+		-
+			message: "#^PHPDoc tag @return contains unresolvable type\\.$#"
+			count: 1
+			path: src/Domain/Value/Filter/FilterCollection.php
+

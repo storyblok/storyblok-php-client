@@ -25,14 +25,13 @@ final readonly class LikeFilter extends Filter
         TrimmedNonEmptyString::fromString($field);
     }
 
-    public function field(): string
+    public function toArray(): array
     {
-        return $this->field;
-    }
-
-    public function value(): string
-    {
-        return $this->value;
+        return [
+            $this->field => [
+                self::operation()->value => $this->value,
+            ],
+        ];
     }
 
     public static function operation(): Operation

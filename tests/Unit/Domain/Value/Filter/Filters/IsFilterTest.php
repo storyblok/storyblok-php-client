@@ -29,13 +29,10 @@ final class IsFilterTest extends FilterTestCase
         return IsFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new IsFilter($field = $faker->word(), $faker->randomElement([
+        $filter = new IsFilter($field = $faker->word(), $value = $faker->randomElement([
             IsFilter::EMPTY_ARRAY,
             IsFilter::NOT_EMPTY_ARRAY,
             IsFilter::EMPTY,
@@ -46,7 +43,11 @@ final class IsFilterTest extends FilterTestCase
             IsFilter::NOT_NULL,
         ]));
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::Is->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -60,26 +61,6 @@ final class IsFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new IsFilter($field, IsFilter::EMPTY);
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new IsFilter($faker->word(), $value = $faker->randomElement([
-            IsFilter::EMPTY_ARRAY,
-            IsFilter::NOT_EMPTY_ARRAY,
-            IsFilter::EMPTY,
-            IsFilter::NOT_EMPTY,
-            IsFilter::TRUE,
-            IsFilter::FALSE,
-            IsFilter::NULL,
-            IsFilter::NOT_NULL,
-        ]));
-
-        self::assertSame($value, $filter->value());
     }
 
     /**

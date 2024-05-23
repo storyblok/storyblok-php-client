@@ -18,7 +18,6 @@ use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
-use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
@@ -53,10 +52,7 @@ final class StoriesApi implements StoriesApiInterface
         }
 
         if (null !== $filters) {
-            $parameter = array_merge(
-                $parameter,
-                ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters->toArray())
-            );
+            $parameter['filter_query'] = $filters->toArray();
         }
 
         try {
@@ -103,10 +99,7 @@ final class StoriesApi implements StoriesApiInterface
         }
 
         if (null !== $filters) {
-            $parameter = array_merge(
-                $parameter,
-                ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters->toArray())
-            );
+            $parameter['filter_query'] = $filters->toArray();
         }
 
         try {

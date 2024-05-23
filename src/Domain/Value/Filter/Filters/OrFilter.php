@@ -13,29 +13,33 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters;
 
-use OskarStark\Value\TrimmedNonEmptyString;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
+use Webmozart\Assert\Assert;
 
-final readonly class GreaterThanDateFilter extends Filter
+final readonly class OrFilter extends Filter
 {
-    public function __construct(
-        private string $field,
-        private \DateTimeInterface $value,
-    ) {
-        TrimmedNonEmptyString::fromString($field);
+    private FilterCollection $filters;
+
+    public function __construct(Filter ...$filters)
+    {
+        Assert::isList($filters);
+        $this->filters = new FilterCollection($filters);
+
+        Assert::minCount($this->filters, 2);
     }
 
     public function toArray(): array
     {
         return [
-            $this->field => [
-                self::operation()->value => $this->value->format('Y-m-d H:i'),
+            self::operation()->value => [
+                ...array_map(static fn (Filter $filter): array => $filter->toArray(), [...$this->filters]),
             ],
         ];
     }
 
     public static function operation(): Operation
     {
-        return Operation::GreaterThanDate;
+        return Operation::Or;
     }
 }

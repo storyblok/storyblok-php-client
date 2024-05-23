@@ -73,10 +73,13 @@ final class FilterCollection implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @return list<Filter>
+     * @return list<string, mixed>
      */
     public function toArray(): array
     {
-        return $this->items;
+        return array_merge_recursive(...array_map(
+            static fn (Filter $filter): array => $filter->toArray(),
+            $this->items,
+        ));
     }
 }

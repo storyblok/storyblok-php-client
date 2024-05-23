@@ -43,6 +43,207 @@ $storiesApi = new StoriesApi($client);
 $response = $storiesApi->all(locale: 'de');
 ```
 
+### Pagination
+
+```php
+use SensioLabs\Storyblok\Api\StoriesApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+
+$client = new StoryblokClient(/* ... */);
+
+$storiesApi = new StoriesApi($client);
+$response = $storiesApi->all(
+    locale: 'de',
+    pagination: new Pagination(page: 1, perPage: 30)
+);
+```
+
+#### Sorting
+
+```php
+use SensioLabs\Storyblok\Api\StoriesApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Direction;
+
+$client = new StoryblokClient(/* ... */);
+
+$storiesApi = new StoriesApi($client);
+$response = $storiesApi->all(
+    locale: 'de',
+    sortBy: new SortBy(field: 'title', direction: Direction::Desc)
+);
+```
+
+#### Filtering
+
+```php
+use SensioLabs\Storyblok\Api\StoriesApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Direction;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\InFilter;
+
+$client = new StoryblokClient(/* ... */);
+
+$storiesApi = new StoriesApi($client);
+$response = $storiesApi->all(
+    locale: 'de',
+    filters: new FilterCollection([
+        new InFilter(field: 'single_reference_field', value: 'f2fdb571-a265-4d8a-b7c5-7050d23c2383')
+    ])
+);
+```
+
+#### Available filters
+
+[AllInArrayFilter.php](src/Domain/Value/Filter/Filters/AllInArrayFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\AllInArrayFilter;
+
+new AllInArrayFilter(field: 'tags', value: ['foo', 'bar', 'baz']);
+```
+
+[AnyInArrayFilter.php](src/Domain/Value/Filter/Filters/AnyInArrayFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\AnyInArrayFilter;
+
+new AnyInArrayFilter(field: 'tags', value: ['foo', 'bar', 'baz']);
+```
+
+[GreaterThanDateFilter.php](src/Domain/Value/Filter/Filters/GreaterThanDateFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\GreaterThanDateFilter;
+
+new GreaterThanDateFilter(field: 'created_at', value: new \DateTimeImmutable());
+```
+
+[LessThanDateFilter.php](src/Domain/Value/Filter/Filters/LessThanDateFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LessThanDateFilter;
+
+new LessThanDateFilter(field: 'created_at', value: new \DateTimeImmutable());
+```
+
+[GreaterThanFloatFilter.php](src/Domain/Value/Filter/Filters/GreaterThanFloatFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\GreaterThanFloatFilter;
+
+new GreaterThanFloatFilter(field: 'price', value: 39.99);
+```
+
+[LessThanFloatFilter.php](src/Domain/Value/Filter/Filters/LessThanFloatFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LessThanFloatFilter;
+
+new LessThanFloatFilter(field: 'price', value: 199.99);
+```
+
+[GreaterThanIntFilter.php](src/Domain/Value/Filter/Filters/GreaterThanIntFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\GreaterThanIntFilter;
+
+new GreaterThanIntFilter(field: 'stock', value: 0);
+```
+
+[LessThanIntFilter.php](src/Domain/Value/Filter/Filters/LessThanIntFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LessThanIntFilter;
+
+new LessThanIntFilter(field: 'stock', value: 100);
+```
+
+[InFilter.php](src/Domain/Value/Filter/Filters/InFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\InFilter;
+
+new InFilter(field: 'text', value: 'Hello World!');
+// or
+new InFilter(field: 'text', value: ['Hello Symfony!', 'Hello SensioLabs!']);
+```
+
+[NotInFilter.php](src/Domain/Value/Filter/Filters/NotInFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\NotInFilter;
+
+new NotInFilter(field: 'text', value: 'Hello World!');
+// or
+new NotInFilter(field: 'text', value: ['Bye Symfony!', 'Bye SensioLabs!']);
+```
+
+[IsFilter.php](src/Domain/Value/Filter/Filters/IsFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\IsFilter;
+
+// You can use one of the following constants:
+// IsFilter::EMPTY_ARRAY
+// IsFilter::NOT_EMPTY_ARRAY
+// IsFilter::EMPTY
+// IsFilter::NOT_EMPTY
+// IsFilter::TRUE
+// IsFilter::FALSE
+// IsFilter::NULL
+// IsFilter::NOT_NULL
+
+new IsFilter(field: 'text', value: IsFilter::EMPTY);
+```
+
+[LikeFilter.php](src/Domain/Value/Filter/Filters/LikeFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LikeFilter;
+
+new LikeFilter(field: 'description', value: '*I love Symfony*');
+```
+
+[NotLikeFilter.php](src/Domain/Value/Filter/Filters/NotLikeFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\NotLikeFilter;
+
+new NotLikeFilter(field: 'description', value: '*Text*');
+```
+
+[OrFilter.php](src/Domain/Value/Filter/Filters/OrFilter.php)
+
+Example:
+```php
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\OrFilter;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LikeFilter;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\NotLikeFilter;
+
+new OrFilter(
+    new LikeFilter(field: 'text', value: 'Yes!*'),
+    new LikeFilter(field: 'text', value: 'Maybe!*'),
+    // ...
+);
+```
+
 ### Get all available stories by Content Type (`string`)
 
 ```php
@@ -113,6 +314,21 @@ $client = new StoryblokClient(/* ... */);
 
 $linksApi = new LinksApi($client);
 $response = $linksApi->all();
+```
+
+### Pagination
+
+```php
+use SensioLabs\Storyblok\Api\LinksApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+
+$client = new StoryblokClient(/* ... */);
+
+$linksApi = new LinksApi($client);
+$response = $linksApi->all(
+    pagination: new Pagination(page: 1, perPage: 1000)
+);
 ```
 
 ### Get by parent (`SensioLabs\Storyblok\Api\Domain\Value\Id`)

@@ -29,15 +29,16 @@ final class LessThanDateFilterTest extends FilterTestCase
         return LessThanDateFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new LessThanDateFilter($field = $faker->word(), $faker->dateTime());
+        $filter = new LessThanDateFilter($field = $faker->word(), $value = $faker->dateTime());
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::LessThanDate->value => $value->format('Y-m-d H:i'),
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,16 +52,5 @@ final class LessThanDateFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new LessThanDateFilter($field, self::faker()->dateTime());
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new LessThanDateFilter($faker->word(), $value = $faker->dateTime());
-
-        self::assertSame($value->format('Y-m-d H:i'), $filter->value());
     }
 }

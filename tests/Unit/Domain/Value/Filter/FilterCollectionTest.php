@@ -16,6 +16,8 @@ namespace SensioLabs\Storyblok\Api\Tests\Unit\Domain\Value\Filter;
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\IsFilter;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LikeFilter;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
 final class FilterCollectionTest extends TestCase
@@ -85,16 +87,44 @@ final class FilterCollectionTest extends TestCase
      */
     public function toArray(): void
     {
-        $faker = self::faker();
-
         $filters = [
-            new IsFilter($faker->word(), IsFilter::EMPTY),
-            new IsFilter($faker->word(), IsFilter::NOT_EMPTY_ARRAY),
-            new IsFilter($faker->word(), IsFilter::FALSE),
+            new IsFilter('field', IsFilter::EMPTY),
+            new IsFilter('title', IsFilter::NOT_EMPTY_ARRAY),
+            new IsFilter('description', IsFilter::FALSE),
         ];
 
         $collection = new FilterCollection($filters);
 
-        self::assertSame($filters, $collection->toArray());
+        self::assertSame([
+            'field' => [
+                Operation::Is->value => IsFilter::EMPTY,
+            ],
+            'title' => [
+                Operation::Is->value => IsFilter::NOT_EMPTY_ARRAY,
+            ],
+            'description' => [
+                Operation::Is->value => IsFilter::FALSE,
+            ],
+        ], $collection->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function toArrayFiltersGetCombined(): void
+    {
+        $filters = [
+            new IsFilter('title', IsFilter::EMPTY),
+            new LikeFilter('title', '*fooo'),
+        ];
+
+        $collection = new FilterCollection($filters);
+
+        self::assertSame([
+            'title' => [
+                Operation::Is->value => IsFilter::EMPTY,
+                Operation::Like->value => '*fooo',
+            ],
+        ], $collection->toArray());
     }
 }

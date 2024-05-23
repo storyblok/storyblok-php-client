@@ -29,15 +29,16 @@ final class InFilterTest extends FilterTestCase
         return InFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new InFilter($field = $faker->word(), [$faker->word()]);
+        $filter = new InFilter($field = $faker->word(), [$value = $faker->word()]);
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::In->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,17 +52,6 @@ final class InFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new InFilter($field, [self::faker()->word()]);
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new InFilter($faker->word(), [$value = $faker->word()]);
-
-        self::assertSame($value, $filter->value());
     }
 
     /**

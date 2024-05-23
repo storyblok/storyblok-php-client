@@ -25,14 +25,13 @@ final readonly class LessThanDateFilter extends Filter
         TrimmedNonEmptyString::fromString($field);
     }
 
-    public function field(): string
+    public function toArray(): array
     {
-        return $this->field;
-    }
-
-    public function value(): string
-    {
-        return $this->value->format('Y-m-d H:i');
+        return [
+            $this->field => [
+                self::operation()->value => $this->value->format('Y-m-d H:i'),
+            ],
+        ];
     }
 
     public static function operation(): Operation

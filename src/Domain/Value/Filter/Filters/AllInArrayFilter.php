@@ -33,14 +33,13 @@ final readonly class AllInArrayFilter extends Filter
         Assert::allNotWhitespaceOnly($value);
     }
 
-    public function field(): string
+    public function toArray(): array
     {
-        return $this->field;
-    }
-
-    public function value(): string
-    {
-        return implode(',', $this->value);
+        return [
+            $this->field => [
+                self::operation()->value => implode(',', $this->value),
+            ],
+        ];
     }
 
     public static function operation(): Operation

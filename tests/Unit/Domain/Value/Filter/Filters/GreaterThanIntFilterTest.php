@@ -29,15 +29,16 @@ final class GreaterThanIntFilterTest extends FilterTestCase
         return GreaterThanIntFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new GreaterThanIntFilter($field = $faker->word(), $faker->randomNumber());
+        $filter = new GreaterThanIntFilter($field = $faker->word(), $value = $faker->randomNumber());
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::GreaterThanInt->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,16 +52,5 @@ final class GreaterThanIntFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new GreaterThanIntFilter($field, self::faker()->randomNumber());
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new GreaterThanIntFilter($faker->word(), $value = $faker->randomNumber());
-
-        self::assertSame((string) $value, $filter->value());
     }
 }

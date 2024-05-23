@@ -29,15 +29,16 @@ final class NotLikeFilterTest extends FilterTestCase
         return NotLikeFilter::class;
     }
 
-    /**
-     * @test
-     */
-    public function field(): void
+    public function toArray(): void
     {
         $faker = self::faker();
-        $filter = new NotLikeFilter($field = $faker->word(), $faker->word());
+        $filter = new NotLikeFilter($field = $faker->word(), $value = $faker->word());
 
-        self::assertSame($field, $filter->field());
+        self::assertSame([
+            $field => [
+                Operation::NotLike->value => $value,
+            ],
+        ], $filter->toArray());
     }
 
     /**
@@ -51,16 +52,5 @@ final class NotLikeFilterTest extends FilterTestCase
         self::expectException(\InvalidArgumentException::class);
 
         new NotLikeFilter($field, self::faker()->word());
-    }
-
-    /**
-     * @test
-     */
-    public function value(): void
-    {
-        $faker = self::faker();
-        $filter = new NotLikeFilter($faker->word(), $value = $faker->word());
-
-        self::assertSame($value, $filter->value());
     }
 }
