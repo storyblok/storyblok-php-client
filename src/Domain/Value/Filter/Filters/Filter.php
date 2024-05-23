@@ -23,6 +23,12 @@ abstract readonly class Filter
 
     abstract public static function operation(): Operation;
 
+    final public function equals(self $filter): bool
+    {
+        return $filter->field() === $this->field()
+            && $filter->value() === $this->value();
+    }
+
     /**
      * @return array<string, bool|float|int|string>
      */

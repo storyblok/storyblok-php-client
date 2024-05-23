@@ -17,6 +17,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
@@ -33,7 +34,7 @@ final class StoriesApi implements StoriesApiInterface
     ) {
     }
 
-    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, array $filters = []): StoriesResponse
+    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, ?FilterCollection $filters = null): StoriesResponse
     {
         Assert::stringNotEmpty($locale);
 
@@ -52,7 +53,10 @@ final class StoriesApi implements StoriesApiInterface
         }
 
         if (null !== $filters) {
-            $parameter = array_merge($parameter, ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters));
+            $parameter = array_merge(
+                $parameter,
+                ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters->toArray())
+            );
         }
 
         try {
@@ -79,7 +83,7 @@ final class StoriesApi implements StoriesApiInterface
         }
     }
 
-    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, array $filters = []): StoriesResponse
+    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, ?FilterCollection $filters = null): StoriesResponse
     {
         Assert::stringNotEmpty($contentType);
         Assert::stringNotEmpty($locale);
@@ -99,7 +103,10 @@ final class StoriesApi implements StoriesApiInterface
         }
 
         if (null !== $filters) {
-            $parameter = array_merge($parameter, ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters));
+            $parameter = array_merge(
+                $parameter,
+                ...array_map(static fn (Filter $filter): array => $filter->toArray(), $filters->toArray())
+            );
         }
 
         try {
