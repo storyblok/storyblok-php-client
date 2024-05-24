@@ -34,6 +34,11 @@ final readonly class GreaterThanDateFilter extends Filter
         ];
     }
 
+    public function field(): string
+    {
+        return $this->field;
+    }
+
     public static function operation(): Operation
     {
         return Operation::GreaterThanDate;

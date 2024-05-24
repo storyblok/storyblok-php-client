@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Domain\Value\Filter;
 
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
+use SensioLabs\Storyblok\Api\Exception\FilterCanNotBeUsedMultipleTimes;
 
 /**
  * @implements \IteratorAggregate<int, Filter>
@@ -21,11 +22,19 @@ use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
 final class FilterCollection implements \Countable, \IteratorAggregate
 {
     /**
+     * @var list<Filter>
+     */
+    private array $items = [];
+
+    /**
      * @param list<Filter> $items
      */
     public function __construct(
-        private array $items = [],
+        array $items = [],
     ) {
+        foreach ($items as $item) {
+            $this->add($item);
+        }
     }
 
     /**
@@ -44,7 +53,7 @@ final class FilterCollection implements \Countable, \IteratorAggregate
     public function add(Filter $filter): void
     {
         if ($this->has($filter)) {
-            return;
+            throw FilterCanNotBeUsedMultipleTimes::fromFilter($filter);
         }
 
         $this->items[] = $filter;
@@ -53,7 +62,9 @@ final class FilterCollection implements \Countable, \IteratorAggregate
     public function has(Filter $filter): bool
     {
         foreach ($this->items as $item) {
-            if ($item->equals($filter)) {
+            if ($item->equals($filter)
+                || ($item::class === $filter::class && $filter->field() === $item->field())
+            ) {
                 return true;
             }
         }

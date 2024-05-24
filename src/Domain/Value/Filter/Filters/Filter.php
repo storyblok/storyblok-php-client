@@ -19,10 +19,12 @@ abstract readonly class Filter
 {
     abstract public static function operation(): Operation;
 
-    final public function equals(self $filter): bool
+    final public function equals(self $other): bool
     {
-        return $filter->toArray() === $filter->toArray();
+        return $this->toArray() === $other->toArray();
     }
+
+    abstract public function field(): string;
 
     /**
      * @return array<string, mixed>

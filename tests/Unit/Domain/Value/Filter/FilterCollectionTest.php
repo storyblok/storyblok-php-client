@@ -15,9 +15,11 @@ namespace SensioLabs\Storyblok\Api\Tests\Unit\Domain\Value\Filter;
 
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
+use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\GreaterThanIntFilter;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\IsFilter;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\LikeFilter;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
+use SensioLabs\Storyblok\Api\Exception\FilterCanNotBeUsedMultipleTimes;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
 final class FilterCollectionTest extends TestCase
@@ -57,15 +59,27 @@ final class FilterCollectionTest extends TestCase
     /**
      * @test
      */
-    public function has(): void
+    public function hasReturnsTrue(): void
     {
         $faker = self::faker();
 
         $filter = new IsFilter($faker->word(), IsFilter::EMPTY);
 
-        $collection = new FilterCollection([$filter]);
+        $collection = new FilterCollection([$filter, new IsFilter($faker->word(), IsFilter::NOT_EMPTY_ARRAY)]);
 
         self::assertTrue($collection->has($filter));
+    }
+
+    /**
+     * @test
+     */
+    public function hasReturnsFalse(): void
+    {
+        $faker = self::faker();
+
+        $collection = new FilterCollection([new IsFilter($faker->word(), IsFilter::NOT_EMPTY_ARRAY)]);
+
+        self::assertFalse($collection->has(new IsFilter($faker->word(), IsFilter::EMPTY)));
     }
 
     /**
@@ -126,5 +140,22 @@ final class FilterCollectionTest extends TestCase
                 Operation::Like->value => '*fooo',
             ],
         ], $collection->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function throwsExceptionIfAlreadyInCollectionAndFilterCanBeUsedOnlyOnceForAField(): void
+    {
+        $faker = self::faker();
+
+        $filters = [
+            new GreaterThanIntFilter('stock', $faker->unique()->randomNumber()),
+            new GreaterThanIntFilter('stock', $faker->unique()->randomNumber()),
+        ];
+
+        self::expectException(FilterCanNotBeUsedMultipleTimes::class);
+
+        new FilterCollection($filters);
     }
 }

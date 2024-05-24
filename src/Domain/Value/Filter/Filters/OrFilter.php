@@ -13,18 +13,20 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters;
 
-use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 use Webmozart\Assert\Assert;
 
 final readonly class OrFilter extends Filter
 {
-    private FilterCollection $filters;
+    /**
+     * @var list<Filter>
+     */
+    private array $filters;
 
     public function __construct(Filter ...$filters)
     {
         Assert::isList($filters);
-        $this->filters = new FilterCollection($filters);
+        $this->filters = $filters;
 
         Assert::minCount($this->filters, 2);
     }
@@ -36,6 +38,11 @@ final readonly class OrFilter extends Filter
                 ...array_map(static fn (Filter $filter): array => $filter->toArray(), [...$this->filters]),
             ],
         ];
+    }
+
+    public function field(): string
+    {
+        return implode('|', array_map(static fn (Filter $filter): string => $filter->field(), $this->filters));
     }
 
     public static function operation(): Operation

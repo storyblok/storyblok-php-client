@@ -11,6 +11,6 @@ static-code-analysis-baseline:
 cs:
 	symfony php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --diff --verbose
 
-.PHONY: test
-test:
+.PHONY: tests
+tests:
 	php vendor/bin/phpunit -v
