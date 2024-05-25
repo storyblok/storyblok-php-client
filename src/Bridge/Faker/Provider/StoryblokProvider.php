@@ -220,7 +220,7 @@ final class StoryblokProvider extends BaseProvider
 
     /**
      * @param array{
-     *    tags?: list<array{name: string, taggings_count: int}>,
+     *    tags?: list<array{name?: string, taggings_count?: int}>,
      * } $overrides
      *
      * @return array{
@@ -239,6 +239,71 @@ final class StoryblokProvider extends BaseProvider
                 'taggings_count' => $this->generator->numberBetween(0, 100),
             ];
         }
+
+        return array_replace_recursive(
+            $response,
+            $overrides,
+        );
+    }
+
+    /**
+     * @param array{
+     *   datasource_entries?: list<array{
+     *     id?: int,
+     *     name?: string,
+     *     value?: string,
+     *     dimension_value?: string|null
+     * }>,
+     * } $overrides
+     *
+     * @return array{
+     *   datasource_entries: list<array{
+     *     id: int,
+     *     name: string,
+     *     value: string,
+     *     dimension_value: string|null
+     *   }>,
+     * }
+     */
+    public function datasourceResponse(array $overrides = []): array
+    {
+        $response = [
+            'datasource_entries' => [],
+        ];
+
+        for ($i = 0; $this->generator->numberBetween(1, 10) > $i; ++$i) {
+            $response['datasource_entries'][] = $this->datasourceEntryResponse();
+        }
+
+        return array_replace_recursive(
+            $response,
+            $overrides,
+        );
+    }
+
+    /**
+     * @param array{
+     *     id?: int,
+     *     name?: string,
+     *     value?: string,
+     *     dimension_value?: string|null
+     * } $overrides
+     *
+     * @return array{
+     *     id: int,
+     *     name: string,
+     *     value: string,
+     *     dimension_value: string|null
+     * }
+     */
+    public function datasourceEntryResponse(array $overrides = []): array
+    {
+        $response = [
+            'id' => $this->generator->unique()->randomNumber(),
+            'name' => $this->generator->word(),
+            'value' => $this->generator->word(),
+            'dimension_value' => $this->generator->boolean() ? $this->generator->word() : null,
+        ];
 
         return array_replace_recursive(
             $response,

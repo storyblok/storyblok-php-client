@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceEntryResponse\\(\\) should return array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceResponse\\(\\) should return array\\{datasource_entries\\: array\\<int, array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\}\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
 			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:linkAlternateResponse\\(\\) should return array\\{lang\\: string, name\\: string, path\\: string, published\\: bool, translated_slug\\: string\\} but returns array\\.$#"
 			count: 1
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php

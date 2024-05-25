@@ -35,6 +35,7 @@ final class TagTest extends TestCase
     /**
      * @test
      *
+     * @dataProvider \Ergebnis\DataProvider\StringProvider::blank()
      * @dataProvider \Ergebnis\DataProvider\StringProvider::empty()
      */
     public function nameInvalid(string $value): void

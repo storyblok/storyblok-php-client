@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Domain\Value;
 
+use OskarStark\Value\TrimmedNonEmptyString;
 use Webmozart\Assert\Assert;
 
 final readonly class Tag
@@ -21,7 +22,7 @@ final readonly class Tag
         public string $name,
         public int $taggingsCount,
     ) {
-        Assert::stringNotEmpty($this->name);
+        TrimmedNonEmptyString::fromString($name);
         Assert::greaterThanEq($this->taggingsCount, 0);
     }
 }

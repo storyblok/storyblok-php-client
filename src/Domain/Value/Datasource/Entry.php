@@ -37,8 +37,7 @@ final readonly class Entry
         $this->name = TrimmedNonEmptyString::fromString($values['name'])->toString();
 
         Assert::keyExists($values, 'value');
-        $value = $values['value'];
-        $this->value = TrimmedNonEmptyString::fromString($value)->toString();
+        $this->value = TrimmedNonEmptyString::fromString($values['value'])->toString();
 
         Assert::keyExists($values, 'dimension_value');
         Assert::nullOrString($values['dimension_value']);
