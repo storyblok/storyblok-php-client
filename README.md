@@ -1,8 +1,8 @@
 # storyblok-api
 
-| Branch    | PHP                                         | Code Coverage                                        |
-|-----------|---------------------------------------------|------------------------------------------------------|
-| `master`  | [![PHP](https://github.com/sensiolabs-de/storyblok-api/actions/workflows/ci.yaml/badge.svg)](https://github.com/sensiolabs-de/storyblok-api/actions/workflows/ci.yaml)  | [![Code Coverage][coverage-status-master]][codecov]  |
+| Branch    | PHP                                         | Code Coverage                                                                                                                                       |
+|-----------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `master`  | [![PHP](https://github.com/sensiolabs-de/storyblok-api/actions/workflows/ci.yaml/badge.svg)](https://github.com/sensiolabs-de/storyblok-api/actions/workflows/ci.yaml)  | [![codecov](https://codecov.io/gh/sensiolabs-de/storyblok-api/graph/badge.svg?token=8K4F33LSWF)](https://codecov.io/gh/sensiolabs-de/storyblok-api) |
 
 ## Usage
 
@@ -386,6 +386,22 @@ $client = new StoryblokClient(/* ... */);
 
 $api = new DatasourceApi($client);
 $response = $api->byName('tags', new Dimension('de')); // returns SensioLabs\Storyblok\Api\Domain\Value\Datasource
+```
+
+## Tags
+
+In your code you should type-hint to `SensioLabs\Storyblok\Api\TagsApiInterface`
+
+### Get all available tags
+
+```php
+use SensioLabs\Storyblok\Api\TagsApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+
+$client = new StoryblokClient(/* ... */);
+
+$api = new TagsApi($client);
+$response = $api->all(); // returns SensioLabs\Storyblok\Api\Response\TagsResponse
 ```
 
 [actions]: https://github.com/sensiolabs-de/storyblok-api/actions
