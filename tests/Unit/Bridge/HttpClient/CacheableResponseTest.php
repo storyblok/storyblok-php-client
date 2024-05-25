@@ -26,7 +26,7 @@ class CacheableResponseTest extends TestCase
      */
     public function getStatusCode(): void
     {
-        $client = new MockHttpClient([new MockResponse(info: ['http_code' => 201])]);
+        $client = new MockHttpClient(new MockResponse(info: ['http_code' => 201]));
         $response = $client->request('GET', 'https://example.com/');
 
         self::assertSame(201, (new CacheableResponse($response))->getStatusCode());
@@ -37,9 +37,9 @@ class CacheableResponseTest extends TestCase
      */
     public function getHeaders(): void
     {
-        $client = new MockHttpClient([
+        $client = new MockHttpClient(
             new MockResponse(info: ['response_headers' => $headers = ['accept' => [0 => 'application/json']]]),
-        ]);
+        );
         $response = $client->request('GET', 'https://example.com/');
 
         self::assertSame($headers, (new CacheableResponse($response))->getHeaders());
@@ -50,9 +50,7 @@ class CacheableResponseTest extends TestCase
      */
     public function getContent(): void
     {
-        $client = new MockHttpClient([
-            new MockResponse($body = 'response body'),
-        ]);
+        $client = new MockHttpClient(new MockResponse($body = 'response body'));
         $response = $client->request('GET', 'https://example.com/');
 
         self::assertSame($body, (new CacheableResponse($response))->getContent());
@@ -65,9 +63,7 @@ class CacheableResponseTest extends TestCase
     {
         $json = '[{"hello there": "General Kenobi"}]';
 
-        $client = new MockHttpClient([
-            new MockResponse($json),
-        ]);
+        $client = new MockHttpClient(new MockResponse($json));
         $response = $client->request('GET', 'https://example.com/');
 
         self::assertSame(json_decode($json, true), (new CacheableResponse($response))->toArray());
@@ -78,9 +74,9 @@ class CacheableResponseTest extends TestCase
      */
     public function toArrayWithInvalidJsonThrowsException(): void
     {
-        $client = new MockHttpClient([
+        $client = new MockHttpClient(
             new MockResponse('[{"hello there "General Kenobi"}]'),
-        ]);
+        );
         $response = $client->request('GET', 'https://example.com/');
 
         self::expectException(\RuntimeException::class);
@@ -93,7 +89,7 @@ class CacheableResponseTest extends TestCase
      */
     public function cancelThrowsException(): void
     {
-        $client = new MockHttpClient([new MockResponse()]);
+        $client = new MockHttpClient(new MockResponse());
         $response = $client->request('GET', 'https://example.com/');
 
         self::expectException(\BadMethodCallException::class);
@@ -106,7 +102,7 @@ class CacheableResponseTest extends TestCase
      */
     public function getInfoThrowsException(): void
     {
-        $client = new MockHttpClient([new MockResponse()]);
+        $client = new MockHttpClient(new MockResponse());
         $response = $client->request('GET', 'https://example.com/');
 
         self::expectException(\BadMethodCallException::class);
