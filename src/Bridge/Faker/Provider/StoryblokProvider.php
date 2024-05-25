@@ -299,7 +299,7 @@ final class StoryblokProvider extends BaseProvider
     public function datasourceEntryResponse(array $overrides = []): array
     {
         $response = [
-            'id' => $this->generator->unique()->randomNumber(),
+            'id' => $this->generator->numberBetween(1),
             'name' => $this->generator->word(),
             'value' => $this->generator->word(),
             'dimension_value' => $this->generator->boolean() ? $this->generator->word() : null,

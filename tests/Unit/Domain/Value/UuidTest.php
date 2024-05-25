@@ -55,4 +55,15 @@ final class UuidTest extends TestCase
         yield 'mixed_case_uuid' => ['9C2c176d-d8a1-457c-b066-f37ab38771ad'];
         yield 'upper_case_uuid' => ['9C2C176D-D8A1-457C-B066-F37AB38771AD'];
     }
+
+    /**
+     * @test
+     */
+    public function stringable(): void
+    {
+        $uuid = new Uuid($expected = self::faker()->uuid());
+
+        self::assertSame($expected, (string) $uuid);
+        self::assertSame($expected, $uuid->__toString());
+    }
 }

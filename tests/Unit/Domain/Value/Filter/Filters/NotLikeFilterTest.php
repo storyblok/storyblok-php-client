@@ -29,6 +29,9 @@ final class NotLikeFilterTest extends FilterTestCase
         return NotLikeFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -39,6 +42,17 @@ final class NotLikeFilterTest extends FilterTestCase
                 Operation::NotLike->value => $value,
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new NotLikeFilter($field = $faker->word(), $faker->word());
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

@@ -46,6 +46,17 @@ final class AllInArrayFilterTest extends FilterTestCase
 
     /**
      * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new AllInArrayFilter($field = $faker->word(), [$faker->word()]);
+
+        self::assertSame($field, $filter->field());
+    }
+
+    /**
+     * @test
      *
      * @dataProvider \Ergebnis\DataProvider\StringProvider::blank()
      * @dataProvider \Ergebnis\DataProvider\StringProvider::empty()

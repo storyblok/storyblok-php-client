@@ -59,11 +59,12 @@ final class CacheableResponse implements ResponseInterface
         return json_decode($this->content, true);
     }
 
-    public function cancel(): void
+    public function cancel(): never
     {
+        throw new \BadMethodCallException(sprintf('%s is not callable.', __METHOD__));
     }
 
-    public function getInfo(?string $type = null): mixed
+    public function getInfo(?string $type = null): never
     {
         throw new \BadMethodCallException(sprintf('%s is not callable.', __METHOD__));
     }

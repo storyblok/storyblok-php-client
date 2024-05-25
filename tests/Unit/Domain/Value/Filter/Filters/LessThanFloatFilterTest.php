@@ -29,6 +29,9 @@ final class LessThanFloatFilterTest extends FilterTestCase
         return LessThanFloatFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -36,9 +39,20 @@ final class LessThanFloatFilterTest extends FilterTestCase
 
         self::assertSame([
             $field => [
-                Operation::LessThanFloat->value => $value,
+                Operation::LessThanFloat->value => (string) $value,
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new LessThanFloatFilter($field = $faker->word(), $faker->randomFloat());
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

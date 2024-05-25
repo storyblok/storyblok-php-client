@@ -29,6 +29,9 @@ final class NotInFilterTest extends FilterTestCase
         return NotInFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -36,9 +39,20 @@ final class NotInFilterTest extends FilterTestCase
 
         self::assertSame([
             $field => [
-                Operation::NotIn->value => $value,
+                Operation::NotIn->value => implode(',', $value),
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new NotInFilter($field = $faker->word(), [$faker->word()]);
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

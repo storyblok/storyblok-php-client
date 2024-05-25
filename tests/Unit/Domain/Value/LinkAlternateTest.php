@@ -135,4 +135,24 @@ final class LinkAlternateTest extends TestCase
 
         new LinkAlternate($values);
     }
+
+    /**
+     * @test
+     */
+    public function isPublishedReturnsTrue(): void
+    {
+        $values = self::faker()->linkAlternateResponse(['published' => true]);
+
+        self::assertTrue((new LinkAlternate($values))->isPublished());
+    }
+
+    /**
+     * @test
+     */
+    public function isPublishedReturnsFalse(): void
+    {
+        $values = self::faker()->linkAlternateResponse(['published' => false]);
+
+        self::assertFalse((new LinkAlternate($values))->isPublished());
+    }
 }

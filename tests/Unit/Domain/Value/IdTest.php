@@ -51,4 +51,22 @@ final class IdTest extends TestCase
         yield 'zero' => [0];
         yield 'negative_number' => [-1];
     }
+
+    /**
+     * @test
+     */
+    public function equalsReturnsTrue(): void
+    {
+        $value = self::faker()->numberBetween(1);
+
+        self::assertTrue((new Id($value))->equals(new Id($value)));
+    }
+
+    /**
+     * @test
+     */
+    public function equalsReturnsFalse(): void
+    {
+        self::assertFalse((new Id(1))->equals(new Id(2)));
+    }
 }

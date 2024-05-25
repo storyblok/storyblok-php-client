@@ -27,7 +27,7 @@ final class EntryTest extends TestCase
     public function id(): void
     {
         $faker = self::faker();
-        $response = $faker->datasourceEntryResponse(['id' => $id = $faker->unique()->randomNumber()]);
+        $response = $faker->datasourceEntryResponse(['id' => $id = $faker->numberBetween(1)]);
 
         self::assertSame($id, (new Entry($response))->id->value);
     }

@@ -29,6 +29,9 @@ final class GreaterThanFloatFilterTest extends FilterTestCase
         return GreaterThanFloatFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -36,9 +39,20 @@ final class GreaterThanFloatFilterTest extends FilterTestCase
 
         self::assertSame([
             $field => [
-                Operation::GreaterThanFloat->value => $value,
+                Operation::GreaterThanFloat->value => (string) $value,
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new GreaterThanFloatFilter($field = $faker->word(), $faker->randomFloat());
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

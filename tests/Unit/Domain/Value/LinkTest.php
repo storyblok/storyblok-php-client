@@ -276,4 +276,208 @@ final class LinkTest extends TestCase
 
         new Link($values);
     }
+
+    /**
+     * @test
+     */
+    public function isPublishedWithNullAndStoryIsNotPublished(): void
+    {
+        $values = self::faker()->linkResponse(['published' => null]);
+
+        self::assertFalse((new Link($values))->isPublished());
+    }
+
+    /**
+     * @test
+     */
+    public function isPublishedWithNullAndStoryIsPublished(): void
+    {
+        $values = self::faker()->linkResponse(['published' => true]);
+
+        self::assertTrue((new Link($values))->isPublished());
+    }
+
+    /**
+     * @test
+     */
+    public function isPublishedWithLangAndAlternateIsPublished(): void
+    {
+        $faker = self::faker();
+        $alternate = $faker->linkAlternateResponse([
+            'lang' => $lang = $faker->randomElement(['de', 'fr']),
+            'published' => true,
+        ]);
+
+        $values = $faker->linkResponse();
+        unset($values['alternates']);
+        $values['alternates'] = [$alternate];
+
+        self::assertTrue((new Link($values))->isPublished($lang));
+    }
+
+    /**
+     * @test
+     */
+    public function isPublishedWithLangAndAlternateIsNotPublished(): void
+    {
+        $faker = self::faker();
+        $alternate = $faker->linkAlternateResponse([
+            'lang' => $lang = $faker->randomElement(['de', 'fr']),
+            'published' => false,
+        ]);
+
+        $values = $faker->linkResponse();
+        unset($values['alternates']);
+        $values['alternates'] = [$alternate];
+
+        self::assertFalse((new Link($values))->isPublished($lang));
+    }
+
+    /**
+     * @test
+     */
+    public function isFolderReturnsTrue(): void
+    {
+        $values = self::faker()->linkResponse(['is_folder' => true]);
+
+        self::assertTrue((new Link($values))->isFolder());
+    }
+
+    /**
+     * @test
+     */
+    public function isFolderReturnsFalse(): void
+    {
+        $values = self::faker()->linkResponse(['is_folder' => false]);
+
+        self::assertFalse((new Link($values))->isFolder());
+    }
+
+    /**
+     * @test
+     */
+    public function isStoryReturnsTrue(): void
+    {
+        $values = self::faker()->linkResponse(['is_folder' => false]);
+
+        self::assertTrue((new Link($values))->isStory());
+    }
+
+    /**
+     * @test
+     */
+    public function isStoryReturnsFalse(): void
+    {
+        $values = self::faker()->linkResponse(['is_folder' => true]);
+
+        self::assertFalse((new Link($values))->isStory());
+    }
+
+    /**
+     * @test
+     */
+    public function isStartPageReturnsTrue(): void
+    {
+        $values = self::faker()->linkResponse(['is_startpage' => true]);
+
+        self::assertTrue((new Link($values))->isStartPage());
+    }
+
+    /**
+     * @test
+     */
+    public function isStartPageReturnsFalse(): void
+    {
+        $values = self::faker()->linkResponse(['is_startpage' => false]);
+
+        self::assertFalse((new Link($values))->isStartPage());
+    }
+
+    /**
+     * @test
+     */
+    public function getNameWithLangAndAlternate(): void
+    {
+        $faker = self::faker();
+        $alternate = $faker->linkAlternateResponse([
+            'lang' => $lang = $faker->randomElement(['de', 'fr']),
+            'name' => $name = $faker->word(),
+        ]);
+
+        $values = $faker->linkResponse();
+        unset($values['alternates']);
+        $values['alternates'] = [$alternate];
+
+        self::assertSame($name, (new Link($values))->getName($lang));
+    }
+
+    /**
+     * @test
+     */
+    public function getNameWithNullReturnsDefaultName(): void
+    {
+        $faker = self::faker();
+
+        $values = $faker->linkResponse(['name' => $name = $faker->word()]);
+
+        self::assertSame($name, (new Link($values))->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function getNameThrowsExceptionOnUnknownLanguage(): void
+    {
+        $faker = self::faker();
+
+        $values = $faker->linkResponse();
+
+        self::expectException(\InvalidArgumentException::class);
+
+        (new Link($values))->getName('unknown');
+    }
+
+    /**
+     * @test
+     */
+    public function getSlugWithLangAndAlternate(): void
+    {
+        $faker = self::faker();
+        $alternate = $faker->linkAlternateResponse([
+            'lang' => $lang = $faker->randomElement(['de', 'fr']),
+            'translated_slug' => $slug = $faker->word(),
+        ]);
+
+        $values = $faker->linkResponse();
+        unset($values['alternates']);
+        $values['alternates'] = [$alternate];
+
+        self::assertSame($slug, (new Link($values))->getSlug($lang));
+    }
+
+    /**
+     * @test
+     */
+    public function getSlugWithNullReturnsDefaultName(): void
+    {
+        $faker = self::faker();
+
+        $values = $faker->linkResponse(['slug' => $slug = $faker->word()]);
+
+        self::assertSame($slug, (new Link($values))->getSlug());
+    }
+
+    /**
+     * @test
+     */
+    public function getSlugThrowsExceptionOnUnknownLanguage(): void
+    {
+        $faker = self::faker();
+
+        $values = $faker->linkResponse();
+
+        self::expectException(\InvalidArgumentException::class);
+
+        (new Link($values))->getSlug('unknown');
+    }
 }

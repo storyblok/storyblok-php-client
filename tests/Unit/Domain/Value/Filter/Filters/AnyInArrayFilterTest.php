@@ -29,6 +29,9 @@ final class AnyInArrayFilterTest extends FilterTestCase
         return AnyInArrayFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -39,6 +42,17 @@ final class AnyInArrayFilterTest extends FilterTestCase
                 Operation::AnyInArray->value => $value,
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new AnyInArrayFilter($field = $faker->word(), [$faker->word()]);
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

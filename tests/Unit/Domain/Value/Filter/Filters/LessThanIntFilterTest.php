@@ -29,6 +29,9 @@ final class LessThanIntFilterTest extends FilterTestCase
         return LessThanIntFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -36,9 +39,20 @@ final class LessThanIntFilterTest extends FilterTestCase
 
         self::assertSame([
             $field => [
-                Operation::LessThanInt->value => $value,
+                Operation::LessThanInt->value => (string) $value,
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new LessThanIntFilter($field = $faker->word(), $faker->randomNumber());
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

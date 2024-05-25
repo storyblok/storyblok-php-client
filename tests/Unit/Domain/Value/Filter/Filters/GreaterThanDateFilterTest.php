@@ -29,6 +29,9 @@ final class GreaterThanDateFilterTest extends FilterTestCase
         return GreaterThanDateFilter::class;
     }
 
+    /**
+     * @test
+     */
     public function toArray(): void
     {
         $faker = self::faker();
@@ -39,6 +42,17 @@ final class GreaterThanDateFilterTest extends FilterTestCase
                 Operation::GreaterThanDate->value => $value->format('Y-m-d H:i'),
             ],
         ], $filter->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function field(): void
+    {
+        $faker = self::faker();
+        $filter = new GreaterThanDateFilter($field = $faker->word(), $faker->dateTime());
+
+        self::assertSame($field, $filter->field());
     }
 
     /**

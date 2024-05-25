@@ -158,4 +158,17 @@ final class FilterCollectionTest extends TestCase
 
         new FilterCollection($filters);
     }
+
+    /**
+     * @test
+     */
+    public function getIterator(): void
+    {
+        $filters = [
+            new IsFilter('title', IsFilter::EMPTY),
+            new LikeFilter('title', '*fooo'),
+        ];
+
+        self::assertInstanceOf(\ArrayIterator::class, (new FilterCollection($filters))->getIterator());
+    }
 }
