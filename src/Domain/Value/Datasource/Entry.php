@@ -22,6 +22,7 @@ final readonly class Entry
     public Id $id;
     public string $name;
     public string $value;
+    public ?string $dimensionValue;
 
     /**
      * @param array<string, mixed> $values
@@ -37,13 +38,15 @@ final readonly class Entry
 
         Assert::keyExists($values, 'value');
         $value = $values['value'];
+        $this->value = TrimmedNonEmptyString::fromString($value)->toString();
 
-        if (\array_key_exists('dimension_value', $values)
-            && \is_string($values['dimension_value'])
-        ) {
-            $value = $values['dimension_value'];
+        Assert::keyExists($values, 'dimension_value');
+        Assert::nullOrString($values['dimension_value']);
+
+        if (\is_string($dimensionValue = $values['dimension_value'])) {
+            $dimensionValue = TrimmedNonEmptyString::fromString($dimensionValue)->toString();
         }
 
-        $this->value = TrimmedNonEmptyString::fromString($value)->toString();
+        $this->dimensionValue = $dimensionValue;
     }
 }
