@@ -217,4 +217,32 @@ final class StoryblokProvider extends BaseProvider
             $overrides,
         );
     }
+
+    /**
+     * @param array{
+     *    tags?: list<array{name: string, taggings_count: int}>,
+     * } $overrides
+     *
+     * @return array{
+     *    tags: list<array{name: string, taggings_count: int}>,
+     * }
+     */
+    public function tagsResponse(array $overrides = []): array
+    {
+        $response = [
+            'tags' => [],
+        ];
+
+        for ($i = 0; $this->generator->numberBetween(1, 10) > $i; ++$i) {
+            $response['tags'][] = [
+                'name' => $this->generator->word(),
+                'taggings_count' => $this->generator->numberBetween(0, 100),
+            ];
+        }
+
+        return array_replace_recursive(
+            $response,
+            $overrides,
+        );
+    }
 }

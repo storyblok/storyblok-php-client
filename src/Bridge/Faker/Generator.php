@@ -23,6 +23,7 @@ use SensioLabs\Storyblok\Api\Bridge\Faker\Provider\StoryblokProvider;
  * @method array linksResponse(array $overrides = [])
  * @method array storiesResponse(array $overrides = [])
  * @method array storyResponse(array $overrides = [])
+ * @method array tagsResponse(array $overrides = [])
  */
 final class Generator extends BaseGenerator
 {
