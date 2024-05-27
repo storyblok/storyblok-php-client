@@ -19,6 +19,7 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Webmozart\Assert\Assert;
+use function Safe\parse_url;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
@@ -28,6 +29,7 @@ final class StoryblokClient implements StoryblokClientInterface
     private HttpClientInterface $client;
     private string $token;
     private int $timeout;
+    private ?int $cacheVersion = null;
 
     public function __construct(
         string $baseUri,
@@ -63,15 +65,17 @@ final class StoryblokClient implements StoryblokClientInterface
             $url = QueryStringHelper::applyQueryString($url, [
                 ...$options['query'],
                 'token' => $this->token,
+                'cv' => $this->cacheVersion,
             ]);
             unset($options['query']);
         } else {
             $options['query'] = [
                 'token' => $this->token,
+                'cv' => $this->cacheVersion,
             ];
         }
 
-        return $this->client->request(
+        $response = $this->client->request(
             $method,
             $url,
             array_merge_recursive(
@@ -84,5 +88,16 @@ final class StoryblokClient implements StoryblokClientInterface
                 ],
             ),
         );
+
+        if ($response->getStatusCode()) {
+            $parsed = [];
+            /** @var string $parsedUrl */
+            $parsedUrl = parse_url($response->getInfo('url'), \PHP_URL_QUERY);
+            parse_str($parsedUrl, $parsed);
+
+            $this->cacheVersion = \array_key_exists('cv', $parsed) ? (int) $parsed['cv'] : $this->cacheVersion;
+        }
+
+        return $response;
     }
 }
