@@ -61,11 +61,6 @@ parameters:
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php
 
 		-
-			message: "#^Function json_decode is unsafe to use\\. It can return FALSE instead of throwing an exception\\. Please add 'use function Safe\\\\json_decode;' at the beginning of the file to use the variant provided by the 'thecodingmachine/safe' library\\.$#"
-			count: 1
-			path: src/Bridge/HttpClient/CacheableResponse.php
-
-		-
 			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Domain\\\\Value\\\\Filter\\\\FilterCollection\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Domain/Value/Filter/FilterCollection.php
