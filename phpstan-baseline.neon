@@ -1,12 +1,27 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceDimensionResponse\\(\\) should return array\\{id\\: int, name\\: string, entry_value\\: string, datasource_id\\: int, created_at\\: string, updated_at\\: string\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceEntriesResponse\\(\\) should return array\\{datasource_entries\\: array\\<int, array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\}\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
 			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceEntryResponse\\(\\) should return array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\} but returns array\\.$#"
 			count: 1
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php
 
 		-
-			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceResponse\\(\\) should return array\\{datasource_entries\\: array\\<int, array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\}\\>\\} but returns array\\.$#"
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceResponse\\(\\) should return array\\{id\\: int, name\\: string, slug\\: string, dimensions\\: array\\<int, array\\{id\\: int, name\\: string, entry_value\\: string, datasource_id\\: int, created_at\\: string, updated_at\\: string\\}\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourcesResponse\\(\\) should return array\\{datasources\\: array\\<int, array\\<string, mixed\\>\\>\\} but returns array\\.$#"
 			count: 1
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php
 

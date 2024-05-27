@@ -16,7 +16,6 @@ namespace SensioLabs\Storyblok\Api;
 use OskarStark\Value\TrimmedNonEmptyString;
 use SensioLabs\Storyblok\Api\Bridge\HttpClient\QueryStringHelper;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpClient\HttpClientTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Webmozart\Assert\Assert;
@@ -26,7 +25,6 @@ use Webmozart\Assert\Assert;
  */
 final class StoryblokClient implements StoryblokClientInterface
 {
-    use HttpClientTrait;
     private HttpClientInterface $client;
     private string $token;
     private int $timeout;

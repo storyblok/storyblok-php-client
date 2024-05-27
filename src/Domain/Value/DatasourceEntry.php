@@ -11,13 +11,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace SensioLabs\Storyblok\Api\Domain\Value\Datasource;
+namespace SensioLabs\Storyblok\Api\Domain\Value;
 
 use OskarStark\Value\TrimmedNonEmptyString;
-use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use Webmozart\Assert\Assert;
 
-final readonly class Entry
+/**
+ * @see https://www.storyblok.com/docs/api/content-delivery/v2/datasources/the-datasource-entry-object
+ */
+final readonly class DatasourceEntry
 {
     public Id $id;
     public string $name;
@@ -30,7 +32,6 @@ final readonly class Entry
     public function __construct(array $values)
     {
         Assert::keyExists($values, 'id');
-        Assert::integer($values['id']);
         $this->id = new Id($values['id']);
 
         Assert::keyExists($values, 'name');
@@ -40,10 +41,10 @@ final readonly class Entry
         $this->value = TrimmedNonEmptyString::fromString($values['value'])->toString();
 
         Assert::keyExists($values, 'dimension_value');
-        Assert::nullOrString($values['dimension_value']);
+        $dimensionValue = null;
 
-        if (\is_string($dimensionValue = $values['dimension_value'])) {
-            $dimensionValue = TrimmedNonEmptyString::fromString($dimensionValue)->toString();
+        if (null !== $values['dimension_value']) {
+            $dimensionValue = TrimmedNonEmptyString::fromString($values['dimension_value'])->toString();
         }
 
         $this->dimensionValue = $dimensionValue;

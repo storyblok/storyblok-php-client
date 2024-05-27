@@ -14,31 +14,20 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Domain\Value;
 
 use OskarStark\Value\TrimmedNonEmptyString;
+use Safe\DateTimeImmutable;
 use Webmozart\Assert\Assert;
 
 /**
  * @see https://www.storyblok.com/docs/api/content-delivery/v2/datasources/the-datasource-object
  */
-final readonly class Datasource
+final readonly class DatasourceDimension
 {
     public Id $id;
-
-    /**
-     * The complete name provided for the datasource.
-     */
     public string $name;
-
-    /**
-     * The unique slug of the datasource.
-     */
-    public string $slug;
-
-    /**
-     * The dimensions (e.g., per country, region, language, or other context) defined for the datasource.
-     *
-     * @var list<DatasourceDimension>
-     */
-    public array $dimensions;
+    public string $entryValue;
+    public Id $datasourceId;
+    public \DateTimeImmutable $createdAt;
+    public \DateTimeImmutable $updatedAt;
 
     /**
      * @param array<string, mixed> $values
@@ -51,13 +40,16 @@ final readonly class Datasource
         Assert::keyExists($values, 'name');
         $this->name = TrimmedNonEmptyString::fromString($values['name'])->toString();
 
-        Assert::keyExists($values, 'slug');
-        $this->slug = TrimmedNonEmptyString::fromString($values['slug'])->toString();
+        Assert::keyExists($values, 'entry_value');
+        $this->entryValue = TrimmedNonEmptyString::fromString($values['entry_value'])->toString();
 
-        Assert::keyExists($values, 'dimensions');
-        $this->dimensions = array_map(
-            static fn (array $dimension) => new DatasourceDimension($dimension),
-            $values['dimensions'],
-        );
+        Assert::keyExists($values, 'datasource_id');
+        $this->datasourceId = new Id($values['datasource_id']);
+
+        Assert::keyExists($values, 'created_at');
+        $this->createdAt = new DateTimeImmutable($values['created_at']);
+
+        Assert::keyExists($values, 'updated_at');
+        $this->updatedAt = new DateTimeImmutable($values['updated_at']);
     }
 }

@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Response\TagsResponse;
 
-final class TagsApi implements TagsApiInterface
+final readonly class TagsApi implements TagsApiInterface
 {
     public function __construct(
         private StoryblokClientInterface $client,
