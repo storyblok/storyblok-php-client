@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
+use SensioLabs\Storyblok\Api\Request\LinksRequest;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
 
 /**
@@ -22,11 +22,9 @@ use SensioLabs\Storyblok\Api\Response\LinksResponse;
  */
 interface LinksApiInterface
 {
-    public const int MAX_PER_PAGE = 1000;
+    public function all(?LinksRequest $request = null): LinksResponse;
 
-    public function all(?Pagination $pagination = null): LinksResponse;
+    public function byParent(Id $parentId, ?LinksRequest $request = null): LinksResponse;
 
-    public function byParent(Id $parentId, ?Pagination $pagination = null): LinksResponse;
-
-    public function roots(?Pagination $pagination = null): LinksResponse;
+    public function roots(?LinksRequest $request = null): LinksResponse;
 }

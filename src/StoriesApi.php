@@ -13,197 +13,96 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
-use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
+use SensioLabs\Storyblok\Api\Request\StoriesRequest;
 use SensioLabs\Storyblok\Api\Response\StoriesResponse;
 use SensioLabs\Storyblok\Api\Response\StoryResponse;
 use Webmozart\Assert\Assert;
 
 final class StoriesApi implements StoriesApiInterface
 {
+    private const string ENDPOINT = '/v2/cdn/stories';
+
     public function __construct(
         private StoryblokClientInterface $client,
-        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
-    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, ?FilterCollection $filters = null): StoriesResponse
+    public function all(?StoriesRequest $request = null): StoriesResponse
     {
-        Assert::stringNotEmpty($locale);
+        $request ??= new StoriesRequest();
 
-        if (null === $pagination) {
-            $pagination = new Pagination();
-        }
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => $request->toArray(),
+        ]);
 
-        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
-
-        $parameter = [];
-
-        if (null !== $sortBy) {
-            $parameter = [
-                'sort_by' => sprintf('%s:%s', $sortBy->field, $sortBy->direction->value),
-            ];
-        }
-
-        if (null !== $filters) {
-            $parameter['filter_query'] = $filters->toArray();
-        }
-
-        try {
-            $response = $this->client->request(
-                'GET',
-                '/v2/cdn/stories',
-                [
-                    'query' => array_merge($parameter, [
-                        'language' => $locale,
-                        'fallback_lang' => 'default',
-                        'page' => $pagination->page,
-                        'per_page' => $pagination->perPage,
-                    ]),
-                ],
-            );
-
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new StoriesResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new StoriesResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, ?FilterCollection $filters = null): StoriesResponse
+    public function allByContentType(string $contentType, ?StoriesRequest $request = null): StoriesResponse
     {
         Assert::stringNotEmpty($contentType);
-        Assert::stringNotEmpty($locale);
 
-        if (null === $pagination) {
-            $pagination = new Pagination();
-        }
+        $request ??= new StoriesRequest();
 
-        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => [
+                ...$request->toArray(),
+                'content_type' => $contentType,
+            ],
+        ]);
 
-        $parameter = [];
-
-        if (null !== $sortBy) {
-            $parameter = [
-                'sort_by' => sprintf('%s:%s', $sortBy->field, $sortBy->direction->value),
-            ];
-        }
-
-        if (null !== $filters) {
-            $parameter['filter_query'] = $filters->toArray();
-        }
-
-        try {
-            $response = $this->client->request(
-                'GET',
-                '/v2/cdn/stories',
-                [
-                    'query' => array_merge($parameter, [
-                        'language' => $locale,
-                        'fallback_lang' => 'default',
-                        'content_type' => $contentType,
-                        'page' => $pagination->page,
-                        'per_page' => $pagination->perPage,
-                    ]),
-                ],
-            );
-
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new StoriesResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new StoriesResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function bySlug(string $slug, string $locale = 'default'): StoryResponse
+    public function bySlug(string $slug, string $language = 'default'): StoryResponse
     {
-        Assert::stringNotEmpty($locale);
+        Assert::stringNotEmpty($language);
         Assert::stringNotEmpty($slug);
 
-        try {
-            $response = $this->client->request(
-                'GET',
-                sprintf('/v2/cdn/stories/%s', $slug),
-                [
-                    'query' => [
-                        'language' => $locale,
-                        'fallback_lang' => 'default',
-                    ],
-                ],
-            );
+        $response = $this->client->request('GET', sprintf('%s/%s', self::ENDPOINT, $slug), [
+            'query' => [
+                'language' => $language,
+            ],
+        ]);
 
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new StoryResponse($response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new StoryResponse($response->toArray());
     }
 
-    public function byUuid(Uuid $uuid, string $locale = 'default'): StoryResponse
+    public function byUuid(Uuid $uuid, string $language = 'default'): StoryResponse
     {
-        Assert::stringNotEmpty($locale);
+        Assert::stringNotEmpty($language);
 
-        try {
-            $response = $this->client->request(
-                'GET',
-                sprintf('/v2/cdn/stories/%s', $uuid->value),
-                [
-                    'query' => [
-                        'language' => $locale,
-                        'fallback_lang' => 'default',
-                        'find_by' => 'uuid',
-                    ],
-                ],
-            );
+        $response = $this->client->request('GET', sprintf('%s/%s', self::ENDPOINT, $uuid->value), [
+            'query' => [
+                'language' => $language,
+                'find_by' => 'uuid',
+            ],
+        ]);
 
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new StoryResponse($response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new StoryResponse($response->toArray());
     }
 
-    public function byId(Id $id, string $locale = 'default'): StoryResponse
+    public function byId(Id $id, string $language = 'default'): StoryResponse
     {
-        Assert::stringNotEmpty($locale);
+        Assert::stringNotEmpty($language);
 
-        try {
-            $response = $this->client->request(
-                'GET',
-                sprintf('/v2/cdn/stories/%s', $id->value),
-                [
-                    'query' => [
-                        'language' => $locale,
-                        'fallback_lang' => 'default',
-                    ],
-                ],
-            );
+        $response = $this->client->request('GET', sprintf('/v2/cdn/stories/%s', $id->value), [
+            'query' => [
+                'language' => $language,
+            ],
+        ]);
 
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new StoryResponse($response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new StoryResponse($response->toArray());
     }
 }

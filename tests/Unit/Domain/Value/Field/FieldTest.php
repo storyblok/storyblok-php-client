@@ -11,25 +11,24 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace SensioLabs\Storyblok\Api\Tests\Unit\Domain\Value\Dto;
+namespace SensioLabs\Storyblok\Api\Tests\Unit\Domain\Value\Field;
 
 use PHPUnit\Framework\TestCase;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Direction;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
+use SensioLabs\Storyblok\Api\Domain\Value\Field\Field;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
-final class SortByTest extends TestCase
+final class FieldTest extends TestCase
 {
     use FakerTrait;
 
     /**
      * @test
      */
-    public function page(): void
+    public function value(): void
     {
         $value = self::faker()->word();
 
-        self::assertSame($value, (new SortBy($value, Direction::Asc))->field);
+        self::assertSame($value, (new Field($value))->value);
     }
 
     /**
@@ -38,20 +37,10 @@ final class SortByTest extends TestCase
      * @dataProvider \Ergebnis\DataProvider\StringProvider::blank()
      * @dataProvider \Ergebnis\DataProvider\StringProvider::empty()
      */
-    public function pageInvalid(string $value): void
+    public function valueInvalid(string $value): void
     {
         self::expectException(\InvalidArgumentException::class);
 
-        new SortBy($value, Direction::Asc);
-    }
-
-    /**
-     * @test
-     */
-    public function toStringMethod(): void
-    {
-        $value = self::faker()->word();
-
-        self::assertSame(sprintf('%s:%s', $value, Direction::Asc->value), (new SortBy($value, Direction::Asc))->toString());
+        new Field($value);
     }
 }

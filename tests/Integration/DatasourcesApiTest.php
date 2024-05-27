@@ -16,6 +16,7 @@ namespace SensioLabs\Storyblok\Api\Tests\Integration;
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\DatasourcesApi;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+use SensioLabs\Storyblok\Api\Request\DatasourcesRequest;
 use SensioLabs\Storyblok\Api\Response\DatasourceResponse;
 use SensioLabs\Storyblok\Api\Response\DatasourcesResponse;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
@@ -36,7 +37,7 @@ class DatasourcesApiTest extends TestCase
         );
         $api = new DatasourcesApi($client);
 
-        $response = $api->all(new Pagination(1, 10));
+        $response = $api->all(new DatasourcesRequest(pagination: new Pagination(1, 10)));
 
         self::assertInstanceOf(DatasourcesResponse::class, $response);
     }
@@ -66,7 +67,7 @@ class DatasourcesApiTest extends TestCase
 
         self::expectException(\Exception::class);
 
-        $api->all(new Pagination(1, 10));
+        $api->all(new DatasourcesRequest(pagination: new Pagination(1, 10)));
     }
 
     /**

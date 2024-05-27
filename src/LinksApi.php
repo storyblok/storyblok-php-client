@@ -13,117 +13,68 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
+use SensioLabs\Storyblok\Api\Request\LinksRequest;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
-use Webmozart\Assert\Assert;
 
 final class LinksApi implements LinksApiInterface
 {
+    private const string ENDPOINT = '/v2/cdn/links';
+
     public function __construct(
         private StoryblokClientInterface $client,
-        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
-    public function all(?Pagination $pagination = null): LinksResponse
+    public function all(?LinksRequest $request = null): LinksResponse
     {
-        if (null === $pagination) {
-            $pagination = new Pagination();
-        }
+        $request ??= new LinksRequest();
 
-        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => $request->toArray(),
+        ]);
 
-        try {
-            $response = $this->client->request(
-                'GET',
-                '/v2/cdn/links',
-                [
-                    'query' => [
-                        'paginated' => true,
-                        'include_dates' => true,
-                        'page' => $pagination->page,
-                        'per_page' => $pagination->perPage,
-                    ],
-                ],
-            );
-
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new LinksResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function byParent(Id $parentId, ?Pagination $pagination = null): LinksResponse
+    public function byParent(Id $parentId, ?LinksRequest $request = null): LinksResponse
     {
-        if (null === $pagination) {
-            $pagination = new Pagination();
-        }
+        $request ??= new LinksRequest();
 
-        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => [
+                ...$request->toArray(),
+                'with_parent' => $parentId->value,
+            ],
+        ]);
 
-        try {
-            $response = $this->client->request(
-                'GET',
-                '/v2/cdn/links',
-                [
-                    'query' => [
-                        'paginated' => true,
-                        'include_dates' => true,
-                        'with_parent' => $parentId->value,
-                        'page' => $pagination->page,
-                        'per_page' => $pagination->perPage,
-                    ],
-                ],
-            );
-
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new LinksResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function roots(?Pagination $pagination = null): LinksResponse
+    public function roots(?LinksRequest $request = null): LinksResponse
     {
-        if (null === $pagination) {
-            $pagination = new Pagination();
-        }
+        $request ??= new LinksRequest();
 
-        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => [
+                ...$request->toArray(),
+                'with_parent' => 0,
+            ],
+        ]);
 
-        try {
-            $response = $this->client->request(
-                'GET',
-                '/v2/cdn/links',
-                [
-                    'query' => [
-                        'paginated' => true,
-                        'include_dates' => true,
-                        'with_parent' => 0,
-                        'page' => $pagination->page,
-                        'per_page' => $pagination->perPage,
-                    ],
-                ],
-            );
-
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new LinksResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new LinksResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 }

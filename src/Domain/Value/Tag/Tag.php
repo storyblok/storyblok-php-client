@@ -11,21 +11,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace SensioLabs\Storyblok\Api\Domain\Value\Dto;
+namespace SensioLabs\Storyblok\Api\Domain\Value\Tag;
 
 use OskarStark\Value\TrimmedNonEmptyString;
 
-final readonly class SortBy
+final readonly class Tag
 {
     public function __construct(
-        public string $field,
-        public Direction $direction,
+        public string $value,
     ) {
-        TrimmedNonEmptyString::fromString($field);
-    }
-
-    public function toString(): string
-    {
-        return sprintf('%s:%s', $this->field, $this->direction->value);
+        TrimmedNonEmptyString::fromString($value);
     }
 }

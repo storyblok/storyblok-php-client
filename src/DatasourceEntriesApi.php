@@ -13,70 +13,93 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
+use SensioLabs\Storyblok\Api\Request\DatasourceEntriesRequest;
 use SensioLabs\Storyblok\Api\Response\DatasourceEntriesResponse;
 use Webmozart\Assert\Assert;
 
 final readonly class DatasourceEntriesApi implements DatasourceEntriesApiInterface
 {
+    private const string ENDPOINT = '/v2/cdn/datasource_entries';
     public function __construct(
         private StoryblokClientInterface $client,
-        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
-    public function all(?Pagination $pagination = null): DatasourceEntriesResponse
+    public function all(?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse
     {
-        return $this->collectionRequest([], $pagination);
+        $request ??= new DatasourceEntriesRequest();
+
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => $request->toArray(),
+        ]);
+
+        return new DatasourceEntriesResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function allByDatasource(string $datasource, ?Pagination $pagination = null): DatasourceEntriesResponse
+    public function allByDatasource(string $datasource, ?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse
     {
         Assert::regex($datasource, '/^[a-z0-9-]+$/');
 
-        return $this->collectionRequest(['datasource' => $datasource], $pagination);
+        $request ??= new DatasourceEntriesRequest();
+
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => [
+                ...$request->toArray(),
+                'datasource' => $datasource,
+            ],
+        ]);
+
+        return new DatasourceEntriesResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function allByDimension(string $dimension, ?Pagination $pagination = null): DatasourceEntriesResponse
+    public function allByDimension(string $dimension, ?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse
     {
         Assert::regex($dimension, '/^[a-z0-9-]+$/');
 
-        return $this->collectionRequest(['datasource' => $dimension], $pagination);
+        $request ??= new DatasourceEntriesRequest();
+
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => [
+                ...$request->toArray(),
+                'dimension' => $dimension,
+            ],
+        ]);
+
+        return new DatasourceEntriesResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 
-    public function allByDatasourceDimension(string $datasource, string $dimension, ?Pagination $pagination = null): DatasourceEntriesResponse
+    public function allByDatasourceDimension(string $datasource, string $dimension, ?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse
     {
         Assert::regex($datasource, '/^[a-z0-9-]+$/');
         Assert::regex($dimension, '/^[a-z0-9-]+$/');
 
-        return $this->collectionRequest(['datasource' => $datasource, 'dimension' => $dimension], $pagination);
-    }
+        $request ??= new DatasourceEntriesRequest();
 
-    /**
-     * @param array<string, mixed> $parameters
-     */
-    private function collectionRequest(array $parameters, ?Pagination $pagination = null): DatasourceEntriesResponse
-    {
-        $pagination ??= new Pagination(1, self::PER_PAGE);
-        Assert::lessThanEq($pagination->perPage, self::MAX_PER_PAGE);
+        $response = $this->client->request('GET', self::ENDPOINT, [
+            'query' => [
+                ...$request->toArray(),
+                'datasource' => $datasource,
+                'dimension' => $dimension,
+            ],
+        ]);
 
-        try {
-            $response = $this->client->request('GET', '/v2/cdn/datasource_entries', [
-                'query' => [
-                    ...$parameters,
-                    'page' => $pagination->page,
-                    'per_page' => $pagination->perPage,
-                ],
-            ]);
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
-
-        return new DatasourceEntriesResponse(Total::fromHeaders($response->getHeaders()), $pagination, $response->toArray());
+        return new DatasourceEntriesResponse(
+            Total::fromHeaders($response->getHeaders()),
+            $request->pagination,
+            $response->toArray(),
+        );
     }
 }

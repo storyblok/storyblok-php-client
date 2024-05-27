@@ -13,11 +13,9 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
-use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
+use SensioLabs\Storyblok\Api\Request\StoriesRequest;
 use SensioLabs\Storyblok\Api\Response\StoriesResponse;
 use SensioLabs\Storyblok\Api\Response\StoryResponse;
 
@@ -28,13 +26,13 @@ interface StoriesApiInterface
 {
     public const int MAX_PER_PAGE = 100;
 
-    public function all(string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, ?FilterCollection $filters = null): StoriesResponse;
+    public function all(?StoriesRequest $request = null): StoriesResponse;
 
-    public function allByContentType(string $contentType, string $locale = 'default', ?Pagination $pagination = null, ?SortBy $sortBy = null, ?FilterCollection $filters = null): StoriesResponse;
+    public function allByContentType(string $contentType, ?StoriesRequest $request = null): StoriesResponse;
 
-    public function bySlug(string $slug, string $locale = 'default'): StoryResponse;
+    public function bySlug(string $slug, string $language = 'default'): StoryResponse;
 
-    public function byUuid(Uuid $uuid, string $locale = 'default'): StoryResponse;
+    public function byUuid(Uuid $uuid, string $language = 'default'): StoryResponse;
 
-    public function byId(Id $id, string $locale = 'default'): StoryResponse;
+    public function byId(Id $id, string $language = 'default'): StoryResponse;
 }

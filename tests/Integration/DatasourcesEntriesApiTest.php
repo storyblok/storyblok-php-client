@@ -16,6 +16,7 @@ namespace SensioLabs\Storyblok\Api\Tests\Integration;
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\DatasourceEntriesApi;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+use SensioLabs\Storyblok\Api\Request\DatasourceEntriesRequest;
 use SensioLabs\Storyblok\Api\Response\DatasourceEntriesResponse;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 use SensioLabs\Storyblok\Api\Tests\Util\StoryblokFakeClient;
@@ -35,7 +36,7 @@ class DatasourcesEntriesApiTest extends TestCase
         );
         $api = new DatasourceEntriesApi($client);
 
-        $response = $api->all(new Pagination(1, 10));
+        $response = $api->all(new DatasourceEntriesRequest(pagination: new Pagination(1, 10)));
 
         self::assertInstanceOf(DatasourceEntriesResponse::class, $response);
     }
@@ -51,7 +52,10 @@ class DatasourcesEntriesApiTest extends TestCase
         );
         $api = new DatasourceEntriesApi($client);
 
-        $response = $api->allByDatasource('test-datasource', new Pagination(1, 10));
+        $response = $api->allByDatasource(
+            'test-datasource',
+            new DatasourceEntriesRequest(pagination: new Pagination(1, 10)),
+        );
 
         self::assertInstanceOf(DatasourceEntriesResponse::class, $response);
     }
@@ -67,7 +71,10 @@ class DatasourcesEntriesApiTest extends TestCase
         );
         $api = new DatasourceEntriesApi($client);
 
-        $response = $api->allByDimension('test-dimension', new Pagination(1, 10));
+        $response = $api->allByDimension(
+            'test-dimension',
+            new DatasourceEntriesRequest(pagination: new Pagination(1, 10)),
+        );
 
         self::assertInstanceOf(DatasourceEntriesResponse::class, $response);
     }
@@ -83,7 +90,11 @@ class DatasourcesEntriesApiTest extends TestCase
         );
         $api = new DatasourceEntriesApi($client);
 
-        $response = $api->allByDatasourceDimension('test-datasource', 'test-dimension', new Pagination(1, 10));
+        $response = $api->allByDatasourceDimension(
+            'test-datasource',
+            'test-dimension',
+            new DatasourceEntriesRequest(pagination: new Pagination(1, 10)),
+        );
 
         self::assertInstanceOf(DatasourceEntriesResponse::class, $response);
     }
@@ -98,7 +109,7 @@ class DatasourcesEntriesApiTest extends TestCase
 
         self::expectException(\Exception::class);
 
-        $api->all(new Pagination(1, 10));
+        $api->all(new DatasourceEntriesRequest(pagination: new Pagination(1, 10)));
     }
 
     /**
@@ -111,7 +122,10 @@ class DatasourcesEntriesApiTest extends TestCase
 
         self::expectException(\Exception::class);
 
-        $api->allByDatasource('test-datasource', new Pagination(1, 10));
+        $api->allByDatasource(
+            'test-datasource',
+            new DatasourceEntriesRequest(pagination: new Pagination(1, 10)),
+        );
     }
 
     /**
@@ -124,7 +138,10 @@ class DatasourcesEntriesApiTest extends TestCase
 
         self::expectException(\Exception::class);
 
-        $api->allByDimension('test-dimension', new Pagination(1, 10));
+        $api->allByDimension(
+            'test-dimension',
+            new DatasourceEntriesRequest(pagination: new Pagination(1, 10)),
+        );
     }
 
     /**
@@ -137,6 +154,10 @@ class DatasourcesEntriesApiTest extends TestCase
 
         self::expectException(\Exception::class);
 
-        $api->allByDatasourceDimension('test-datasource', 'test-dimension', new Pagination(1, 10));
+        $api->allByDatasourceDimension(
+            'test-datasource',
+            'test-dimension',
+            new DatasourceEntriesRequest(pagination: new Pagination(1, 10)),
+        );
     }
 }

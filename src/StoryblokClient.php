@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api;
 
 use OskarStark\Value\TrimmedNonEmptyString;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Bridge\HttpClient\QueryStringHelper;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -37,6 +39,7 @@ final class StoryblokClient implements StoryblokClientInterface
         string $token,
         int $timeout = 4,
         ?HttpClientInterface $storyblokClient = null,
+        private LoggerInterface $logger = new NullLogger(),
     ) {
         $this->client = $storyblokClient ?? HttpClient::createForBaseUri($baseUri);
         $this->token = TrimmedNonEmptyString::fromString($token, '$token must not be an empty string')->toString();
@@ -75,19 +78,27 @@ final class StoryblokClient implements StoryblokClientInterface
             ];
         }
 
-        $response = $this->client->request(
-            $method,
-            $url,
-            array_merge_recursive(
-                $options,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
+        try {
+            $response = $this->client->request(
+                $method,
+                $url,
+                array_merge_recursive(
+                    $options,
+                    [
+                        'headers' => [
+                            'Accept' => 'application/json',
+                            'Content-Type' => 'application/json',
+                        ],
                     ],
-                ],
-            ),
-        );
+                ),
+            );
+
+            $this->logger->debug('Response', $response->toArray(false));
+        } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage());
+
+            throw $e;
+        }
 
         if ($response->getStatusCode()) {
             $parsed = [];

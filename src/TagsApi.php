@@ -13,33 +13,21 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use SensioLabs\Storyblok\Api\Response\TagsResponse;
 
 final readonly class TagsApi implements TagsApiInterface
 {
+    private const string ENDPOINT = '/v2/cdn/tags';
+
     public function __construct(
         private StoryblokClientInterface $client,
-        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
     public function all(): TagsResponse
     {
-        try {
-            $response = $this->client->request(
-                'GET',
-                '/v2/cdn/tags/',
-            );
+        $response = $this->client->request('GET', self::ENDPOINT);
 
-            $this->logger->debug('Response', $response->toArray(false));
-
-            return new TagsResponse($response->toArray());
-        } catch (\Throwable $e) {
-            $this->logger->error($e->getMessage());
-
-            throw $e;
-        }
+        return new TagsResponse($response->toArray());
     }
 }

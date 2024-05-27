@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
-use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+use SensioLabs\Storyblok\Api\Request\DatasourceEntriesRequest;
 use SensioLabs\Storyblok\Api\Response\DatasourceEntriesResponse;
 
 /**
@@ -21,14 +21,11 @@ use SensioLabs\Storyblok\Api\Response\DatasourceEntriesResponse;
  */
 interface DatasourceEntriesApiInterface
 {
-    public const int PER_PAGE = 25;
-    public const int MAX_PER_PAGE = 1000;
+    public function all(?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse;
 
-    public function all(?Pagination $pagination = null): DatasourceEntriesResponse;
+    public function allByDatasource(string $datasource, ?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse;
 
-    public function allByDatasource(string $datasource, ?Pagination $pagination = null): DatasourceEntriesResponse;
+    public function allByDimension(string $dimension, ?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse;
 
-    public function allByDimension(string $dimension, ?Pagination $pagination = null): DatasourceEntriesResponse;
-
-    public function allByDatasourceDimension(string $datasource, string $dimension, ?Pagination $pagination = null): DatasourceEntriesResponse;
+    public function allByDatasourceDimension(string $datasource, string $dimension, ?DatasourceEntriesRequest $request = null): DatasourceEntriesResponse;
 }
