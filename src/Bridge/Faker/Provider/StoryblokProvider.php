@@ -310,4 +310,37 @@ final class StoryblokProvider extends BaseProvider
             $overrides,
         );
     }
+
+    /**
+     * @param array{
+     *     id?: int,
+     *     name?: string,
+     *     domain?: string,
+     *     version?: int,
+     *     language_codes?: list<string>
+     * } $overrides
+     *
+     * @return array{
+     *     id: int,
+     *     name: string,
+     *     domain: string,
+     *     version: int,
+     *     language_codes: list<string>
+     * }
+     */
+    public function spaceResponse(array $overrides = []): array
+    {
+        $response = [
+            'id' => $this->generator->numberBetween(1),
+            'name' => $this->generator->word(),
+            'domain' => $this->generator->url(),
+            'version' => $this->generator->numberBetween(1),
+            'language_codes' => ['de', 'fr'],
+        ];
+
+        return array_replace_recursive(
+            $response,
+            $overrides,
+        );
+    }
 }

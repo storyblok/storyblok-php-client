@@ -26,6 +26,11 @@ parameters:
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php
 
 		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:spaceResponse\\(\\) should return array\\{id\\: int, name\\: string, domain\\: string, version\\: int, language_codes\\: array\\<int, string\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
 			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:storiesResponse\\(\\) should return array\\{cv\\: int, stories\\: array\\<int, array\\<string, mixed\\>\\>, links\\: array\\<string\\>, rels\\: array\\<string\\>\\} but returns array\\.$#"
 			count: 1
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php
