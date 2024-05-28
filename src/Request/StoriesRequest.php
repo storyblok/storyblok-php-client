@@ -17,6 +17,7 @@ use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
 use SensioLabs\Storyblok\Api\Domain\Value\Field\FieldCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
+use SensioLabs\Storyblok\Api\Domain\Value\IdCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Tag\TagCollection;
 use Webmozart\Assert\Assert;
 
@@ -32,6 +33,7 @@ final readonly class StoriesRequest
         public ?FilterCollection $filters = null,
         public ?FieldCollection $excludeFields = null,
         public ?TagCollection $withTags = null,
+        public ?IdCollection $excludeIds = null,
     ) {
         Assert::stringNotEmpty($language);
         Assert::lessThanEq($this->pagination->perPage, self::MAX_PER_PAGE);
@@ -46,6 +48,7 @@ final readonly class StoriesRequest
      *     filter_query?: list<mixed>,
      *     with_tag?: string,
      *     excluding_fields?: string,
+     *     excluding_ids?: string,
      * }
      */
     public function toArray(): array
@@ -60,16 +63,20 @@ final readonly class StoriesRequest
             $array['sort_by'] = $this->sortBy->toString();
         }
 
-        if (null !== $this->filters) {
+        if (null !== $this->filters && $this->filters->count() > 0) {
             $array['filter_query'] = $this->filters->toArray();
         }
 
-        if (null !== $this->withTags) {
+        if (null !== $this->withTags && $this->withTags->count() > 0) {
             $array['with_tag'] = $this->withTags->toString();
         }
 
-        if (null !== $this->excludeFields) {
+        if (null !== $this->excludeFields && $this->excludeFields->count() > 0) {
             $array['excluding_fields'] = $this->excludeFields->toString();
+        }
+
+        if (null !== $this->excludeIds && $this->excludeIds->count() > 0) {
+            $array['exclude_ids'] = $this->excludeIds->toString();
         }
 
         return $array;
