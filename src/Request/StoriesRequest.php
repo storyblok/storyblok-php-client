@@ -76,7 +76,7 @@ final readonly class StoriesRequest
         }
 
         if (null !== $this->excludeIds && $this->excludeIds->count() > 0) {
-            $array['exclude_ids'] = $this->excludeIds->toString();
+            $array['excluding_ids'] = $this->excludeIds->toString();
         }
 
         return $array;
