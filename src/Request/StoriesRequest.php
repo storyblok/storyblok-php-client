@@ -44,6 +44,8 @@ final readonly class StoriesRequest
      *     per_page: int,
      *     sort_by?: string,
      *     filter_query?: list<mixed>,
+     *     with_tag?: string,
+     *     excluding_fields?: string,
      * }
      */
     public function toArray(): array
