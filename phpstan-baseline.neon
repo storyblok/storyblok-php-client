@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:assetResponse\\(\\) should return array\\{asset\\: array\\{filename\\: string, created_at\\: string, updated_at\\: string, expire_at\\: string\\|null, content_length\\: int, signed_url\\: string, content_type\\: string\\}\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
 			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceDimensionResponse\\(\\) should return array\\{id\\: int, name\\: string, entry_value\\: string, datasource_id\\: int, created_at\\: string, updated_at\\: string\\} but returns array\\.$#"
 			count: 1
 			path: src/Bridge/Faker/Provider/StoryblokProvider.php
@@ -69,4 +74,9 @@ parameters:
 			message: "#^PHPDoc tag @return contains unresolvable type\\.$#"
 			count: 1
 			path: src/Domain/Value/Filter/FilterCollection.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on DateTimeImmutable\\|null\\.$#"
+			count: 1
+			path: tests/Unit/Domain/Value/AssetTest.php
 

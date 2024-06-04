@@ -18,6 +18,7 @@ use Faker\Generator as BaseGenerator;
 use SensioLabs\Storyblok\Api\Bridge\Faker\Provider\StoryblokProvider;
 
 /**
+ * @method array assetResponse(array $overrides = [])
  * @method array datasourceDimensionResponse(array $overrides = [])
  * @method array datasourceEntriesResponse(array $overrides = [])
  * @method array datasourceEntryResponse(array $overrides = [])

@@ -454,4 +454,49 @@ final class StoryblokProvider extends BaseProvider
             $overrides,
         );
     }
+
+    /**
+     * @param array{
+     *   asset?: array{
+     *      filename?: string,
+     *      created_at?: string,
+     *      updated_at?: string,
+     *      expire_at?: null|string,
+     *      content_length?: int,
+     *      signed_url?: string,
+     *      content_type?: string,
+     *   },
+     * } $overrides
+     *
+     * @return array{
+     *   asset: array{
+     *     filename: string,
+     *     created_at: string,
+     *     updated_at: string,
+     *     expire_at: null|string,
+     *     content_length: int,
+     *     signed_url: string,
+     *     content_type: string,
+     *   },
+     * }
+     */
+    public function assetResponse(array $overrides = []): array
+    {
+        $response = [
+            'asset' => [
+                'filename' => $this->generator->url(),
+                'created_at' => $this->generator->dateTime()->format(\DATE_ATOM),
+                'updated_at' => $this->generator->dateTime()->format(\DATE_ATOM),
+                'expire_at' => $this->generator->boolean() ? $this->generator->dateTime()->format(\DATE_ATOM) : null,
+                'content_length' => $this->generator->numberBetween(1),
+                'signed_url' => $this->generator->url(),
+                'content_type' => $this->generator->word(),
+            ],
+        ];
+
+        return array_replace_recursive(
+            $response,
+            $overrides,
+        );
+    }
 }
