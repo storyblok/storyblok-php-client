@@ -15,6 +15,7 @@ namespace SensioLabs\Storyblok\Api\Request;
 
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
 use SensioLabs\Storyblok\Api\Domain\Value\Field\FieldCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\FilterCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\IdCollection;
@@ -34,6 +35,7 @@ final readonly class StoriesRequest
         public ?FieldCollection $excludeFields = null,
         public ?TagCollection $withTags = null,
         public ?IdCollection $excludeIds = null,
+        public ?Version $version = null,
     ) {
         Assert::stringNotEmpty($language);
         Assert::lessThanEq($this->pagination->perPage, self::MAX_PER_PAGE);
@@ -49,6 +51,7 @@ final readonly class StoriesRequest
      *     with_tag?: string,
      *     excluding_fields?: string,
      *     excluding_ids?: string,
+     *     version?: string,
      * }
      */
     public function toArray(): array
@@ -77,6 +80,10 @@ final readonly class StoriesRequest
 
         if (null !== $this->excludeIds && $this->excludeIds->count() > 0) {
             $array['excluding_ids'] = $this->excludeIds->toString();
+        }
+
+        if (null !== $this->version) {
+            $array['version'] = $this->version->value;
         }
 
         return $array;

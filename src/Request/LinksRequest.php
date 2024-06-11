@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Request;
 
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
 use Webmozart\Assert\Assert;
 
 final readonly class LinksRequest
@@ -24,6 +25,7 @@ final readonly class LinksRequest
     public function __construct(
         public Pagination $pagination = new Pagination(perPage: self::PER_PAGE),
         public bool $includeDates = true,
+        public ?Version $version = null,
     ) {
         Assert::lessThanEq($this->pagination->perPage, self::MAX_PER_PAGE);
     }
@@ -33,14 +35,21 @@ final readonly class LinksRequest
      *     page: int,
      *     per_page: int,
      *     include_dates: bool,
+     *     version?: string,
      * }
      */
     public function toArray(): array
     {
-        return [
+        $values = [
             'page' => $this->pagination->page,
             'per_page' => $this->pagination->perPage,
             'include_dates' => $this->includeDates,
         ];
+
+        if (null !== $this->version) {
+            $values['version'] = $this->version->value;
+        }
+
+        return $values;
     }
 }

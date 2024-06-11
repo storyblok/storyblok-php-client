@@ -87,7 +87,7 @@ final readonly class Link
         $this->isStartPage = true === $values['is_startpage'];
 
         Assert::keyExists($values, 'published');
-        $this->isPublished = null !== $values['published'];
+        $this->isPublished = true === $values['published'];
 
         Assert::keyExists($values, 'alternates');
         Assert::isArray($values['alternates']);
