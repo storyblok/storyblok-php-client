@@ -33,6 +33,16 @@ final class UuidTest extends TestCase
 
     /**
      * @test
+     */
+    public function valueCanStartWithI(): void
+    {
+        $value = self::faker()->uuid();
+
+        self::assertSame($value, (new Uuid('i-'.$value))->value);
+    }
+
+    /**
+     * @test
      *
      * @dataProvider \Ergebnis\DataProvider\StringProvider::blank()
      * @dataProvider \Ergebnis\DataProvider\StringProvider::empty()
