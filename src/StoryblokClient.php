@@ -29,20 +29,21 @@ use function Safe\parse_url;
 final class StoryblokClient implements StoryblokClientInterface
 {
     private HttpClientInterface $client;
-    private string $token;
-    private int $timeout;
     private ?int $cacheVersion = null;
 
     public function __construct(
         string $baseUri,
         #[\SensitiveParameter]
-        string $token,
+        private string $token,
         int $timeout = 4,
         private LoggerInterface $logger = new NullLogger(),
     ) {
         $this->client = HttpClient::createForBaseUri($baseUri);
         $this->token = TrimmedNonEmptyString::fromString($token, '$token must not be an empty string')->toString();
-        $this->timeout = $timeout;
+
+        $this->client = HttpClient::createForBaseUri($baseUri, [
+            'timeout' => $timeout,
+        ]);
     }
 
     public function withHttpClient(HttpClientInterface $client): self
@@ -56,10 +57,6 @@ final class StoryblokClient implements StoryblokClientInterface
     {
         Assert::notStartsWith($url, 'http', '$url should be relative: Got: %s');
         Assert::startsWith($url, '/', '$url should start with a "/". Got: %s');
-
-        if (!\array_key_exists('timeout', $options)) {
-            $options['timeout'] = $this->timeout;
-        }
 
         /*
          * This workaround is necessary because the symfony/http-client does not support URL array syntax like in JavaScript.
