@@ -53,7 +53,6 @@ final class StoryblokClientTest extends TestCase
         return new StoryblokClient(
             baseUri: 'https://api.storyblok.com/',
             token: 'test-token',
-            storyblokClient: new MockHttpClient($response, 'https://api.storyblok.com/'),
         );
     }
 }
