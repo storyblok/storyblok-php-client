@@ -26,7 +26,7 @@ final readonly class SpacesApi implements SpacesApiInterface
 
     public function me(): SpaceResponse
     {
-        $response = $this->client->request('GET', sprintf('%s/me', self::ENDPOINT));
+        $response = $this->client->request('GET', \sprintf('%s/me', self::ENDPOINT));
 
         return new SpaceResponse($response->toArray());
     }

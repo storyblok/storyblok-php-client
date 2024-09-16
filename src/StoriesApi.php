@@ -70,7 +70,7 @@ final class StoriesApi implements StoriesApiInterface
         Assert::stringNotEmpty($language);
         Assert::stringNotEmpty($slug);
 
-        $response = $this->client->request('GET', sprintf('%s/%s', self::ENDPOINT, $slug), [
+        $response = $this->client->request('GET', \sprintf('%s/%s', self::ENDPOINT, $slug), [
             'query' => [
                 'language' => $language,
             ],
@@ -83,7 +83,7 @@ final class StoriesApi implements StoriesApiInterface
     {
         Assert::stringNotEmpty($language);
 
-        $response = $this->client->request('GET', sprintf('%s/%s', self::ENDPOINT, $uuid->value), [
+        $response = $this->client->request('GET', \sprintf('%s/%s', self::ENDPOINT, $uuid->value), [
             'query' => [
                 'language' => $language,
                 'find_by' => 'uuid',
@@ -97,7 +97,7 @@ final class StoriesApi implements StoriesApiInterface
     {
         Assert::stringNotEmpty($language);
 
-        $response = $this->client->request('GET', sprintf('/v2/cdn/stories/%s', $id->value), [
+        $response = $this->client->request('GET', \sprintf('/v2/cdn/stories/%s', $id->value), [
             'query' => [
                 'language' => $language,
             ],

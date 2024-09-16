@@ -144,6 +144,6 @@ final readonly class Link
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('Alternate for language "%s" not found', $lang));
+        throw new \InvalidArgumentException(\sprintf('Alternate for language "%s" not found', $lang));
     }
 }

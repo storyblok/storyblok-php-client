@@ -26,6 +26,6 @@ final readonly class SortBy
 
     public function toString(): string
     {
-        return sprintf('%s:%s', $this->field, $this->direction->value);
+        return \sprintf('%s:%s', $this->field, $this->direction->value);
     }
 }

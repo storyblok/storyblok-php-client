@@ -52,6 +52,6 @@ final class SortByTest extends TestCase
     {
         $value = self::faker()->word();
 
-        self::assertSame(sprintf('%s:%s', $value, Direction::Asc->value), (new SortBy($value, Direction::Asc))->toString());
+        self::assertSame(\sprintf('%s:%s', $value, Direction::Asc->value), (new SortBy($value, Direction::Asc))->toString());
     }
 }

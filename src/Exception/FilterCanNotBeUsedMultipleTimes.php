@@ -19,7 +19,7 @@ class FilterCanNotBeUsedMultipleTimes extends \InvalidArgumentException
 {
     public static function fromFilter(Filter $filter): self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Filter "%s" can not be used multiple times',
             $filter::class,
         ));

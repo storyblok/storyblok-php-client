@@ -47,7 +47,7 @@ final readonly class DatasourcesApi implements DatasourcesApiInterface
     {
         Assert::regex($datasourceSlug, '/^[a-z0-9-]+$/');
 
-        $response = $this->client->request('GET', sprintf('%s/%s', self::ENDPOINT, $datasourceSlug));
+        $response = $this->client->request('GET', \sprintf('%s/%s', self::ENDPOINT, $datasourceSlug));
 
         return new DatasourceResponse($response->toArray());
     }
