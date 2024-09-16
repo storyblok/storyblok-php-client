@@ -16,7 +16,6 @@ namespace SensioLabs\Storyblok\Api\Tests\Integration;
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\StoryblokClient;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
-use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 

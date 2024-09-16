@@ -38,14 +38,9 @@ final class StoryblokClient implements StoryblokClientInterface
         #[\SensitiveParameter]
         string $token,
         int $timeout = 4,
-        ?HttpClientInterface $storyblokClient = null,
         private LoggerInterface $logger = new NullLogger(),
     ) {
-        if ($storyblokClient instanceof HttpClientInterface) {
-            trigger_deprecation('sensiolabs-de/storyblok-api', '2.4', 'The "$storyblokClient" argument is deprecated and will be removed in 3.0. Use "withHttpClient()" instead.');
-        }
-
-        $this->client = $storyblokClient ?? HttpClient::createForBaseUri($baseUri);
+        $this->client = HttpClient::createForBaseUri($baseUri);
         $this->token = TrimmedNonEmptyString::fromString($token, '$token must not be an empty string')->toString();
         $this->timeout = $timeout;
     }
