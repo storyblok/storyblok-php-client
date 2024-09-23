@@ -422,5 +422,174 @@ $api = new TagsApi($client);
 $response = $api->all(); // returns SensioLabs\Storyblok\Api\Response\TagsResponse
 ```
 
+## Symfony Support
+
+### Flex recipe
+
+If you install it in your Symfony flex project there is a recipe which will automatically configure the client for you.
+
+* [Flex recipe](https://github.com/symfony/recipes-contrib/tree/main/sensiolabs-de/storyblok-api)
+
+```yaml
+# config/packages/sensiolabs_de_storyblok_api.yaml
+services:
+    _defaults:
+        autowire: true
+
+    SensioLabs\Storyblok\Api\StoryblokClient:
+        arguments:
+            - '%env(STORYBLOK_API_BASE_URI)%'
+            - '%env(STORYBLOK_API_TOKEN)%'
+
+    SensioLabs\Storyblok\Api\StoryblokClientInterface: '@SensioLabs\Storyblok\Api\StoryblokClient'
+
+    SensioLabs\Storyblok\Api\DatasourceApi: null
+    SensioLabs\Storyblok\Api\DatasourceApiInterface: '@SensioLabs\Storyblok\Api\DatasourceApi'
+
+    SensioLabs\Storyblok\Api\DatasourceEntriesApi: null
+    SensioLabs\Storyblok\Api\DatasourceEntriesApiInterface: '@SensioLabs\Storyblok\Api\DatasourceEntriesApi'
+
+    SensioLabs\Storyblok\Api\StoriesApi: null
+    SensioLabs\Storyblok\Api\StoriesApiInterface: '@SensioLabs\Storyblok\Api\StoriesApi'
+
+    SensioLabs\Storyblok\Api\LinksApi: null
+    SensioLabs\Storyblok\Api\LinksApiInterface: '@SensioLabs\Storyblok\Api\LinksApi'
+
+    SensioLabs\Storyblok\Api\TagsApi: null
+    SensioLabs\Storyblok\Api\TagsApiInterface: '@SensioLabs\Storyblok\Api\TagsApi'
+```
+
+### DX Enhancement through Abstract Collections
+
+To improve developer experience (DX), especially when working with content types like stories, the following abstract
+class is provided to manage collections of specific content types. This class simplifies data handling and ensures type
+safety while dealing with large amounts of content from Storyblok.
+
+#### Abstract ContentTypeCollection Class
+
+The ContentTypeCollection class provides a structured way to work with Storyblok content types. It makes managing
+pagination, filtering, and sorting more intuitive and reusable, saving time and reducing boilerplate code.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\ContentType;
+
+use IteratorAggregate;
+use SensioLabs\Storyblok\Api\Response\StoriesResponse;
+
+/**
+ * @template T of ContentTypeInterface
+ *
+ * @implements IteratorAggregate<int, T>
+ */
+abstract readonly class ContentTypeCollection implements \Countable, \IteratorAggregate
+{
+    public int $total;
+    public int $perPage;
+    public int $curPage;
+    public int $lastPage;
+    public ?int $prevPage;
+    public ?int $nextPage;
+
+    /**
+     * @var list<T>
+     */
+    private array $items;
+
+    final public function __construct(StoriesResponse $response)
+    {
+        $this->items = array_values(array_map($this->createItem(...), $response->stories));
+
+        $this->total = $response->total->value;
+        $this->curPage = $response->pagination->page;
+        $this->perPage = $response->pagination->perPage;
+
+        $this->lastPage = (int) ceil($this->total / $this->perPage);
+        $this->prevPage = 1 < $this->curPage ? $this->curPage - 1 : null;
+        $this->nextPage = $this->curPage < $this->lastPage ? $this->curPage + 1 : null;
+    }
+
+    /**
+     * @return \Traversable<int, T>
+     */
+    final public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->items);
+    }
+
+    final public function count(): int
+    {
+        return \count($this->items);
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     *
+     * @return T
+     */
+    abstract protected function createItem(array $values): ContentTypeInterface;
+}
+```
+
+#### Benefits of Using the Abstract Collection:
+
+1. **Simplified Data Handling:** Instead of dealing with raw arrays of stories, this abstract class helps you manage
+   collections of content types, like blog posts or articles, in an organized manner. It abstracts away the repetitive
+   work of pagination and mapping response data to objects.
+2. **Enhanced Readability:** Using a well-structured collection class makes the code easier to read and maintain. Instead of
+   handling pagination and raw data structures in controllers or services, you simply instantiate the collection and let
+   it handle the data.
+3. **Reusability:** The class is flexible and reusable across different content types. Once implemented, you can easily
+   create new collections for other Storyblok content types with minimal extra code.
+4. **Pagination and Metadata Management:** The collection class comes with built-in properties for pagination and
+   metadata (e.g., total items, current page, etc.), making it much easier to manage paginated data efficiently.
+
+### Example Usage with a Collection
+
+Here is an example of how to use the ContentTypeCollection to manage blog posts in your Symfony project:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\ContentType\BlogPost;
+
+use App\ContentType\ContentTypeCollection;
+use App\ContentType\ContentTypeFactory;
+
+/**
+ * @extends ContentTypeCollection<BlogPost>
+ */
+final readonly class BlogPostCollection extends ContentTypeCollection
+{
+    protected function createItem(array $values): BlogPost
+    {
+        return ContentTypeFactory::create($values, BlogPost::class);
+    }
+}
+```
+
+```php
+new BlogPostCollection(
+    $this->stories->allByContentType(
+        BlogPost::type(),
+        new StoriesRequest(
+            language: $this->localeSwitcher->getLocale(),
+            pagination: new Pagination($this->curPage, self::PER_PAGE),
+            sortBy: new SortBy('first_published_at', Direction::Desc),
+            filters: $filters,
+            excludeFields: new FieldCollection([
+                new Field('body'),
+                new Field('additional_contents'),
+            ]),
+        ),
+    ),
+);
+```
+
 [actions]: https://github.com/sensiolabs-de/storyblok-api/actions
 [codecov]: https://codecov.io/gh/sensiolabs-de/storyblok-api
