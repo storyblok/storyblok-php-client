@@ -434,18 +434,12 @@ To use the assets API you have to configure the Assets client.
 
 ```php
 use SensioLabs\Storyblok\Api\StoryblokClient;
-use SensioLabs\Storyblok\Api\StoryblokAssetsClient;
 use SensioLabs\Storyblok\Api\AssetsApi;
 
 $client = new StoryblokClient(
     baseUri: 'https://api.storyblok.com',
-    token: 'api-token',
-    timeout: 10 // optional
-);
-
-$assetsClient = new StoryblokAssetsClient(
     token: 'assets-api-token',
-    client: $client,
+    timeout: 10 // optional
 );
 
 $assetsApi = new AssetsApi($assetsClient);
