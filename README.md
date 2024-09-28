@@ -4,6 +4,11 @@
 |-----------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `master`  | [![PHP](https://github.com/sensiolabs-de/storyblok-api/actions/workflows/ci.yaml/badge.svg)](https://github.com/sensiolabs-de/storyblok-api/actions/workflows/ci.yaml)  | [![codecov](https://codecov.io/gh/sensiolabs-de/storyblok-api/graph/badge.svg?token=8K4F33LSWF)](https://codecov.io/gh/sensiolabs-de/storyblok-api) |
 
+## Symfony
+
+Use the symfony bundle [sensiolabs-de/storyblok-bundle](https://github.com/sensiolabs-de/storyblok-bundle) to integrate
+this library into your Symfony application.
+
 ## Usage
 
 ### Installation
@@ -422,41 +427,29 @@ $api = new TagsApi($client);
 $response = $api->all(); // returns SensioLabs\Storyblok\Api\Response\TagsResponse
 ```
 
-## Symfony Support
 
-### Flex recipe
+## Assets
 
-If you install it in your Symfony flex project there is a recipe which will automatically configure the client for you.
+To use the assets API you have to configure the Assets client.
 
-* [Flex recipe](https://github.com/symfony/recipes-contrib/tree/main/sensiolabs-de/storyblok-api)
+```php
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\StoryblokAssetsClient;
+use SensioLabs\Storyblok\Api\AssetsApi;
 
-```yaml
-# config/packages/sensiolabs_de_storyblok_api.yaml
-services:
-    _defaults:
-        autowire: true
+$client = new StoryblokClient(
+    baseUri: 'https://api.storyblok.com',
+    token: 'api-token',
+    timeout: 10 // optional
+);
 
-    SensioLabs\Storyblok\Api\StoryblokClient:
-        arguments:
-            - '%env(STORYBLOK_API_BASE_URI)%'
-            - '%env(STORYBLOK_API_TOKEN)%'
+$assetsClient = new StoryblokAssetsClient(
+    token: 'assets-api-token',
+    client: $client,
+);
 
-    SensioLabs\Storyblok\Api\StoryblokClientInterface: '@SensioLabs\Storyblok\Api\StoryblokClient'
-
-    SensioLabs\Storyblok\Api\DatasourceApi: null
-    SensioLabs\Storyblok\Api\DatasourceApiInterface: '@SensioLabs\Storyblok\Api\DatasourceApi'
-
-    SensioLabs\Storyblok\Api\DatasourceEntriesApi: null
-    SensioLabs\Storyblok\Api\DatasourceEntriesApiInterface: '@SensioLabs\Storyblok\Api\DatasourceEntriesApi'
-
-    SensioLabs\Storyblok\Api\StoriesApi: null
-    SensioLabs\Storyblok\Api\StoriesApiInterface: '@SensioLabs\Storyblok\Api\StoriesApi'
-
-    SensioLabs\Storyblok\Api\LinksApi: null
-    SensioLabs\Storyblok\Api\LinksApiInterface: '@SensioLabs\Storyblok\Api\LinksApi'
-
-    SensioLabs\Storyblok\Api\TagsApi: null
-    SensioLabs\Storyblok\Api\TagsApiInterface: '@SensioLabs\Storyblok\Api\TagsApi'
+$assetsApi = new AssetsApi($assetsClient);
+$assetsApi->get('filename.png')
 ```
 
 ### DX Enhancement through Abstract Collections
