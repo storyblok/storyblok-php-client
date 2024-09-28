@@ -72,10 +72,16 @@ final class SpacesApiTest extends TestCase
      */
     public static function createClient(array $response): StoryblokClient
     {
-        return new StoryblokClient(
+        $client = new StoryblokClient(
             baseUri: 'https://example.com/',
             token: 'token',
-            storyblokClient: new MockHttpClient(new JsonMockResponse($response), 'https://api.storyblok.com/'),
         );
+
+        $client->withHttpClient(new MockHttpClient(
+            new JsonMockResponse($response),
+            'https://api.storyblok.com/',
+        ));
+
+        return $client;
     }
 }
