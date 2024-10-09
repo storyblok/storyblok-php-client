@@ -21,7 +21,6 @@ use SensioLabs\Storyblok\Api\Response\StoryResponse;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 interface StoriesApiInterface
 {

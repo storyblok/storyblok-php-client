@@ -19,7 +19,6 @@ use function Symfony\Component\String\u;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 readonly class Uuid implements \Stringable
 {

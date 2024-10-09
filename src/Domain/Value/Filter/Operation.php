@@ -15,7 +15,6 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Filter;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  *
  * @see https://www.storyblok.com/docs/api/content-delivery/v2/filter-queries
  */

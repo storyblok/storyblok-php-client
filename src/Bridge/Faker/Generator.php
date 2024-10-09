@@ -19,7 +19,6 @@ use SensioLabs\Storyblok\Api\Bridge\Faker\Provider\StoryblokProvider;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  *
  * @method array assetResponse(array $overrides = [])
  * @method array datasourceDimensionResponse(array $overrides = [])

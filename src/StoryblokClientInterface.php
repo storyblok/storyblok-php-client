@@ -18,7 +18,6 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 interface StoryblokClientInterface
 {

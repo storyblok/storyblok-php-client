@@ -22,7 +22,6 @@ use SensioLabs\Storyblok\Api\Tests\Util\StoryblokFakeClient;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final class LinksApiTest extends TestCase
 {

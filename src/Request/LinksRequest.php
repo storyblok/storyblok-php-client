@@ -18,8 +18,8 @@ use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
 use Webmozart\Assert\Assert;
 
 /**
- * @author Silas Joisten <silasjoisten@proton.me>
  * @author Oskar Stark <oskarstark@googlemail.com>
+ * @author Silas Joisten <silasjoisten@proton.me>
  */
 final readonly class LinksRequest
 {

@@ -18,7 +18,6 @@ use SensioLabs\Storyblok\Api\Exception\FilterCanNotBeUsedMultipleTimes;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  *
  * @implements \IteratorAggregate<int, Filter>
  */

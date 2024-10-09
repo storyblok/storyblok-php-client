@@ -18,7 +18,6 @@ use SensioLabs\Storyblok\Api\Bridge\HttpClient\QueryStringHelper;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 class QueryStringHelperTest extends TestCase
 {

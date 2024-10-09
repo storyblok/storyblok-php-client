@@ -18,7 +18,6 @@ use SensioLabs\Storyblok\Api\Bridge\Faker\Generator;
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
  * @author Simon André <smn.andre@gmail.com>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 trait FakerTrait
 {

@@ -17,7 +17,6 @@ use OskarStark\Value\TrimmedNonEmptyString;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final readonly class Tag
 {

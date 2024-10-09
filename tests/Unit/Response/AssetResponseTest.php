@@ -19,7 +19,6 @@ use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final class AssetResponseTest extends TestCase
 {

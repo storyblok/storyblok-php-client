@@ -15,7 +15,6 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Tag;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  *
  * @implements \IteratorAggregate<int, Tag>
  */

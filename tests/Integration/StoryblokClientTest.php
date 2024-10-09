@@ -22,7 +22,6 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
  * @author Simon André <smn.andre@gmail.com>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final class StoryblokClientTest extends TestCase
 {

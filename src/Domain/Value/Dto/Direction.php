@@ -15,7 +15,6 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Dto;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 enum Direction: string
 {

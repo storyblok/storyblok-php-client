@@ -17,7 +17,6 @@ use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 abstract readonly class Filter
 {

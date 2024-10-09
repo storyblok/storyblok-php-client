@@ -19,7 +19,6 @@ use SensioLabs\Storyblok\Api\Tests\Unit\Domain\Value\Filter\FilterTestCase;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final class IsFilterTest extends FilterTestCase
 {

@@ -18,7 +18,6 @@ use Webmozart\Assert\Assert;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  *
  * @see https://www.storyblok.com/docs/api/content-delivery/v2/datasources/the-datasource-object
  */

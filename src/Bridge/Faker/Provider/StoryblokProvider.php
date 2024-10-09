@@ -18,7 +18,6 @@ use function Safe\array_replace_recursive;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
- * @author Oskar Stark <oskarstark@googlemail.com>
  * @author Simon André <smn.andre@gmail.com>
  */
 final class StoryblokProvider extends BaseProvider
