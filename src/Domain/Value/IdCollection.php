@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace SensioLabs\Storyblok\Api\Domain\Value;
 
 /**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ *
  * @implements \IteratorAggregate<int, Id>
  */
 final class IdCollection implements \Countable, \IteratorAggregate

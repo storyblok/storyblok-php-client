@@ -17,6 +17,10 @@ use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\AnyInArrayFilter;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 use SensioLabs\Storyblok\Api\Tests\Unit\Domain\Value\Filter\FilterTestCase;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class AnyInArrayFilterTest extends FilterTestCase
 {
     public static function operation(): Operation

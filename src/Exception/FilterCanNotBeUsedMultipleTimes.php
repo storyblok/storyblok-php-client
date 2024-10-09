@@ -15,6 +15,10 @@ namespace SensioLabs\Storyblok\Api\Exception;
 
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 class FilterCanNotBeUsedMultipleTimes extends \InvalidArgumentException
 {
     public static function fromFilter(Filter $filter): self

@@ -7,6 +7,14 @@
         {
             "name": "Silas Joisten",
             "email": "silasjoisten@proton.me"
+        },
+        {
+            "name": "Simon André",
+            "email": "smn.andre@gmail.com"
+        },
+        {
+            "name": "Oskar Stark",
+            "email": "oskarstark@googlemail.com"
         }
     ],
     "require": {

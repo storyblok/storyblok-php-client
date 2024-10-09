@@ -16,6 +16,10 @@ namespace SensioLabs\Storyblok\Api\Response;
 use SensioLabs\Storyblok\Api\Domain\Value\Asset;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class AssetResponse
 {
     public Asset $asset;

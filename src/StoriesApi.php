@@ -21,6 +21,11 @@ use SensioLabs\Storyblok\Api\Response\StoriesResponse;
 use SensioLabs\Storyblok\Api\Response\StoryResponse;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class StoriesApi implements StoriesApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/stories';

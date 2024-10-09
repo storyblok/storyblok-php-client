@@ -18,6 +18,10 @@ use SensioLabs\Storyblok\Api\Domain\Value\Field\Field;
 use SensioLabs\Storyblok\Api\Domain\Value\Field\FieldCollection;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class FieldCollectionTest extends TestCase
 {
     use FakerTrait;

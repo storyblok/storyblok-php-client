@@ -15,6 +15,10 @@ namespace SensioLabs\Storyblok\Api\Domain\Value;
 
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class Total
 {
     public function __construct(

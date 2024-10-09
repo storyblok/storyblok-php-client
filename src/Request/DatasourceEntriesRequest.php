@@ -16,6 +16,10 @@ namespace SensioLabs\Storyblok\Api\Request;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class DatasourceEntriesRequest
 {
     public const int MAX_PER_PAGE = 1000;

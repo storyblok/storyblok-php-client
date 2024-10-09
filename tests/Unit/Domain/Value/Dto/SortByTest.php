@@ -18,6 +18,10 @@ use SensioLabs\Storyblok\Api\Domain\Value\Dto\Direction;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\SortBy;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class SortByTest extends TestCase
 {
     use FakerTrait;

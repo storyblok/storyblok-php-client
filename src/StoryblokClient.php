@@ -25,6 +25,7 @@ use function Safe\parse_url;
 
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final class StoryblokClient implements StoryblokClientInterface
 {

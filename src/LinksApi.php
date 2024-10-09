@@ -18,6 +18,11 @@ use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Request\LinksRequest;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class LinksApi implements LinksApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/links';

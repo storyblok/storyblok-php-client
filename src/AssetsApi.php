@@ -15,6 +15,10 @@ namespace SensioLabs\Storyblok\Api;
 
 use SensioLabs\Storyblok\Api\Response\AssetResponse;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class AssetsApi implements AssetsApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/assets/me';

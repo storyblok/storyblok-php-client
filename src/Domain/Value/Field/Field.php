@@ -15,6 +15,10 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Field;
 
 use OskarStark\Value\TrimmedNonEmptyString;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class Field
 {
     public function __construct(

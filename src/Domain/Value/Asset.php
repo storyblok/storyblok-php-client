@@ -16,6 +16,10 @@ namespace SensioLabs\Storyblok\Api\Domain\Value;
 use Safe\DateTimeImmutable;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class Asset
 {
     public string $filename;

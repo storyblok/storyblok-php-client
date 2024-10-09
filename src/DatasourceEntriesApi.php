@@ -18,6 +18,11 @@ use SensioLabs\Storyblok\Api\Request\DatasourceEntriesRequest;
 use SensioLabs\Storyblok\Api\Response\DatasourceEntriesResponse;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class DatasourceEntriesApi implements DatasourceEntriesApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/datasource_entries';

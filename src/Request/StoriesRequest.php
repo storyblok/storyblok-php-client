@@ -22,6 +22,10 @@ use SensioLabs\Storyblok\Api\Domain\Value\IdCollection;
 use SensioLabs\Storyblok\Api\Domain\Value\Tag\TagCollection;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class StoriesRequest
 {
     public const int MAX_PER_PAGE = 100;

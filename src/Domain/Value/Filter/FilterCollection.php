@@ -17,6 +17,9 @@ use SensioLabs\Storyblok\Api\Domain\Value\Filter\Filters\Filter;
 use SensioLabs\Storyblok\Api\Exception\FilterCanNotBeUsedMultipleTimes;
 
 /**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ *
  * @implements \IteratorAggregate<int, Filter>
  */
 final class FilterCollection implements \Countable, \IteratorAggregate

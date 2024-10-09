@@ -15,6 +15,10 @@ namespace SensioLabs\Storyblok\Api\Response;
 
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class StoryResponse
 {
     /**

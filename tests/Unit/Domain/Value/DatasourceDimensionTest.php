@@ -17,6 +17,11 @@ use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Domain\Value\DatasourceDimension;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class DatasourceDimensionTest extends TestCase
 {
     use FakerTrait;

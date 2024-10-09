@@ -15,6 +15,10 @@ namespace SensioLabs\Storyblok\Api\Domain\Value\Tag;
 
 use OskarStark\Value\TrimmedNonEmptyString;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class Tag
 {
     public function __construct(

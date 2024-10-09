@@ -18,6 +18,10 @@ use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\IdCollection;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class IdCollectionTest extends TestCase
 {
     use FakerTrait;

@@ -18,6 +18,10 @@ use SensioLabs\Storyblok\Api\Domain\Value\Link;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class TotalTest extends TestCase
 {
     use FakerTrait;

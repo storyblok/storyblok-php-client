@@ -22,6 +22,11 @@ use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\JsonMockResponse;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class SpacesApiTest extends TestCase
 {
     use FakerTrait;

@@ -15,6 +15,11 @@ namespace SensioLabs\Storyblok\Api;
 
 use SensioLabs\Storyblok\Api\Response\SpaceResponse;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class SpacesApi implements SpacesApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/spaces';

@@ -17,6 +17,10 @@ use OskarStark\Value\TrimmedNonEmptyString;
 use SensioLabs\Storyblok\Api\Domain\Value\Filter\Operation;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class AllInArrayFilter extends Filter
 {
     /**

@@ -16,6 +16,11 @@ namespace SensioLabs\Storyblok\Api\Response;
 use SensioLabs\Storyblok\Api\Domain\Value\Datasource;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class DatasourceResponse
 {
     public Datasource $datasource;

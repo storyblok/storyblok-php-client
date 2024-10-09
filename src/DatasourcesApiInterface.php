@@ -18,7 +18,9 @@ use SensioLabs\Storyblok\Api\Response\DatasourceResponse;
 use SensioLabs\Storyblok\Api\Response\DatasourcesResponse;
 
 /**
+ * @author Silas Joisten <silasjoisten@proton.me>
  * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
  */
 interface DatasourcesApiInterface
 {

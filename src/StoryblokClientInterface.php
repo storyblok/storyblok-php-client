@@ -16,6 +16,10 @@ namespace SensioLabs\Storyblok\Api;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 interface StoryblokClientInterface
 {
     /**

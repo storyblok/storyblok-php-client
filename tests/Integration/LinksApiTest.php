@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Integration;
+namespace SensioLabs\Storyblok\Api\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
@@ -20,6 +20,10 @@ use SensioLabs\Storyblok\Api\Response\LinksResponse;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 use SensioLabs\Storyblok\Api\Tests\Util\StoryblokFakeClient;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class LinksApiTest extends TestCase
 {
     use FakerTrait;

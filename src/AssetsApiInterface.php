@@ -17,6 +17,7 @@ use SensioLabs\Storyblok\Api\Response\AssetResponse;
 
 /**
  * @author Silas Joisten <silas.joisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
  */
 interface AssetsApiInterface
 {

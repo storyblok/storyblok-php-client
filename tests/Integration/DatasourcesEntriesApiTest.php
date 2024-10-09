@@ -21,6 +21,11 @@ use SensioLabs\Storyblok\Api\Response\DatasourceEntriesResponse;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 use SensioLabs\Storyblok\Api\Tests\Util\StoryblokFakeClient;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 class DatasourcesEntriesApiTest extends TestCase
 {
     use FakerTrait;

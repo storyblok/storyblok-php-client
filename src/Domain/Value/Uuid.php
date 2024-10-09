@@ -17,6 +17,10 @@ use OskarStark\Value\TrimmedNonEmptyString;
 use Webmozart\Assert\Assert;
 use function Symfony\Component\String\u;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 readonly class Uuid implements \Stringable
 {
     public string $value;

@@ -16,6 +16,10 @@ namespace SensioLabs\Storyblok\Api\Domain\Value;
 use OskarStark\Value\TrimmedNonEmptyString;
 use Webmozart\Assert\Assert;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final readonly class Space
 {
     public Id $id;

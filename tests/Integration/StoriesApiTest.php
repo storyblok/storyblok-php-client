@@ -22,6 +22,11 @@ use SensioLabs\Storyblok\Api\StoriesApi;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 use SensioLabs\Storyblok\Api\Tests\Util\StoryblokFakeClient;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class StoriesApiTest extends TestCase
 {
     use FakerTrait;

@@ -17,6 +17,10 @@ use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Domain\Value\Link;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class LinkTest extends TestCase
 {
     use FakerTrait;

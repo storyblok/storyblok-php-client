@@ -16,6 +16,10 @@ namespace SensioLabs\Storyblok\Api\Tests\Unit\Bridge\HttpClient;
 use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Bridge\HttpClient\QueryStringHelper;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 class QueryStringHelperTest extends TestCase
 {
     /**

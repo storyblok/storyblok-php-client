@@ -30,6 +30,7 @@ use function Safe\preg_replace;
  *
  * @author Silas Joisten <silasjoisten@proton.me>
  * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
  */
 final class QueryStringHelper
 {

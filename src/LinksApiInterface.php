@@ -18,7 +18,9 @@ use SensioLabs\Storyblok\Api\Request\LinksRequest;
 use SensioLabs\Storyblok\Api\Response\LinksResponse;
 
 /**
- * @author Silas Joisten <silas.joisten@proton.me>
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Simon André <smn.andre@gmail.com>
+ * @author Oskar Stark <oskarstark@googlemail.com>
  */
 interface LinksApiInterface
 {

@@ -17,6 +17,10 @@ use PHPUnit\Framework\TestCase;
 use SensioLabs\Storyblok\Api\Domain\Value\Dto\Pagination;
 use SensioLabs\Storyblok\Api\Tests\Util\FakerTrait;
 
+/**
+ * @author Silas Joisten <silasjoisten@proton.me>
+ * @author Oskar Stark <oskarstark@googlemail.com>
+ */
 final class PaginationTest extends TestCase
 {
     use FakerTrait;
