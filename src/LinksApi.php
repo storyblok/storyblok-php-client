@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Request\LinksRequest;
@@ -25,10 +26,16 @@ use SensioLabs\Storyblok\Api\Response\LinksResponse;
 final class LinksApi implements LinksApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/links';
+    private Version $version;
 
+    /**
+     * @param 'draft'|'published' $version
+     */
     public function __construct(
         private StoryblokClientInterface $client,
+        string $version = 'published', // we inject a string here, because Symfony DI does not support enums
     ) {
+        $this->version = Version::from($version);
     }
 
     public function all(?LinksRequest $request = null): LinksResponse
@@ -36,7 +43,10 @@ final class LinksApi implements LinksApiInterface
         $request ??= new LinksRequest();
 
         $response = $this->client->request('GET', self::ENDPOINT, [
-            'query' => $request->toArray(),
+            'query' => [
+                ...$request->toArray(),
+                'version' => null !== $request->version ? $request->version->value : $this->version->value,
+            ],
         ]);
 
         return new LinksResponse(
@@ -54,6 +64,7 @@ final class LinksApi implements LinksApiInterface
             'query' => [
                 ...$request->toArray(),
                 'with_parent' => $parentId->value,
+                'version' => null !== $request->version ? $request->version->value : $this->version->value,
             ],
         ]);
 
@@ -72,6 +83,7 @@ final class LinksApi implements LinksApiInterface
             'query' => [
                 ...$request->toArray(),
                 'with_parent' => 0,
+                'version' => null !== $request->version ? $request->version->value : $this->version->value,
             ],
         ]);
 
