@@ -46,7 +46,10 @@ final class StoriesApi implements StoriesApiInterface
         $request ??= new StoriesRequest();
 
         $response = $this->client->request('GET', self::ENDPOINT, [
-            'query' => $request->toArray(),
+            'query' => [
+                ...$request->toArray(),
+                'version' => null !== $request->version ? $request->version->value : $this->version->value,
+            ],
         ]);
 
         return new StoriesResponse(
@@ -66,6 +69,7 @@ final class StoriesApi implements StoriesApiInterface
             'query' => [
                 ...$request->toArray(),
                 'content_type' => $contentType,
+                'version' => null !== $request->version ? $request->version->value : $this->version->value,
             ],
         ]);
 
