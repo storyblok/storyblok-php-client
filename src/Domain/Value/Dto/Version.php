@@ -13,11 +13,15 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api\Domain\Value\Dto;
 
+use OskarStark\Enum\Trait\Comparable;
+
 /**
  * @author Silas Joisten <silasjoisten@proton.me>
  */
 enum Version: string
 {
+    use Comparable;
+
     case Published = 'published';
     case Draft = 'draft';
 }
