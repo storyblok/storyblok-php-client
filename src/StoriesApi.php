@@ -29,11 +29,16 @@ use Webmozart\Assert\Assert;
 final class StoriesApi implements StoriesApiInterface
 {
     private const string ENDPOINT = '/v2/cdn/stories';
+    private Version $version;
 
+    /**
+     * @param 'draft'|'published' $version
+     */
     public function __construct(
         private StoryblokClientInterface $client,
-        private Version $version = Version::Published,
+        string $version = 'published', // we inject a string here, because Symfony DI does not support enums
     ) {
+        $this->version = Version::from($version);
     }
 
     public function all(?StoriesRequest $request = null): StoriesResponse
