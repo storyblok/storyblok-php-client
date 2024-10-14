@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Total;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
@@ -31,6 +32,7 @@ final class StoriesApi implements StoriesApiInterface
 
     public function __construct(
         private StoryblokClientInterface $client,
+        private Version $version = Version::Published,
     ) {
     }
 
@@ -69,7 +71,7 @@ final class StoriesApi implements StoriesApiInterface
         );
     }
 
-    public function bySlug(string $slug, string $language = 'default'): StoryResponse
+    public function bySlug(string $slug, string $language = 'default', ?Version $version = null): StoryResponse
     {
         Assert::stringNotEmpty($language);
         Assert::stringNotEmpty($slug);
@@ -77,13 +79,14 @@ final class StoriesApi implements StoriesApiInterface
         $response = $this->client->request('GET', \sprintf('%s/%s', self::ENDPOINT, $slug), [
             'query' => [
                 'language' => $language,
+                'version' => null !== $version ? $version->value : $this->version->value,
             ],
         ]);
 
         return new StoryResponse($response->toArray());
     }
 
-    public function byUuid(Uuid $uuid, string $language = 'default'): StoryResponse
+    public function byUuid(Uuid $uuid, string $language = 'default', ?Version $version = null): StoryResponse
     {
         Assert::stringNotEmpty($language);
 
@@ -91,19 +94,21 @@ final class StoriesApi implements StoriesApiInterface
             'query' => [
                 'language' => $language,
                 'find_by' => 'uuid',
+                'version' => null !== $version ? $version->value : $this->version->value,
             ],
         ]);
 
         return new StoryResponse($response->toArray());
     }
 
-    public function byId(Id $id, string $language = 'default'): StoryResponse
+    public function byId(Id $id, string $language = 'default', ?Version $version = null): StoryResponse
     {
         Assert::stringNotEmpty($language);
 
         $response = $this->client->request('GET', \sprintf('/v2/cdn/stories/%s', $id->value), [
             'query' => [
                 'language' => $language,
+                'version' => null !== $version ? $version->value : $this->version->value,
             ],
         ]);
 

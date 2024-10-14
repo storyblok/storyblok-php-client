@@ -66,6 +66,41 @@ $storiesApi = new StoriesApi($client);
 $response = $storiesApi->all(locale: 'de');
 ```
 
+### Fetch by Version (`draft`, `published`)
+
+#### Global
+
+```php
+use SensioLabs\Storyblok\Api\StoriesApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
+
+$client = new StoryblokClient(/* ... */);
+
+$storiesApi = new StoriesApi($client, Version::Draft);
+$response = $storiesApi->bySlug(
+    locale: 'de',
+    slug: '/my-story/',
+);
+```
+
+#### Method Call
+
+```php
+use SensioLabs\Storyblok\Api\StoriesApi;
+use SensioLabs\Storyblok\Api\StoryblokClient;
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
+
+$client = new StoryblokClient(/* ... */);
+
+$storiesApi = new StoriesApi($client, Version::Published);
+$response = $storiesApi->bySlug(
+    locale: 'de',
+    slug: '/my-story/',
+    version: Version::Draft, // This overrides the global "version"
+);
+```
+
 ### Pagination
 
 ```php

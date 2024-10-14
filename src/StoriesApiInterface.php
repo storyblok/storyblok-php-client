@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace SensioLabs\Storyblok\Api;
 
+use SensioLabs\Storyblok\Api\Domain\Value\Dto\Version;
 use SensioLabs\Storyblok\Api\Domain\Value\Id;
 use SensioLabs\Storyblok\Api\Domain\Value\Uuid;
 use SensioLabs\Storyblok\Api\Request\StoriesRequest;
@@ -30,9 +31,9 @@ interface StoriesApiInterface
 
     public function allByContentType(string $contentType, ?StoriesRequest $request = null): StoriesResponse;
 
-    public function bySlug(string $slug, string $language = 'default'): StoryResponse;
+    public function bySlug(string $slug, string $language = 'default', ?Version $version = null): StoryResponse;
 
-    public function byUuid(Uuid $uuid, string $language = 'default'): StoryResponse;
+    public function byUuid(Uuid $uuid, string $language = 'default', ?Version $version = null): StoryResponse;
 
-    public function byId(Id $id, string $language = 'default'): StoryResponse;
+    public function byId(Id $id, string $language = 'default', ?Version $version = null): StoryResponse;
 }
