@@ -1,8 +1,10 @@
 {
-    "name": "sensiolabs-de/storyblok-api",
+    "name": "storyblok/php-client",
+    "description": "Storyblok Client to easily call the publishing api",
     "type": "library",
-    "description": "API for Storyblok",
+    "keywords": ["storyblok", "api", "integration", "cms"],
     "license": "MIT",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "Silas Joisten",
@@ -55,6 +57,5 @@
         "psr-4": {
             "SensioLabs\\Storyblok\\Api\\Tests\\": "tests/"
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
