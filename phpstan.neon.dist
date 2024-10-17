@@ -1,0 +1,9 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    inferPrivatePropertyTypeFromConstructor: true
+    level: 8
+    paths:
+        - src
+        - tests

@@ -1,0 +1,82 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:assetResponse\\(\\) should return array\\{asset\\: array\\{filename\\: string, created_at\\: string, updated_at\\: string, expire_at\\: string\\|null, content_length\\: int, signed_url\\: string, content_type\\: string\\}\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceDimensionResponse\\(\\) should return array\\{id\\: int, name\\: string, entry_value\\: string, datasource_id\\: int, created_at\\: string, updated_at\\: string\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceEntriesResponse\\(\\) should return array\\{datasource_entries\\: array\\<int, array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\}\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceEntryResponse\\(\\) should return array\\{id\\: int, name\\: string, value\\: string, dimension_value\\: string\\|null\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourceResponse\\(\\) should return array\\{id\\: int, name\\: string, slug\\: string, dimensions\\: array\\<int, array\\{id\\: int, name\\: string, entry_value\\: string, datasource_id\\: int, created_at\\: string, updated_at\\: string\\}\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:datasourcesResponse\\(\\) should return array\\{datasources\\: array\\<int, array\\<string, mixed\\>\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:linkAlternateResponse\\(\\) should return array\\{lang\\: string, name\\: string, path\\: string, published\\: bool, translated_slug\\: string\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:linkResponse\\(\\) should return array\\{uuid\\: string, id\\: int, parent_id\\: int\\|null, name\\: string, slug\\: string, path\\: string, real_path\\: string, is_folder\\: bool, \\.\\.\\.\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:linksResponse\\(\\) should return array\\{links\\: array\\<int, array\\<string, mixed\\>\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:spaceResponse\\(\\) should return array\\{id\\: int, name\\: string, domain\\: string, version\\: int, language_codes\\: array\\<int, string\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:storiesResponse\\(\\) should return array\\{cv\\: int, stories\\: array\\<int, array\\<string, mixed\\>\\>, links\\: array\\<string\\>, rels\\: array\\<string\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:storyResponse\\(\\) should return array\\{cv\\: int, story\\: array\\<string, mixed\\>, links\\: array\\<string\\>, rels\\: array\\<string\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Bridge\\\\Faker\\\\Provider\\\\StoryblokProvider\\:\\:tagsResponse\\(\\) should return array\\{tags\\: array\\<int, array\\{name\\: string, taggings_count\\: int\\}\\>\\} but returns array\\.$#"
+			count: 1
+			path: src/Bridge/Faker/Provider/StoryblokProvider.php
+
+		-
+			message: "#^Method SensioLabs\\\\Storyblok\\\\Api\\\\Domain\\\\Value\\\\Filter\\\\FilterCollection\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Domain/Value/Filter/FilterCollection.php
+
+		-
+			message: "#^PHPDoc tag @return contains unresolvable type\\.$#"
+			count: 1
+			path: src/Domain/Value/Filter/FilterCollection.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on DateTimeImmutable\\|null\\.$#"
+			count: 1
+			path: tests/Unit/Domain/Value/AssetTest.php
+
