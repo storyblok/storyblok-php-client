@@ -1,6 +1,7 @@
 {
     "name": "storyblok/php-client",
     "description": "Storyblok Client to easily call the publishing api",
+    "abandoned": "storyblok/php-content-api-client",
     "type": "library",
     "keywords": ["storyblok", "api", "integration", "cms"],
     "license": "MIT",
